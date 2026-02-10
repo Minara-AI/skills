@@ -1,6 +1,6 @@
 # Minara Integration Examples
 
-Examples 1–3 use Circle Wallet (preferred). Example 4 shows EOA fallback (no Circle Wallet).
+Examples 1–3 use Circle Wallet (preferred) and **prioritize Circle SDK** (`circleClient.createContractExecutionTransaction`, `circleClient.signTypedData`, `circleClient.signTransaction`). Example 4 shows EOA fallback (no Circle Wallet).
 
 Examples 1–3 assume circle-wallet skill is installed and configured via `circle-wallet setup`.
 
@@ -85,34 +85,19 @@ The CLI auto-detects the chain from the wallet address format.
 
 User: _"swap 500 USDC to ETH on Base"_
 
-The API returns a pre-assembled transaction (contract address + calldata). Execute via Circle:
+The API returns a pre-assembled transaction (contract address + calldata). Execute via Circle SDK:
 
 ```typescript
 // swapTx.transaction contains contractAddress, callData, etc.
-const res = await fetch(
-  "https://api.circle.com/v1/w3s/developer/transactions/contractExecution",
-  {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${config.apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      idempotencyKey: crypto.randomUUID(),
-      entitySecretCiphertext: await generateCiphertext(
-        config.entitySecret,
-        config.apiKey,
-      ),
-      walletId: walletId,
-      contractAddress: swapTx.transaction.contractAddress,
-      callData: swapTx.transaction.callData,
-      feeLevel: "MEDIUM",
-    }),
-  },
-).then((r) => r.json());
+const res = await circleClient.createContractExecutionTransaction({
+  idempotencyKey: crypto.randomUUID(),
+  walletId: walletId,
+  contractAddress: swapTx.transaction.contractAddress,
+  callData: swapTx.transaction.callData,
+  feeLevel: "MEDIUM",
+});
+// SDK handles entitySecretCiphertext internally when initialized with entitySecret
 ```
-
-> For `entitySecretCiphertext` generation in EVM raw API calls (2b), use the Circle SDK's `forgeEntitySecretCiphertext` utility or encrypt the entity secret with Circle's RSA public key. See [Circle entity secret docs](https://developers.circle.com/w3s/entity-secret-management). The Solana SDK method (2c) handles this internally.
 
 ### 2c. Solana swap — Circle signTransaction
 
@@ -141,8 +126,8 @@ console.log(`Swap tx: https://solscan.io/tx/${txId}`);
 ### Flow
 
 ```
-EVM:    Minara intent-to-swap-tx → pre-assembled tx → Circle contractExecution → tx on-chain
-Solana: Minara intent-to-swap-tx → pre-assembled tx → Circle signTransaction → RPC send
+EVM:    Minara intent-to-swap-tx → pre-assembled tx → Circle SDK createContractExecutionTransaction → tx on-chain
+Solana: Minara intent-to-swap-tx → pre-assembled tx → Circle SDK signTransaction → RPC send
 ```
 
 ---
@@ -239,31 +224,17 @@ const typedData = {
 };
 ```
 
-### 4. Sign with Circle (EIP-712)
+### 4. Sign with Circle SDK (EIP-712)
 
 ```typescript
-// signTypedData requires raw API call (not in circle-wallet CLI)
-const signRes = await fetch(
-  "https://api.circle.com/v1/w3s/developer/sign/typedData",
-  {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${config.apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      data: JSON.stringify(typedData),
-      entitySecretCiphertext: await generateCiphertext(
-        config.entitySecret,
-        config.apiKey,
-      ),
-      walletId: walletId,
-      memo: `Hyperliquid ${strategy.side} ${strategy.symbol}`,
-    }),
-  },
-).then((r) => r.json());
+const signRes = await circleClient.signTypedData({
+  walletId: walletId,
+  data: JSON.stringify(typedData),
+  memo: `Hyperliquid ${strategy.side} ${strategy.symbol}`,
+});
 
 const signature = signRes.data.signature;
+// SDK handles entitySecretCiphertext internally when initialized with entitySecret
 ```
 
 ### 5. Submit to Hyperliquid
@@ -336,7 +307,7 @@ const leverageAction = {
 Minara perp-trading-suggestion → { side, entryPrice, SL, TP, confidence }
   → Map to Hyperliquid order action
   → Build EIP-712 typed data (Hyperliquid SDK)
-  → Circle signTypedData (raw API, credentials from ~/.openclaw/circle-wallet/config.json)
+  → Circle SDK signTypedData
   → POST https://api.hyperliquid.xyz/exchange → order placed (no API key)
 ```
 
@@ -375,27 +346,13 @@ const approveCallData = encodeFunctionData({
   ],
 });
 
-const approveRes = await fetch(
-  "https://api.circle.com/v1/w3s/developer/transactions/contractExecution",
-  {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${config.apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      idempotencyKey: crypto.randomUUID(),
-      entitySecretCiphertext: await generateCiphertext(
-        config.entitySecret,
-        config.apiKey,
-      ),
-      walletId: walletId,
-      contractAddress: USDC_ADDRESS,
-      callData: approveCallData,
-      feeLevel: "MEDIUM",
-    }),
-  },
-).then((r) => r.json());
+const approveRes = await circleClient.createContractExecutionTransaction({
+  idempotencyKey: crypto.randomUUID(),
+  walletId: walletId,
+  contractAddress: USDC_ADDRESS,
+  callData: approveCallData,
+  feeLevel: "MEDIUM",
+});
 ```
 
 #### 2. Send request and handle 402 challenge
@@ -425,26 +382,11 @@ import { createPaymentHeader } from "@x402/evm/exact/client";
 
 const paymentPayload = createPaymentHeader(paymentRequirements);
 
-// Sign with Circle wallet (EIP-712)
-const signRes = await fetch(
-  "https://api.circle.com/v1/w3s/developer/sign/typedData",
-  {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${config.apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      data: JSON.stringify(paymentPayload.typedData),
-      entitySecretCiphertext: await generateCiphertext(
-        config.entitySecret,
-        config.apiKey,
-      ),
-      walletId: walletId,
-      memo: "x402 payment for Minara API",
-    }),
-  },
-).then((r) => r.json());
+const signRes = await circleClient.signTypedData({
+  walletId: walletId,
+  data: JSON.stringify(paymentPayload.typedData),
+  memo: "x402 payment for Minara API",
+});
 
 const signature = signRes.data.signature;
 ```

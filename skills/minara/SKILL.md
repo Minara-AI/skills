@@ -275,15 +275,15 @@ const circleClient = initiateDeveloperControlledWalletsClient({
 
 SDK operations used by Minara integration:
 
-| Operation          | SDK method                            | Chain     | When                                 |
-| ------------------ | ------------------------------------- | --------- | ------------------------------------ |
-| Create wallet      | `circleClient.createWallets(...)`     | EVM / SOL | Initial setup                        |
-| Transfer USDC      | `circleClient.createTransaction(...)` | EVM / SOL | Simple send (or use CLI)             |
-| Contract execution | Raw `POST .../contractExecution`      | EVM       | DEX swap, ERC-20 approve             |
-| Sign EIP-712       | Raw `POST .../sign/typedData`         | EVM       | x402 EVM payment, Hyperliquid orders |
-| Sign Solana tx     | `circleClient.signTransaction(...)`   | SOL       | x402 Solana payment, DEX swap        |
+| Operation          | SDK method                                      | Chain     | When                                 |
+| ------------------ | ----------------------------------------------- | --------- | ------------------------------------ |
+| Create wallet      | `circleClient.createWallets(...)`               | EVM / SOL | Initial setup                        |
+| Transfer USDC      | `circleClient.createTransaction(...)`           | EVM / SOL | Simple send (or use CLI)             |
+| Contract execution | `circleClient.createContractExecutionTransaction(...)` | EVM       | DEX swap, ERC-20 approve             |
+| Sign EIP-712       | `circleClient.signTypedData(...)`               | EVM       | x402 EVM payment, Hyperliquid orders |
+| Sign Solana tx     | `circleClient.signTransaction(...)`             | SOL       | x402 Solana payment, DEX swap        |
 
-For EVM `contractExecution` and `signTypedData`, use raw `fetch` with the `apiKey` from config (SDK does not expose direct methods). For Solana, the SDK provides `signTransaction` directly. The SDK handles `entitySecretCiphertext` generation internally.
+Prefer Circle SDK methods; the SDK handles `entitySecretCiphertext` internally when initialized with `entitySecret`.
 
 For full code, read `{baseDir}/examples.md`.
 
