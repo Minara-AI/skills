@@ -1,6 +1,8 @@
-# Minara + Circle Wallet Integration Examples
+# Minara Integration Examples
 
-All examples assume circle-wallet skill is installed and configured via `circle-wallet setup`.
+Examples 1–3 use Circle Wallet (preferred). Example 4 shows EOA fallback (no Circle Wallet).
+
+Examples 1–3 assume circle-wallet skill is installed and configured via `circle-wallet setup`.
 
 ## Shared setup — load Circle config and create SDK client
 
@@ -10,7 +12,10 @@ import * as fs from "fs";
 
 // Load credentials managed by circle-wallet skill
 const config = JSON.parse(
-  fs.readFileSync(`${process.env.HOME}/.openclaw/circle-wallet/config.json`, "utf-8")
+  fs.readFileSync(
+    `${process.env.HOME}/.openclaw/circle-wallet/config.json`,
+    "utf-8",
+  ),
 );
 
 const circleClient = initiateDeveloperControlledWalletsClient({
@@ -22,36 +27,44 @@ const circleClient = initiateDeveloperControlledWalletsClient({
 Get wallet address (use existing wallet or create one):
 
 ```bash
-# List existing wallets
+# List existing wallets (shows both EVM and Solana)
 circle-wallet list
 
-# Or create a new one
+# Create EVM wallet
 circle-wallet create "Trading Wallet" --chain BASE
+
+# Create Solana wallet
+circle-wallet create "SOL Wallet" --chain SOL
 ```
 
 ---
 
 ## Example 1
 
-**Spot Swap: Minara Intent → Circle Execution**
+**Spot Swap: Minara Intent → Circle Execution (EVM + Solana)**
 
-User: *"swap 500 USDC to ETH on Base"*
-
-### 1. Parse intent (Minara)
+### 1. Call Minara intent-to-swap-tx API
 
 ```typescript
-const swapTx = await fetch("https://api.minara.ai/v1/developer/intent-to-swap-tx", {
-  method: "POST",
-  headers: {
-    "Authorization": `Bearer ${process.env.MINARA_API_KEY}`,
-    "Content-Type": "application/json",
+// Detect chain from wallet address
+const isEvm = walletAddress.startsWith("0x");
+const chain = isEvm ? "base" : "solana"; // or use user-specified chain
+
+const swapTx = await fetch(
+  "https://api.minara.ai/v1/developer/intent-to-swap-tx",
+  {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.MINARA_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      intent: "swap 500 USDC to ETH", // or "swap 100 USDC to SOL"
+      walletAddress: walletAddress, // 0x... (EVM) or base58 (Solana)
+      chain: chain,
+    }),
   },
-  body: JSON.stringify({
-    intent: "swap 500 USDC to ETH",
-    walletAddress: walletAddress,   // from circle-wallet list
-    chain: "base",
-  }),
-}).then((r) => r.json());
+).then((r) => r.json());
 
 // swapTx.transaction = {
 //   chain, inputTokenAddress, outputTokenAddress,
@@ -59,18 +72,26 @@ const swapTx = await fetch("https://api.minara.ai/v1/developer/intent-to-swap-tx
 // }
 ```
 
-### 2a. Simple USDC transfer — use CLI
+### 2a. Simple USDC transfer — use CLI (EVM or Solana)
 
 ```bash
+# EVM
 circle-wallet send 0xRecipientAddress 500 --from 0xWalletAddress
+
+# Solana
+circle-wallet send <base58_recipient> 500 --from <sol_wallet>
 ```
 
-### 2b. DEX swap — use Circle API directly
+The CLI auto-detects the chain from the wallet address format.
+
+### 2b. EVM DEX swap — Circle contractExecution
+
+User: _"swap 500 USDC to ETH on Base"_
 
 Build calldata from Minara's swap params via a DEX aggregator (OKX DEX API, 1inch, Uniswap), then execute:
 
 ```typescript
-const dexCalldata = await buildDexCalldata(swapTx.transaction);
+const dexCalldata = await buildEvmDexCalldata(swapTx.transaction);
 
 // Circle contractExecution requires raw API call (not in SDK)
 const res = await fetch(
@@ -78,12 +99,15 @@ const res = await fetch(
   {
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${config.apiKey}`,
+      Authorization: `Bearer ${config.apiKey}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
       idempotencyKey: crypto.randomUUID(),
-      entitySecretCiphertext: await generateCiphertext(config.entitySecret, config.apiKey),
+      entitySecretCiphertext: await generateCiphertext(
+        config.entitySecret,
+        config.apiKey,
+      ),
       walletId: walletId,
       contractAddress: dexCalldata.routerAddress,
       callData: dexCalldata.data,
@@ -93,42 +117,85 @@ const res = await fetch(
 ).then((r) => r.json());
 ```
 
-> For `entitySecretCiphertext` generation in raw API calls, use the Circle SDK's `forgeEntitySecretCiphertext` utility or encrypt the entity secret with Circle's RSA public key. See [Circle entity secret docs](https://developers.circle.com/w3s/entity-secret-management).
+> For `entitySecretCiphertext` generation in EVM raw API calls (2b), use the Circle SDK's `forgeEntitySecretCiphertext` utility or encrypt the entity secret with Circle's RSA public key. See [Circle entity secret docs](https://developers.circle.com/w3s/entity-secret-management). The Solana SDK method (2c) handles this internally.
+
+### 2c. Solana DEX swap — Circle signTransaction + Jupiter
+
+User: _"swap 100 USDC to SOL"_
+
+Build a swap transaction via [Jupiter aggregator](https://station.jup.ag/docs), then sign with Circle:
+
+```typescript
+// Step 1: Get swap transaction from Jupiter
+const quoteRes = await fetch(
+  `https://quote-api.jup.ag/v6/quote?inputMint=${swapTx.transaction.inputTokenAddress}&outputMint=${swapTx.transaction.outputTokenAddress}&amount=${swapTx.transaction.amount}&slippageBps=${swapTx.transaction.slippagePercent * 100}`,
+).then((r) => r.json());
+
+const swapRes = await fetch("https://quote-api.jup.ag/v6/swap", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    quoteResponse: quoteRes,
+    userPublicKey: walletAddress, // Solana base58 address from Circle wallet
+  }),
+}).then((r) => r.json());
+
+// swapRes.swapTransaction = base64-encoded serialized Solana transaction
+
+// Step 2: Sign with Circle Wallet (SDK has direct signTransaction method for Solana)
+const signRes = await circleClient.signTransaction({
+  walletId: solWalletId,
+  rawTransaction: swapRes.swapTransaction, // base64 serialized Solana tx
+  memo: "Jupiter swap via Minara",
+});
+
+const signedTx = signRes.data.signedTransaction;
+
+// Step 3: Submit to Solana
+import { Connection } from "@solana/web3.js";
+const connection = new Connection("https://api.mainnet-beta.solana.com");
+const txId = await connection.sendRawTransaction(
+  Buffer.from(signedTx, "base64"),
+);
+console.log(`Swap tx: https://solscan.io/tx/${txId}`);
+```
 
 ### Flow
 
 ```
-Minara intent-to-swap-tx → { tokens, amount, slippage }
-  → DEX aggregator → { routerAddress, callData }
-  → Circle contractExecution → tx on-chain
+EVM:    Minara intent-to-swap-tx → DEX aggregator → Circle contractExecution → tx on-chain
+Solana: Minara intent-to-swap-tx → Jupiter quote + swap → Circle signTransaction → Solana RPC
 ```
 
 ---
 
 ## Example 2
 
-**Perp Trading: Minara Strategy → Hyperliquid Order via Circle Signing**
+**Perp Trading: Minara Strategy → Hyperliquid Order via Circle Signing (EVM only)**
 
-User: *"open a long ETH position, $1000 margin, 10x leverage"*
+User: _"open a long ETH position, $1000 margin, 10x leverage"_
 
-Hyperliquid is a permissionless perp DEX — no API key. Orders use EIP-712 signatures.
+Hyperliquid is a permissionless perp DEX — no API key. Orders use EIP-712 signatures (Arbitrum, chainId 42161). This flow requires an **EVM** Circle wallet; Solana wallets cannot sign EIP-712.
 
-### 1. Get strategy (Minara)
+### 1. Call Minara perp-trading-suggestion API
 
 ```typescript
-const strategy = await fetch("https://api.minara.ai/v1/developer/perp-trading-suggestion", {
-  method: "POST",
-  headers: {
-    "Authorization": `Bearer ${process.env.MINARA_API_KEY}`,
-    "Content-Type": "application/json",
+const strategy = await fetch(
+  "https://api.minara.ai/v1/developer/perp-trading-suggestion",
+  {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.MINARA_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      symbol: "ETH",
+      style: "scalping",
+      marginUSD: 1000,
+      leverage: 10,
+    }),
   },
-  body: JSON.stringify({
-    symbol: "ETH",
-    style: "scalping",
-    marginUSD: 1000,
-    leverage: 10,
-  }),
-}).then((r) => r.json());
+).then((r) => r.json());
 
 // { entryPrice, side, stopLossPrice, takeProfitPrice, confidence, reasons, risks }
 ```
@@ -145,19 +212,23 @@ const ASSET_INDEX: Record<string, number> = { BTC: 0, ETH: 1, SOL: 2 };
 const assetIndex = ASSET_INDEX[strategy.symbol ?? "ETH"];
 const isBuy = strategy.side === "long";
 const price = strategy.entryPrice;
-const size = String(strategy.marginUSD * strategy.leverage / parseFloat(price));
+const size = String(
+  (strategy.marginUSD * strategy.leverage) / parseFloat(price),
+);
 const nonce = Date.now();
 
 const action = {
   type: "order",
-  orders: [{
-    a: assetIndex,
-    b: isBuy,
-    p: price,
-    s: size,
-    r: false,
-    t: { limit: { tif: "Gtc" } },
-  }],
+  orders: [
+    {
+      a: assetIndex,
+      b: isBuy,
+      p: price,
+      s: size,
+      r: false,
+      t: { limit: { tif: "Gtc" } },
+    },
+  ],
   grouping: "na",
 };
 ```
@@ -183,7 +254,7 @@ const typedData = {
   domain: { name: "HyperliquidSignTransaction", version: "1", chainId: 42161 },
   primaryType: "HyperliquidTransaction:Order",
   message: {
-    action: actionHash,  // msgpack hash — use SDK
+    action: actionHash, // msgpack hash — use SDK
     nonce: nonce,
     vaultAddress: "0x0000000000000000000000000000000000000000",
   },
@@ -194,19 +265,25 @@ const typedData = {
 
 ```typescript
 // signTypedData requires raw API call (not in circle-wallet CLI)
-const signRes = await fetch("https://api.circle.com/v1/w3s/developer/sign/typedData", {
-  method: "POST",
-  headers: {
-    "Authorization": `Bearer ${config.apiKey}`,
-    "Content-Type": "application/json",
+const signRes = await fetch(
+  "https://api.circle.com/v1/w3s/developer/sign/typedData",
+  {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${config.apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      data: JSON.stringify(typedData),
+      entitySecretCiphertext: await generateCiphertext(
+        config.entitySecret,
+        config.apiKey,
+      ),
+      walletId: walletId,
+      memo: `Hyperliquid ${strategy.side} ${strategy.symbol}`,
+    }),
   },
-  body: JSON.stringify({
-    data: JSON.stringify(typedData),
-    entitySecretCiphertext: await generateCiphertext(config.entitySecret, config.apiKey),
-    walletId: walletId,
-    memo: `Hyperliquid ${strategy.side} ${strategy.symbol}`,
-  }),
-}).then((r) => r.json());
+).then((r) => r.json());
 
 const signature = signRes.data.signature;
 ```
@@ -230,12 +307,32 @@ const tpslAction = {
   type: "order",
   orders: [
     {
-      a: assetIndex, b: !isBuy, p: strategy.takeProfitPrice, s: size,
-      r: true, t: { trigger: { isMarket: true, triggerPx: strategy.takeProfitPrice, tpsl: "tp" } },
+      a: assetIndex,
+      b: !isBuy,
+      p: strategy.takeProfitPrice,
+      s: size,
+      r: true,
+      t: {
+        trigger: {
+          isMarket: true,
+          triggerPx: strategy.takeProfitPrice,
+          tpsl: "tp",
+        },
+      },
     },
     {
-      a: assetIndex, b: !isBuy, p: strategy.stopLossPrice, s: size,
-      r: true, t: { trigger: { isMarket: true, triggerPx: strategy.stopLossPrice, tpsl: "sl" } },
+      a: assetIndex,
+      b: !isBuy,
+      p: strategy.stopLossPrice,
+      s: size,
+      r: true,
+      t: {
+        trigger: {
+          isMarket: true,
+          triggerPx: strategy.stopLossPrice,
+          tpsl: "sl",
+        },
+      },
     },
   ],
   grouping: "positionTpsl",
@@ -269,16 +366,18 @@ Minara perp-trading-suggestion → { side, entryPrice, SL, TP, confidence }
 
 ## Example 3
 
-**x402 Pay-per-use: Minara API via Circle Wallet**
+**x402 Pay-per-use: Minara API via Circle Wallet (EVM + Solana)**
 
-When `MINARA_API_KEY` is not set, use x402 to pay Minara per-request with USDC. Circle Wallet signs the x402 payment authorization via `signTypedData` — no `EVM_PRIVATE_KEY` needed.
+When `MINARA_API_KEY` is not set, use x402 to pay Minara per-request with USDC. Circle Wallet signs the x402 payment authorization — no `EVM_PRIVATE_KEY` needed.
 
-### Prerequisites
+### 3A — EVM x402 (Base / Polygon / Ethereum)
 
-- Circle wallet with USDC balance on the target chain (e.g. Base)
-- One-time: approve the x402 facilitator contract to spend USDC from the Circle wallet
+#### Prerequisites
 
-### 1. (One-time) Approve x402 facilitator
+- Circle **EVM** wallet with USDC balance (e.g. Base)
+- One-time: approve the x402 facilitator contract to spend USDC
+
+#### 1. (One-time) Approve x402 facilitator
 
 ```typescript
 // Approve the x402 facilitator contract to spend USDC from Circle wallet.
@@ -290,7 +389,12 @@ const FACILITATOR_ADDRESS = "0x..."; // x402 facilitator on Base — see x402 do
 const approveCallData = encodeFunctionData({
   abi: erc20Abi,
   functionName: "approve",
-  args: [FACILITATOR_ADDRESS, BigInt("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")],
+  args: [
+    FACILITATOR_ADDRESS,
+    BigInt(
+      "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    ),
+  ],
 });
 
 const approveRes = await fetch(
@@ -298,12 +402,15 @@ const approveRes = await fetch(
   {
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${config.apiKey}`,
+      Authorization: `Bearer ${config.apiKey}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
       idempotencyKey: crypto.randomUUID(),
-      entitySecretCiphertext: await generateCiphertext(config.entitySecret, config.apiKey),
+      entitySecretCiphertext: await generateCiphertext(
+        config.entitySecret,
+        config.apiKey,
+      ),
       walletId: walletId,
       contractAddress: USDC_ADDRESS,
       callData: approveCallData,
@@ -313,10 +420,10 @@ const approveRes = await fetch(
 ).then((r) => r.json());
 ```
 
-### 2. Send request and handle 402 challenge
+#### 2. Send request and handle 402 challenge
 
 ```typescript
-// Make initial request to x402-protected endpoint
+// Make initial request to x402-protected endpoint (EVM default)
 const initialRes = await fetch("https://x402.minara.ai/x402/chat", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
@@ -324,52 +431,50 @@ const initialRes = await fetch("https://x402.minara.ai/x402/chat", {
 });
 
 if (initialRes.status !== 402) {
-  // Not a 402 — handle normally
   const data = await initialRes.json();
   console.log(data.content);
 } else {
-  // Parse payment requirements from 402 response
   const paymentHeader = initialRes.headers.get("x-payment");
   const paymentRequirements = JSON.parse(paymentHeader!);
-  // paymentRequirements contains: { payeeAddress, maxAmountRequired, asset, network, ... }
+  // paymentRequirements: { payeeAddress, maxAmountRequired, asset, network, ... }
 }
 ```
 
-### 3. Build and sign x402 payment authorization
+#### 3. Build and sign EIP-712 payment authorization
 
 ```typescript
 import { createPaymentHeader } from "@x402/evm/exact/client";
 
-// Build the x402 EIP-712 typed data from payment requirements
 const paymentPayload = createPaymentHeader(paymentRequirements);
-// paymentPayload.typedData contains the EIP-712 structure to sign
 
-// Sign with Circle wallet (no private key needed)
-const signRes = await fetch("https://api.circle.com/v1/w3s/developer/sign/typedData", {
-  method: "POST",
-  headers: {
-    "Authorization": `Bearer ${config.apiKey}`,
-    "Content-Type": "application/json",
+// Sign with Circle wallet (EIP-712)
+const signRes = await fetch(
+  "https://api.circle.com/v1/w3s/developer/sign/typedData",
+  {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${config.apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      data: JSON.stringify(paymentPayload.typedData),
+      entitySecretCiphertext: await generateCiphertext(
+        config.entitySecret,
+        config.apiKey,
+      ),
+      walletId: walletId,
+      memo: "x402 payment for Minara API",
+    }),
   },
-  body: JSON.stringify({
-    data: JSON.stringify(paymentPayload.typedData),
-    entitySecretCiphertext: await generateCiphertext(config.entitySecret, config.apiKey),
-    walletId: walletId,
-    memo: "x402 payment for Minara API",
-  }),
-}).then((r) => r.json());
+).then((r) => r.json());
 
 const signature = signRes.data.signature;
 ```
 
-### 4. Re-send request with payment proof
+#### 4. Re-send request with payment proof
 
 ```typescript
-// Attach signed payment authorization and re-send
-const paymentResponse = {
-  ...paymentPayload,
-  signature: signature,
-};
+const paymentResponse = { ...paymentPayload, signature };
 
 const result = await fetch("https://x402.minara.ai/x402/chat", {
   method: "POST",
@@ -379,18 +484,178 @@ const result = await fetch("https://x402.minara.ai/x402/chat", {
   },
   body: JSON.stringify({ userQuery: "What is the current price of BTC?" }),
 });
-
 const data = await result.json();
 console.log(data.content);
 ```
 
+#### EVM Flow
+
+```
+Request x402.minara.ai/x402/chat → 402 + payment requirements
+  → createPaymentHeader (EIP-712 typed data)
+  → Circle signTypedData
+  → Re-send with x-payment-response → Minara response
+```
+
+---
+
+### 3B — Solana x402
+
+#### Prerequisites
+
+- Circle **Solana** wallet with USDC balance
+- No approve step needed (Solana uses direct transaction signing, not ERC-20 allowance)
+
+#### 1. Send request to Solana x402 endpoint
+
+```typescript
+// Use the Solana-specific x402 endpoint
+const initialRes = await fetch("https://x402.minara.ai/x402/solana/chat", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ userQuery: "What is the current price of SOL?" }),
+});
+
+if (initialRes.status !== 402) {
+  const data = await initialRes.json();
+  console.log(data.content);
+} else {
+  const paymentHeader = initialRes.headers.get("x-payment");
+  const paymentRequirements = JSON.parse(paymentHeader!);
+  // paymentRequirements: { transaction (base64 serialized Solana tx), ... }
+}
+```
+
+#### 2. Sign Solana payment transaction with Circle
+
+```typescript
+// The 402 response includes a pre-built Solana transaction for USDC payment.
+// Circle SDK has a direct signTransaction method for Solana (no raw API needed).
+const signRes = await circleClient.signTransaction({
+  walletId: solWalletId,
+  rawTransaction: paymentRequirements.transaction, // base64 serialized Solana tx
+  memo: "x402 Solana payment for Minara API",
+});
+
+const signedTransaction = signRes.data.signedTransaction;
+```
+
+#### 3. Re-send request with signed payment
+
+```typescript
+const paymentResponse = {
+  ...paymentRequirements,
+  signedTransaction: signedTransaction,
+};
+
+const result = await fetch("https://x402.minara.ai/x402/solana/chat", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "x-payment-response": JSON.stringify(paymentResponse),
+  },
+  body: JSON.stringify({ userQuery: "What is the current price of SOL?" }),
+});
+const data = await result.json();
+console.log(data.content);
+```
+
+#### Solana Flow
+
+```
+Request x402.minara.ai/x402/solana/chat → 402 + Solana payment tx
+  → Circle signTransaction (no private key exposed)
+  → Re-send with x-payment-response → Minara response
+```
+
+> **Tip:** Wrap this flow in a helper function (e.g. `x402FetchWithCircle(endpoint, query, chain)`) to reuse across all x402 endpoints. Detect EVM vs Solana from the Circle wallet type and route to the correct endpoint + signing method.
+
+---
+
+## Example 4
+
+**x402 Pay-per-use: EOA fallback (no Circle Wallet)**
+
+When Circle Wallet is not configured, use EOA private keys directly for x402 payment.
+
+### 4A — EVM EOA (`EVM_PRIVATE_KEY`)
+
+The x402 SDK handles 402 challenges automatically with an EOA signer:
+
+```typescript
+import { wrapFetchWithPayment } from "@x402/fetch";
+import { x402Client } from "@x402/core/client";
+import { registerExactEvmScheme } from "@x402/evm/exact/client";
+import { privateKeyToAccount } from "viem/accounts";
+
+const signer = privateKeyToAccount(
+  process.env.EVM_PRIVATE_KEY as `0x${string}`,
+);
+const client = new x402Client();
+registerExactEvmScheme(client, { signer });
+const fetchWithPayment = wrapFetchWithPayment(fetch, client);
+
+const res = await fetchWithPayment("https://x402.minara.ai/x402/chat", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ userQuery: "What is the current price of BTC?" }),
+});
+const data = await res.json();
+console.log(data.content);
+```
+
+Dependencies: `@x402/fetch`, `@x402/evm`, `viem`.
+
+### 4B — Solana EOA (`SOLANA_PRIVATE_KEY`)
+
+Manually handle the 402 challenge and sign the payment transaction locally:
+
+```typescript
+import { Keypair, Transaction } from "@solana/web3.js";
+import bs58 from "bs58";
+
+const keypair = Keypair.fromSecretKey(
+  bs58.decode(process.env.SOLANA_PRIVATE_KEY!),
+);
+
+// 1. Send request → get 402
+const initialRes = await fetch("https://x402.minara.ai/x402/solana/chat", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ userQuery: "What is the current price of SOL?" }),
+});
+
+if (initialRes.status === 402) {
+  const paymentRequirements = JSON.parse(initialRes.headers.get("x-payment")!);
+
+  // 2. Deserialize and sign the payment transaction
+  const tx = Transaction.from(
+    Buffer.from(paymentRequirements.transaction, "base64"),
+  );
+  tx.sign(keypair);
+
+  // 3. Re-send with signed payment
+  const result = await fetch("https://x402.minara.ai/x402/solana/chat", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-payment-response": JSON.stringify({
+        ...paymentRequirements,
+        signedTransaction: tx.serialize().toString("base64"),
+      }),
+    },
+    body: JSON.stringify({ userQuery: "What is the current price of SOL?" }),
+  });
+  const data = await result.json();
+  console.log(data.content);
+}
+```
+
+Dependencies: `@solana/web3.js`, `bs58`.
+
 ### Flow
 
 ```
-Request x402.minara.ai → 402 + payment requirements
-  → Build x402 EIP-712 typed data (createPaymentHeader)
-  → Circle signTypedData (no private key exposed)
-  → Re-send with x-payment-response header → Minara response
+EVM EOA:    wrapFetchWithPayment auto-handles 402 → signed payment → Minara response
+Solana EOA: fetch → 402 → Keypair.sign(tx) → re-send with x-payment-response → Minara response
 ```
-
-> **Tip:** Wrap this flow in a helper function (e.g. `x402FetchWithCircle`) to reuse across all x402 endpoints (chat, solana/chat, polygon/chat).
