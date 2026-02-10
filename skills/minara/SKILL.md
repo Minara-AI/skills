@@ -1,6 +1,6 @@
 ---
 name: minara
-description: Minara Agent API offers crypto trading analysis, swap intent conversion, perpetual trading suggestions, and prediction market analysis. Supports API Key and x402 (pay-per-use USDC).
+description: "Crypto trading intelligence via Minara Agent API: market chat, natural-language swap intent parsing, perpetual trading suggestions, and prediction market analysis. Integrates with Circle Wallet for on-chain execution and Hyperliquid for perp orders. Use when the user asks about crypto trading, swaps, perp positions, or prediction markets."
 homepage: https://minara.ai
 metadata:
   {
@@ -16,95 +16,129 @@ metadata:
 
 # Minara API
 
-Call the [Minara Agent API](https://api.minara.ai) for crypto trading assistance. Two auth options:
+Crypto trading intelligence. Circle Wallet is the preferred signer for both API payment and on-chain execution:
 
-| Method      | Base URL                 | Requires                                                         |
-| ----------- | ------------------------ | ---------------------------------------------------------------- |
-| **API Key** | `https://api.minara.ai`  | `MINARA_API_KEY` (Pro/Partner at [minara.ai](https://minara.ai)) |
-| **x402**    | `https://x402.minara.ai` | `EVM_PRIVATE_KEY` + USDC wallet (pay-per-use, no subscription)   |
+1. **Calling Minara API** (analysis, intent parsing, strategy) — `MINARA_API_KEY` (preferred), or x402 via Circle Wallet / `EVM_PRIVATE_KEY`.
+2. **On-chain execution / signing** — `circle-wallet` CLI (preferred) or `EVM_PRIVATE_KEY` (EOA fallback).
 
-Use API Key when `MINARA_API_KEY` is set; otherwise use x402 when `EVM_PRIVATE_KEY` is available.
+### Minara API auth
+
+| Method      | Base URL                 | Requires                                               |
+| ----------- | ------------------------ | ------------------------------------------------------ |
+| **API Key** | `https://api.minara.ai`  | `MINARA_API_KEY`                                       |
+| **x402**    | `https://x402.minara.ai` | Circle Wallet (preferred) or `EVM_PRIVATE_KEY` + USDC  |
+
+Use API Key when `MINARA_API_KEY` is set; fall back to x402 when Circle Wallet is configured or `EVM_PRIVATE_KEY` is available. x402 is for **Minara API payment only** — not needed for on-chain execution.
+
+### On-chain signing & x402 payment
+
+| Method | Requires | Use for |
+| --- | --- | --- |
+| **Circle Wallet** (preferred) | `circle-wallet` CLI configured | x402 payment signing, USDC transfer, contract execution, EIP-712 signing |
+| **Direct EOA** (fallback) | `EVM_PRIVATE_KEY` | x402 auto-handling, local signing via viem/ethers |
+
+A valid setup can be `circle-wallet` configured with **no** `MINARA_API_KEY` and **no** `EVM_PRIVATE_KEY` — Circle Wallet pays Minara via x402 and handles all on-chain signing.
+
+## Decision logic
+
+```
+Step 1 — Call Minara API (analysis / intent / strategy):
+  IF MINARA_API_KEY is set → use API Key auth
+  ELSE IF circle-wallet configured → x402 via Circle signTypedData (read {baseDir}/examples.md, Example 3)
+  ELSE IF EVM_PRIVATE_KEY is set → x402 via SDK auto-handling
+
+Step 2 — On-chain execution (only when user wants to trade):
+
+  User asks to send USDC:
+    → circle-wallet send <to> <amount> --from <wallet>
+
+  User asks to swap tokens:
+    → Minara intent-to-swap-tx → get params
+    → IF circle-wallet configured → Circle SDK contractExecution (read {baseDir}/examples.md, Example 1)
+    → ELSE IF EVM_PRIVATE_KEY → sign locally with viem
+
+  User asks to open a perp position on Hyperliquid:
+    → Minara perp-trading-suggestion → get strategy
+    → Confirm with user (show entry, SL, TP, confidence, risks)
+    → IF circle-wallet configured → Circle SDK signTypedData → Hyperliquid (read {baseDir}/examples.md, Example 2)
+    → ELSE IF EVM_PRIVATE_KEY → sign EIP-712 locally → Hyperliquid
+
+  User only asks for analysis / market insights / prediction:
+    → No signing needed. Return Minara response directly.
+```
 
 ## Endpoints
 
-### 1. Chat
+All endpoints: `POST`, headers `Authorization: Bearer $MINARA_API_KEY`, `Content-Type: application/json`.
+
+### Chat
 
 `POST https://api.minara.ai/v1/developer/chat`
 
-General-purpose chat for trading analysis, market insights, and questions.
-
-| Param   | Type    | Required | Description                            |
-| ------- | ------- | -------- | -------------------------------------- |
-| mode    | string  | Yes      | `"fast"` or `"expert"`                 |
-| stream  | boolean | Yes      | `false` for JSON, `true` for SSE       |
-| message | object  | Yes      | `{ "role": "user", "content": "..." }` |
-| chatId  | string  | No       | Continue existing conversation         |
+```json
+{ "mode": "fast|expert", "stream": false, "message": { "role": "user", "content": "..." }, "chatId": "optional" }
+```
 
 Response: `{ chatId, messageId, content, usage }`
 
-### 2. Intent to Swap Transaction
+### Intent to Swap
 
 `POST https://api.minara.ai/v1/developer/intent-to-swap-tx`
 
-Convert natural language swap intent to an executable transaction payload (OKX DEX compatible).
+```json
+{ "intent": "swap 0.1 ETH to USDC", "walletAddress": "0x...", "chain": "base" }
+```
 
-| Param         | Type   | Required | Description                                                 |
-| ------------- | ------ | -------- | ----------------------------------------------------------- |
-| intent        | string | Yes      | e.g. `"swap 0.1 ETH to USDC"`                               |
-| walletAddress | string | Yes      | 0x... address                                               |
-| chain         | string | No       | `"base"`, `"ethereum"`, `"bsc"`, `"arbitrum"`, `"optimism"` |
+Chains: `base`, `ethereum`, `bsc`, `arbitrum`, `optimism`.
 
 Response: `{ transaction: { chain, inputTokenAddress, inputTokenSymbol, outputTokenAddress, outputTokenSymbol, amount, amountPercentage, slippagePercent } }`
 
-### 3. Perpetual Trading Suggestion
+### Perp Trading Suggestion
 
 `POST https://api.minara.ai/v1/developer/perp-trading-suggestion`
 
-Get perp trading suggestions: side, entry, stop loss, take profit, confidence.
+```json
+{ "symbol": "ETH", "style": "scalping", "marginUSD": 1000, "leverage": 10, "strategy": "max-profit" }
+```
 
-| Param     | Type   | Required | Description                                                          |
-| --------- | ------ | -------- | -------------------------------------------------------------------- |
-| symbol    | string | Yes      | e.g. `"BTC"`, `"ETH"`, `"SOL"`                                       |
-| style     | string | No       | `"scalping"`, `"day-trading"`, `"swing-trading"` (default: scalping) |
-| marginUSD | number | No       | Default 1000                                                         |
-| leverage  | number | No       | 1–40, default 10                                                     |
-| strategy  | string | No       | Default `"max-profit"`                                               |
+Styles: `scalping` (default), `day-trading`, `swing-trading`. Leverage: 1–40.
 
 Response: `{ entryPrice, side, stopLossPrice, takeProfitPrice, confidence, reasons, risks }`
 
-### 4. Prediction Market Analysis
+### Prediction Market
 
 `POST https://api.minara.ai/v1/developer/prediction-market-ask`
 
-Analyze prediction market events (e.g. Polymarket) and get probability estimates.
-
-| Param        | Type    | Required | Description                               |
-| ------------ | ------- | -------- | ----------------------------------------- |
-| link         | string  | Yes      | Event URL (e.g. Polymarket)               |
-| mode         | string  | Yes      | `"fast"` or `"expert"`                    |
-| only_result  | boolean | No       | `true` = probabilities only, no reasoning |
-| customPrompt | string  | No       | Custom analysis instructions              |
+```json
+{ "link": "https://polymarket.com/event/...", "mode": "expert", "only_result": false, "customPrompt": "optional" }
+```
 
 Response: `{ predictions: [{ outcome, yesProb, noProb }], reasoning }`
 
-## Usage
+## x402 (pay-per-use)
 
-### API Key (api.minara.ai)
+x402 endpoint: `POST https://x402.minara.ai/x402/chat` — body `{ "userQuery": "..." }`, response `{ content }`.
+Chain-specific: `.../x402/solana/chat`, `.../x402/polygon/chat`.
 
-Use `fetch` or HTTP client:
+See [x402 docs](https://minara.ai/docs/ecosystem/agent-api/getting-started-by-x402).
 
-- URL: endpoint above
-- Method: `POST`
-- Headers: `Authorization: Bearer ${process.env.MINARA_API_KEY}`, `Content-Type: application/json`
-- Body: JSON object per endpoint spec
+### Option A — Circle Wallet (preferred)
 
-### x402 (x402.minara.ai)
+x402 uses EIP-712 signatures to authorize USDC payment. Circle's `signTypedData` handles this without exposing a private key.
 
-Pay-per-use with USDC. No subscription. See [Getting Started by x402](https://minara.ai/docs/ecosystem/agent-api/getting-started-by-x402).
+Flow:
 
-**Option A: x402 SDK (recommended)**
+1. (One-time) Approve x402 facilitator contract to spend USDC from Circle wallet via `contractExecution`
+2. Send request → get 402 response with `x-payment` header (payment requirements)
+3. Build x402 payment typed data from requirements
+4. Sign with Circle `signTypedData`
+5. Re-send request with `x-payment-response` header
 
-Node.js example—SDK handles payment challenges automatically:
+For full code, read `{baseDir}/examples.md`, Example 3.
+
+### Option B — EOA fallback
+
+When only `EVM_PRIVATE_KEY` is set (no Circle Wallet), the x402 SDK handles 402 challenges automatically:
 
 ```typescript
 import { wrapFetchWithPayment } from "@x402/fetch";
@@ -112,9 +146,7 @@ import { x402Client } from "@x402/core/client";
 import { registerExactEvmScheme } from "@x402/evm/exact/client";
 import { privateKeyToAccount } from "viem/accounts";
 
-const signer = privateKeyToAccount(
-  process.env.EVM_PRIVATE_KEY as `0x${string}`
-);
+const signer = privateKeyToAccount(process.env.EVM_PRIVATE_KEY as `0x${string}`);
 const client = new x402Client();
 registerExactEvmScheme(client, { signer });
 const fetchWithPayment = wrapFetchWithPayment(fetch, client);
@@ -124,24 +156,63 @@ const res = await fetchWithPayment("https://x402.minara.ai/x402/chat", {
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({ userQuery: "What is the current price of BTC?" }),
 });
-const data = await res.json();
 ```
 
-Dependencies: `@x402/fetch`, `@x402/evm`, `viem`. Solana: add `@x402/svm`.
+Dependencies: `@x402/fetch`, `@x402/evm`, `viem`.
 
-**x402 Chat endpoint** (differs from API Key):
+## Circle Wallet integration
 
-- `POST https://x402.minara.ai/x402/chat`
-- Body: `{ "userQuery": "..." }` (no mode/stream/message/chatId)
-- Response: `{ content }`
+Install and set up the circle-wallet skill:
 
-Chain-specific: `https://x402.minara.ai/x402/solana/chat`, `https://x402.minara.ai/x402/polygon/chat`
+```bash
+clawhub install circle-wallet
+cd ~/.openclaw/workspace/skills/circle-wallet && npm install && npm link
+circle-wallet setup --api-key <YOUR_CIRCLE_API_KEY>
+```
 
-**Option B: Manual 402 flow**
+This generates an entity secret, registers it with Circle, and stores credentials in `~/.openclaw/circle-wallet/config.json`. No manual ciphertext or walletSetId management needed.
 
-1. Request → 402 with payment instructions (amount, recipient, chain)
-2. Send USDC to recipient
-3. Retry with `x-payment-response` header containing payment proof
+### Basic operations (CLI)
+
+```bash
+circle-wallet create "Trading Wallet" --chain BASE   # Create SCA wallet on Base
+circle-wallet list                                     # List wallets with balances
+circle-wallet balance                                  # Check USDC balance
+circle-wallet send 0xRecipient... 10 --from 0xWallet...  # Send USDC (gas-free)
+circle-wallet drip                                     # Get testnet USDC (sandbox only)
+```
+
+Supported chains: `BASE`, `ETH`, `ARB`, `OP`, `MATIC`, `AVAX`, `SOL`, `APTOS`, `MONAD`, `UNI` (+ testnets). Run `circle-wallet chains` for full list.
+
+### Advanced operations (SDK)
+
+The CLI handles USDC transfers. For DEX swaps (`contractExecution`) and Hyperliquid order signing (`signTypedData`), use the `@circle-fin/developer-controlled-wallets` SDK directly. The config from `~/.openclaw/circle-wallet/config.json` provides `apiKey` and `entitySecret`:
+
+```typescript
+import { initiateDeveloperControlledWalletsClient } from "@circle-fin/developer-controlled-wallets";
+import * as fs from "fs";
+
+const config = JSON.parse(
+  fs.readFileSync(`${process.env.HOME}/.openclaw/circle-wallet/config.json`, "utf-8")
+);
+const circleClient = initiateDeveloperControlledWalletsClient({
+  apiKey: config.apiKey,
+  entitySecret: config.entitySecret,
+});
+```
+
+SDK operations used by Minara integration:
+
+| Operation | SDK method | When |
+| --- | --- | --- |
+| Create wallet | `circleClient.createWallets(...)` | Initial setup |
+| Transfer USDC | `circleClient.createTransaction(...)` | Simple send (or use CLI) |
+| Contract execution | Raw `POST /v1/w3s/developer/transactions/contractExecution` | DEX swap, ERC-20 approve |
+| Sign EIP-712 | Raw `POST /v1/w3s/developer/sign/typedData` | x402 payment, Hyperliquid orders |
+
+For contract execution and signTypedData, the SDK does not expose direct methods — use `fetch` with the `apiKey` from config. The SDK handles `entitySecretCiphertext` generation internally for `createTransaction`.
+
+For full code, read `{baseDir}/examples.md`.
 
 ## Config
 
@@ -155,11 +226,23 @@ Chain-specific: `https://x402.minara.ai/x402/solana/chat`, `https://x402.minara.
         "enabled": true,
         "apiKey": "YOUR_MINARA_API_KEY",
         "env": { "EVM_PRIVATE_KEY": "0x..." }
+      },
+      "circle-wallet": {
+        "enabled": true
       }
     }
   }
 }
 ```
 
-- **API Key**: set `apiKey` or `MINARA_API_KEY` in env.
-- **x402**: set `env.EVM_PRIVATE_KEY` or `EVM_PRIVATE_KEY` in env. Wallet must hold USDC. Sandboxed: use `agents.defaults.sandbox.docker.env`.
+- `minara.apiKey` — Minara API Key, or set `MINARA_API_KEY` in env.
+- `minara.env.EVM_PRIVATE_KEY` — (optional) EOA fallback for x402 and local signing. Not needed when Circle Wallet is configured.
+- `circle-wallet` — enable only; credentials are managed by `circle-wallet setup` and stored in `~/.openclaw/circle-wallet/config.json`.
+
+## Additional resources
+
+- Full integration examples with code: `{baseDir}/examples.md`
+- Minara docs: [minara.ai/docs](https://minara.ai/docs)
+- Circle Wallet skill: [clawhub.ai/eltontay/circle-wallet](https://clawhub.ai/eltontay/circle-wallet)
+- Circle API docs: [developers.circle.com](https://developers.circle.com/w3s/programmable-wallets)
+- Hyperliquid API: [hyperliquid.gitbook.io](https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint)
