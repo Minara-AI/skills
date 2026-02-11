@@ -81,13 +81,49 @@ circle-wallet send <base58_recipient> 500 --from <sol_wallet>
 
 The CLI auto-detects the chain from the wallet address format.
 
-### 2b. EVM swap — Circle contractExecution
+### 2b. EVM swap — check approval + Circle contractExecution
 
 User: _"swap 500 USDC to ETH on Base"_
 
-The API returns a pre-assembled transaction (contract address + calldata). Execute via Circle SDK:
+The API returns a pre-assembled transaction + an `approval` field. **Always check approval before executing the swap.**
 
 ```typescript
+import { encodeFunctionData, erc20Abi } from "viem";
+
+// ── Step 1: Check if approval is required ──
+if (swapTx.approval?.isRequired) {
+  console.log(
+    `Approval required: token=${swapTx.approval.tokenAddress}`,
+    `spender=${swapTx.approval.spenderAddress}`,
+    `required=${swapTx.approval.requiredAmount}`,
+    `current=${swapTx.approval.currentAllowance}`,
+  );
+
+  // Use approval.approveAmount (recommended by API) and approval.spenderAddress.
+  // Do NOT assume spender = unsignedTx.to — it may be Permit2 or another contract.
+  const approveCallData = encodeFunctionData({
+    abi: erc20Abi,
+    functionName: "approve",
+    args: [
+      swapTx.approval.spenderAddress as `0x${string}`,
+      BigInt(swapTx.approval.approveAmount), // API-recommended amount
+    ],
+  });
+
+  const approveRes = await circleClient.createContractExecutionTransaction({
+    idempotencyKey: crypto.randomUUID(),
+    walletId: walletId,
+    contractAddress: swapTx.approval.tokenAddress, // from API, not inputToken.address
+    callData: approveCallData,
+    feeLevel: "MEDIUM",
+  });
+  console.log("Approve tx submitted:", approveRes.data?.id);
+
+  // Wait for approve tx to confirm before proceeding
+  // (poll circleClient.getTransaction or wait ~5-10s)
+}
+
+// ── Step 2: Execute the swap ──
 // swapTx.unsignedTx contains to (contractAddress), data (callData) for EVM
 const res = await circleClient.createContractExecutionTransaction({
   idempotencyKey: crypto.randomUUID(),
@@ -98,6 +134,8 @@ const res = await circleClient.createContractExecutionTransaction({
 });
 // SDK handles entitySecretCiphertext internally when initialized with entitySecret
 ```
+
+> **Why not hardcode addresses?** The API returns `approval.tokenAddress` (the ERC-20 to approve) and `approval.spenderAddress` (the actual contract pulling tokens — may be Permit2 at `0x57df...114E`, not the router). Use `approval.approveAmount` as the recommended value. Always use these API-provided values.
 
 ### 2c. Solana swap — Circle signTransaction
 
@@ -126,7 +164,9 @@ console.log(`Swap tx: https://solscan.io/tx/${txId}`);
 ### Flow
 
 ```
-EVM:    Minara intent-to-swap-tx → pre-assembled tx → Circle SDK createContractExecutionTransaction → tx on-chain
+EVM:    Minara intent-to-swap-tx → check approval.isRequired
+          → IF true: approve(approval.spenderAddress) on inputToken → wait confirm
+          → Circle SDK createContractExecutionTransaction(unsignedTx) → tx on-chain
 Solana: Minara intent-to-swap-tx → pre-assembled tx → Circle SDK signTransaction → RPC send
 ```
 

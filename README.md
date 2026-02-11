@@ -7,7 +7,7 @@ An [OpenClaw](https://docs.openclaw.ai) skill that gives your AI agent crypto tr
 | Capability                    | Chains       | Description                                                                 |
 | ----------------------------- | ------------ | --------------------------------------------------------------------------- |
 | **Chat**                      | All          | General-purpose trading analysis, market insights, Q&A                      |
-| **Intent to Swap**            | EVM + Solana | Natural language to swap params (e.g. "swap 0.1 ETH to USDC on Base")       |
+| **Intent to Swap**            | EVM + Solana | Natural language to swap tx with auto approval check (e.g. "swap 0.1 ETH to USDC on Base") |
 | **Perp Trading Suggestion**   | EVM          | Long/short recommendations with entry, SL, TP, confidence, risks            |
 | **Prediction Market**         | All          | Polymarket event analysis with probability estimates                        |
 | **Circle Wallet Integration** | EVM + Solana | On-chain execution and x402 payment via MPC wallet — no private key exposed |
@@ -30,8 +30,15 @@ An [OpenClaw](https://docs.openclaw.ai) skill that gives your AI agent crypto tr
                     └──┬──────────┬───────────┬───────────┘
                        │          │           │
                   Spot Swap   Perp Trading  USDC Transfer
-                  sign+send   Hyperliquid   EVM or Solana
-                  (EVM+SOL)   (EVM only)
+                  (EVM+SOL)   Hyperliquid   EVM or Solana
+                       │       (EVM only)
+                       │          │           │
+               ┌───────▼──┐       │           │
+               │ Approval  │       │           │
+               │ Check +   │       │           │
+               │ Auto ERC20│       │           │
+               │ Approve   │       │           │
+               └───────┬───┘       │           │
                        │          │           │
                     ┌──▼──────────▼───────────▼───────────┐
                     │         Circle Wallet (MPC)          │
@@ -110,7 +117,7 @@ The skill includes three end-to-end integration examples in [`examples.md`](skil
 
 | Example                | Chains       | Flow                                                                              |
 | ---------------------- | ------------ | --------------------------------------------------------------------------------- |
-| **1 — Spot Swap**      | EVM + Solana | Minara `intent-to-swap-tx` (returns pre-assembled tx) -> sign -> Circle execution |
+| **1 — Spot Swap**      | EVM + Solana | Minara `intent-to-swap-tx` -> check approval -> approve if needed -> Circle execution |
 | **2 — Perp Trading**   | EVM only     | Minara `perp-trading-suggestion` -> Hyperliquid EIP-712 -> Circle `signTypedData` |
 | **3A — x402 (EVM)**    | EVM          | 402 challenge -> EIP-712 payment -> Circle `signTypedData` -> re-send             |
 | **3B — x402 (Solana)** | Solana       | 402 challenge -> Solana tx -> Circle `signTransaction` -> re-send                 |
