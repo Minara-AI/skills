@@ -2,6 +2,7 @@
 name: minara
 description: "Crypto trading intelligence: market chat, swap intent parsing, perp suggestions, prediction markets. Supports EVM + Solana via Circle Wallet or EOA. Use for crypto trading, swaps, perps, or market analysis."
 homepage: https://minara.ai
+disable-model-invocation: true
 metadata:
   {
     "openclaw":
