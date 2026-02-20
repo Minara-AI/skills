@@ -1,55 +1,67 @@
 # Minara OpenClaw Skills
 
-An [OpenClaw](https://docs.openclaw.ai) skill that gives your AI agent crypto trading intelligence via the [Minara Agent API](https://minara.ai). Integrates with [Circle Wallet](https://clawhub.ai/eltontay/circle-wallet) for on-chain execution and [Hyperliquid](https://hyperliquid.xyz) for perpetual trading. Supports both **EVM** and **Solana** chains.
+An [OpenClaw](https://docs.openclaw.ai) skill that gives your AI agent crypto trading intelligence via [Minara](https://minara.ai). Uses the **Minara CLI** for wallet login, trading, swaps, perps, AI chat, and market discovery. Optionally uses the **Minara Agent API** for programmatic intent parsing, strategy suggestions, and prediction markets. Supports both **EVM** and **Solana** chains.
 
 ## Features
 
-| Capability                    | Chains       | Description                                                                 |
-| ----------------------------- | ------------ | --------------------------------------------------------------------------- |
-| **Chat**                      | All          | General-purpose trading analysis, market insights, Q&A                      |
-| **Intent to Swap**            | EVM + Solana | Natural language to swap tx with auto approval check (e.g. "swap 0.1 ETH to USDC on Base") |
-| **Perp Trading Suggestion**   | EVM          | Long/short recommendations with entry, SL, TP, confidence, risks            |
-| **Prediction Market**         | All          | Polymarket event analysis with probability estimates                        |
-| **Circle Wallet Integration** | EVM + Solana | On-chain execution and x402 payment via MPC wallet — no private key exposed |
-| **Hyperliquid Perp Orders**   | EVM          | EIP-712 signed orders on Hyperliquid DEX via Circle Wallet                  |
+| Capability              | Interface         | Chains       | Description                                                            |
+| ----------------------- | ----------------- | ------------ | ---------------------------------------------------------------------- |
+| **Login & Account**     | CLI               | All          | Email, Google, or Apple login — persistent session                     |
+| **Spot Swap**           | CLI / API         | EVM + Solana | Token swaps by ticker, name, or contract address; natural-language intent parsing via API |
+| **Transfer & Withdraw** | CLI               | EVM + Solana | Send tokens to external wallets                                        |
+| **Perpetual Futures**   | CLI / API         | EVM          | Orders, positions, leverage, TP/SL; AI strategy via API                |
+| **Limit Orders**        | CLI               | EVM + Solana | Price-triggered limit orders with expiry                               |
+| **Copy Trading**        | CLI               | EVM + Solana | Mirror trades from target wallets                                      |
+| **AI Chat**             | CLI / API         | All          | Interactive REPL & single-shot with fast/quality/thinking modes        |
+| **Market Discovery**    | CLI               | All          | Trending tokens, Fear & Greed Index, BTC metrics, token search         |
+| **Prediction Market**   | API               | All          | Polymarket event analysis with probability estimates                   |
 
-## Architecture
+## How it works
+
+The skill uses an **intent routing** model — each user request pattern maps to either a CLI command or an API call:
+
+- **CLI** (`minara` binary) — handles all wallet operations, trading execution, AI chat, and market discovery. Requires `minara login` once.
+- **Agent API** (optional, requires `MINARA_API_KEY`) — adds natural-language swap intent parsing, perp strategy suggestions, and prediction market analysis. When API key is not set, the skill falls back to CLI for equivalent functionality.
 
 ```
-                    ┌─────────────────────────────────────┐
-                    │           Minara Agent API           │
-                    │  (analysis, intent parsing, strategy) │
-                    └──────┬──────────────┬───────────────┘
-                           │              │
-                     API Key auth    x402 pay-per-use
-                    (MINARA_API_KEY)  (Circle Wallet: EVM or Solana)
-                           │              │
-                    ┌──────▼──────────────▼───────────────┐
-                    │      Agent Decision (auto-detect     │
-                    │      chain from wallet address)      │
-                    └──┬──────────┬───────────┬───────────┘
-                       │          │           │
-                  Spot Swap   Perp Trading  USDC Transfer
-                  (EVM+SOL)   Hyperliquid   EVM or Solana
-                       │       (EVM only)
-                       │          │           │
-               ┌───────▼──┐       │           │
-               │ Approval  │       │           │
-               │ Check +   │       │           │
-               │ Auto ERC20│       │           │
-               │ Approve   │       │           │
-               └───────┬───┘       │           │
-                       │          │           │
-                    ┌──▼──────────▼───────────▼───────────┐
-                    │         Circle Wallet (MPC)          │
-                    │  EVM: contractExecution·signTypedData │
-                    │  SOL: signTransaction                 │
-                    └─────────────────────────────────────┘
+User intent
+    ↓
+┌─────────────────────────────────────┐
+│  Intent Routing (SKILL.md)          │
+│  pattern match → action             │
+└────┬────────────────────┬───────────┘
+     │                    │
+  CLI command         API endpoint
+  (always available)  (if MINARA_API_KEY set)
+     │                    │
+     ▼                    ▼
+┌─────────────┐   ┌──────────────────┐
+│ Minara CLI  │   │ Minara Agent API │
+│ minara swap │   │ intent-to-swap   │
+│ minara chat │   │ perp-suggestion  │
+│ minara perps│   │ prediction-market│
+│ ...         │   │ chat             │
+└─────────────┘   └──────────────────┘
 ```
 
 ## Quick Start
 
-### 1. Install
+```bash
+# 1. Install the CLI
+npm install -g minara
+
+# 2. Login
+minara login
+
+# 3. Start using
+minara account                                    # View wallet addresses
+minara deposit                                    # Get deposit addresses
+minara chat "BTC price?"                          # Ask the AI
+minara swap -c solana -s buy -t '$BONK' -a 100   # Swap tokens
+minara discover trending                          # Trending tokens
+```
+
+### With OpenClaw skill system
 
 ```bash
 clawhub install minara
@@ -62,8 +74,6 @@ git clone https://github.com/Minara-AI/openclaw-skill.git
 cp -r openclaw-skill/skills/minara /path/to/your/openclaw/workspace/skills/
 ```
 
-### 2. Configure
-
 Add to `~/.openclaw/openclaw.json`:
 
 ```json
@@ -73,70 +83,31 @@ Add to `~/.openclaw/openclaw.json`:
       "minara": {
         "enabled": true,
         "apiKey": "YOUR_MINARA_API_KEY"
-      },
-      "circle-wallet": {
-        "enabled": true
       }
     }
   }
 }
 ```
 
-### 3. Set up Circle Wallet (recommended)
+`apiKey` is optional — omit it to use CLI-only mode. Then run `minara login` once.
 
-```bash
-clawhub install circle-wallet
-cd ~/.openclaw/workspace/skills/circle-wallet && npm install && npm link
-circle-wallet setup --api-key <YOUR_CIRCLE_API_KEY>
+## Supported Chains
 
-# Create wallets for the chains you need
-circle-wallet create "EVM Wallet" --chain BASE
-circle-wallet create "SOL Wallet" --chain SOL
-```
-
-## Authentication
-
-| Method            | Base URL                                  | Requires                                  |
-| ----------------- | ----------------------------------------- | ----------------------------------------- |
-| **API Key**       | `https://api-developer.minara.ai`         | `MINARA_API_KEY`                          |
-| **x402 (EVM)**    | `https://x402.minara.ai/x402/chat`        | Circle Wallet or `EVM_PRIVATE_KEY` + USDC |
-| **x402 (Solana)** | `https://x402.minara.ai/x402/solana/chat` | Circle Wallet (Solana) + USDC             |
-
-### Signing & Execution
-
-| Method                        | Chains       | Use for                                                   |
-| ----------------------------- | ------------ | --------------------------------------------------------- |
-| **Circle Wallet** (preferred) | EVM + Solana | x402 payment, USDC transfer, DEX swap, Hyperliquid orders |
-| **Direct EOA** (fallback)     | EVM only     | x402 auto-handling, local signing via viem/ethers         |
-
-> **Minimal setup:** Only `circle-wallet` configured — it pays Minara via x402 and handles all on-chain signing on EVM or Solana. No `MINARA_API_KEY` or `EVM_PRIVATE_KEY` required.
-
-## Integration Examples
-
-The skill includes three end-to-end integration examples in [`examples.md`](skills/minara/examples.md):
-
-| Example                | Chains       | Flow                                                                              |
-| ---------------------- | ------------ | --------------------------------------------------------------------------------- |
-| **1 — Spot Swap**      | EVM + Solana | Minara `intent-to-swap-tx` -> check approval -> approve if needed -> Circle execution |
-| **2 — Perp Trading**   | EVM only     | Minara `perp-trading-suggestion` -> Hyperliquid EIP-712 -> Circle `signTypedData` |
-| **3A — x402 (EVM)**    | EVM          | 402 challenge -> EIP-712 payment -> Circle `signTypedData` -> re-send             |
-| **3B — x402 (Solana)** | Solana       | 402 challenge -> Solana tx -> Circle `signTransaction` -> re-send                 |
+Ethereum, Base, Arbitrum, Optimism, Polygon, Avalanche, BSC, Solana, Berachain, Blast, Manta, Mode, Sonic.
 
 ## File Structure
 
 ```
 skills/minara/
-├── SKILL.md          # Agent-facing instructions (decision logic, endpoints, config)
-└── examples.md       # Full code examples for all integration scenarios
+├── SKILL.md          # Agent-facing intent routing, CLI reference, API reference
+└── examples.md       # Command and API code examples for each scenario
 ```
 
 ## Links
 
 - [Minara](https://minara.ai) — Crypto trading intelligence platform
+- [Minara CLI (npm)](https://www.npmjs.com/package/minara) — CLI client
 - [Minara API Docs](https://minara.ai/docs/ecosystem/agent-api/getting-started-by-api-key)
-- [x402 Guide](https://minara.ai/docs/ecosystem/agent-api/getting-started-by-x402)
-- [Circle Wallet Skill](https://clawhub.ai/eltontay/circle-wallet) — MPC wallet for agents
-- [Hyperliquid API](https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint)
 - [OpenClaw Skills](https://docs.openclaw.ai/tools/skills) — Skill authoring guide
 - [ClawHub](https://clawhub.ai) — Skill registry
 
