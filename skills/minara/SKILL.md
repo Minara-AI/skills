@@ -11,6 +11,8 @@ metadata:
 
 Crypto trading intelligence + built-in wallet. EVM (Base, Ethereum, Arbitrum, Optimism, BSC, Polygon, Solana, etc.).
 
+**Security:** This skill is documentation only (intent routing and CLI reference). It does not execute code or bundle binaries; it instructs the agent to call the user-installed [Minara CLI](https://www.npmjs.com/package/minara).
+
 **Prerequisite:** CLI must be logged in. If `MINARA_API_KEY` is configured, the CLI authenticates automatically. Otherwise, check `~/.minara/credentials.json`; if missing → run `minara login`. Prefer **device code** flow when guiding login (e.g. headless, SSH, or automation).
 
 ## Intent routing

@@ -115,6 +115,10 @@ skills/minara/
 └── examples.md       # CLI command examples for each scenario
 ```
 
+## Security
+
+This skill bundle contains **documentation only** (Markdown): `SKILL.md` and `examples.md`. It does not include executable code, binaries, or scripts. The skill instructs the OpenClaw agent to run the **Minara CLI**, which users install separately from the official npm package ([minara](https://www.npmjs.com/package/minara)). Credentials are handled by the Minara CLI and its official login flow; this repo does not collect or store secrets. For security scans or audits, you can verify the package contents and the upstream CLI at the links below.
+
 ## Links
 
 - [Minara](https://minara.ai) — Crypto trading intelligence platform
