@@ -4,19 +4,15 @@ The ultimate and all-in-one digital finance solution designed for agents: built-
 
 ## Features
 
-| Capability              | Description                                                                                        |
-| ----------------------- | -------------------------------------------------------------------------------------------------- |
-| **Chain Abstraction**   | One flow across EVM and Solana — chain is auto-detected from the token, no manual chain selection  |
-| **Gasless**             | Gasless transactions where Minara or the underlying network supports it — no gas tokens needed     |
-| **Built-in Wallet**     | No seed phrase, no private key — sign up with email, Google, or Apple and get a ready-to-use wallet |
-| **Balance & Portfolio** | Unified balance across spot and perps; holdings with real-time PnL                                 |
-| **Spot Swap**           | Chain-abstracted, gasless-friendly swaps by ticker, name, or contract address; sell-all support    |
-| **Transfer & Withdraw** | Send tokens to any external wallet across supported chains                                         |
-| **Deposit**             | Spot deposit addresses (EVM + Solana); deposit to perps directly or via Spot → Perps transfer      |
-| **Perpetual Futures**   | Orders, positions, leverage, TP/SL on Hyperliquid                                                  |
-| **Limit Orders**        | Price-triggered limit orders with expiry                                                           |
-| **AI Chat**             | Crypto & stock insights and research; interactive REPL & single-shot (fast/quality/thinking modes) |
-| **Market Discovery**    | Trending tokens & stocks, Fear & Greed Index, BTC on-chain metrics, token & stock search           |
+| Capability                 | Description                                                                                                           |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| **Built-in Wallet**        | No seed phrase, no private key — sign up with email and get a ready-to-use wallet; unified balance with real-time PnL |
+| **Spot Trading**           | Swaps by ticker, name, or contract address; transfers and withdrawals across chains; sell-all support                 |
+| **Perpetual Futures**      | Orders, positions, leverage, TP/SL on Hyperliquid; fund transfers between spot and perps                              |
+| **Limit Orders**           | Price-triggered limit orders with expiry                                                                              |
+| **AI Insights & Research** | Crypto & stock analysis and on-chain research; trending tokens & stocks, Fear & Greed, BTC metrics                    |
+| **Chain Abstraction**      | One flow across EVM and Solana — chain auto-detected from token, no manual selection                                  |
+| **Gasless**                | Gasless transactions where supported — no gas tokens needed                                                           |
 
 ## Supported Chains
 
