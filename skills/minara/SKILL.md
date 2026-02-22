@@ -37,9 +37,9 @@ Chain is **auto-detected** from the token. If a token exists on multiple chains,
 
 Triggers: message mentions sending/transferring/withdrawing a crypto token to a wallet address (0x… or base58).
 
-| User intent pattern                                                                   | Action                                                                                       |
-| ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| "send 10 SOL to 0x…", "transfer USDC to <address>" — crypto token + recipient address | `minara transfer` (interactive) or extract params                                            |
+| User intent pattern                                                                   | Action                                                                                                  |
+| ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| "send 10 SOL to 0x…", "transfer USDC to <address>" — crypto token + recipient address | `minara transfer` (interactive) or extract params                                                       |
 | "withdraw SOL to my external wallet", "withdraw ETH to <address>" — crypto withdrawal | `minara withdraw -c <chain> -t '<token>' -a <amount> --to <address>` or `minara withdraw` (interactive) |
 
 ### Perpetual futures (Hyperliquid)
@@ -50,7 +50,7 @@ Triggers: message mentions perps, perpetual, futures, long, short, leverage, mar
 | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
 | "open a long ETH perp", "short BTC on Hyperliquid", "place a perp order"                  | `minara perps order` (interactive order builder)             |
 | "analyze ETH long or short", "should I long BTC?", "AI perp analysis for SOL"             | `minara perps ask` — AI analysis with optional quick order   |
-| "enable AI autopilot for perps", "turn on autopilot trading", "manage autopilot strategy"  | `minara perps autopilot`                                     |
+| "enable AI autopilot for perps", "turn on autopilot trading", "manage autopilot strategy" | `minara perps autopilot`                                     |
 | "check my perp positions", "show my Hyperliquid positions"                                | `minara perps positions`                                     |
 | "set leverage to 10x for ETH perps"                                                       | `minara perps leverage`                                      |
 | "cancel my perp orders"                                                                   | `minara perps cancel`                                        |
@@ -91,6 +91,8 @@ Triggers: message mentions crypto balance, portfolio, assets, wallet, deposit ad
 
 Triggers: message asks about crypto prices, token analysis, DeFi research, on-chain data, crypto market insights, or prediction market analysis.
 
+> **Timeout:** AI chat responses can be long-running. Set shell execution timeout to **15 minutes** (900 s) for all `minara chat` commands.
+
 | User intent pattern                                                                                                                  | Action                                 |
 | ------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------- |
 | "what's the BTC price", "analyze ETH tokenomics", "DeFi yield opportunities", crypto research, on-chain analysis                     | `minara chat "<user text>"`            |
@@ -104,13 +106,13 @@ Triggers: message asks about crypto prices, token analysis, DeFi research, on-ch
 
 Triggers: message mentions trending tokens, trending stocks, crypto market sentiment, fear and greed, or Bitcoin metrics.
 
-| User intent pattern                                                          | Action                                  |
-| ---------------------------------------------------------------------------- | --------------------------------------- |
-| "what crypto tokens are trending", "hot tokens right now"                    | `minara discover trending`              |
-| "what stocks are trending", "trending stocks", "top stocks today"            | `minara discover trending stocks`       |
-| "search for SOL tokens", "find crypto token X", "look up AAPL", "search TSLA" | `minara discover search <query>`        |
-| "crypto fear and greed index", "market sentiment"                            | `minara discover fear-greed`            |
-| "bitcoin on-chain metrics", "BTC hashrate and supply data"                   | `minara discover btc-metrics`           |
+| User intent pattern                                                           | Action                            |
+| ----------------------------------------------------------------------------- | --------------------------------- |
+| "what crypto tokens are trending", "hot tokens right now"                     | `minara discover trending`        |
+| "what stocks are trending", "trending stocks", "top stocks today"             | `minara discover trending stocks` |
+| "search for SOL tokens", "find crypto token X", "look up AAPL", "search TSLA" | `minara discover search <query>`  |
+| "crypto fear and greed index", "market sentiment"                             | `minara discover fear-greed`      |
+| "bitcoin on-chain metrics", "BTC hashrate and supply data"                    | `minara discover btc-metrics`     |
 
 ### Minara premium / subscription
 
@@ -130,11 +132,11 @@ Triggers: message explicitly mentions Minara login, setup, or configuration.
 
 **Login:** Prefer device code flow (`minara login --device`) for headless or non-interactive environments; otherwise `minara login` (interactive).
 
-| User intent pattern                                             | Action                                                                           |
-| --------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| User intent pattern                                             | Action                                                         |
+| --------------------------------------------------------------- | -------------------------------------------------------------- |
 | "login to Minara", "sign in to Minara", first-time Minara setup | `minara login` (prefer device code) or `minara login --device` |
-| "logout from Minara"                                            | `minara logout`                                                                  |
-| "configure Minara settings"                                     | `minara config`                                                                  |
+| "logout from Minara"                                            | `minara logout`                                                |
+| "configure Minara settings"                                     | `minara config`                                                |
 
 ## CLI reference
 
