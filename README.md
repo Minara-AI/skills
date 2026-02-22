@@ -6,9 +6,9 @@ The ultimate and all-in-one digital finance solution designed for agents: built-
 
 | Capability                 | Description                                                                                                           |
 | -------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| **Built-in Wallet**        | No seed phrase, no private key — sign up with email and get a ready-to-use wallet; unified balance with real-time PnL |
+| **Built-in Wallet**        | No seed phrase, no private key — sign up with email and get a ready-to-use wallet; unified balance with real-time PnL; credit card on-ramp via MoonPay |
 | **Spot Trading**           | Swaps by ticker, name, or contract address; transfers and withdrawals across chains; sell-all support                 |
-| **Perpetual Futures**      | Orders, positions, leverage, TP/SL on Hyperliquid; fund transfers between spot and perps                              |
+| **Perpetual Futures**      | Orders, positions, leverage, TP/SL on Hyperliquid; AI autopilot strategy; AI analysis with quick order                |
 | **Limit Orders**           | Price-triggered limit orders with expiry                                                                              |
 | **AI Insights & Research** | Crypto & stock analysis and on-chain research; trending tokens & stocks, Fear & Greed, BTC metrics                    |
 | **Chain Abstraction**      | One flow across EVM and Solana — chain auto-detected from token, no manual selection                                  |
@@ -74,7 +74,7 @@ Once the Minara skill is enabled, you talk to the OpenClaw agent in natural lang
 | Step           | What you want                                         | Example prompts to the agent                                                                                                              |
 | -------------- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | **1. Login**   | Sign in to Minara (first time or new session)         | _"Login to Minara"_ / _"Sign in to Minara"_ / _"Help me set up Minara"_                                                                   |
-| **2. Deposit** | Get an address to send funds, or move USDC into perps | _"Show my Minara deposit address"_ / _"Where do I send USDC to fund my Minara spot wallet?"_ / _"Deposit 500 USDC from my spot to perps"_ |
+| **2. Deposit** | Get an address to send funds, buy with card, or move USDC into perps | _"Show my Minara deposit address"_ / _"Buy crypto with credit card"_ / _"Deposit 500 USDC from my spot to perps"_ |
 | **3. Trade**   | Buy or sell tokens                                    | _"Buy 100 USDC worth of ETH"_ / _"Swap 0.1 ETH to USDC"_ / _"Sell 50 SOL for USDC"_                                                       |
 
 After login, you can say for example: _"What's my Minara balance?"_ then _"Buy 50 USDC of BONK on Solana"_ — the agent will run the commands and show you the result.
@@ -84,6 +84,8 @@ After login, you can say for example: _"What's my Minara balance?"_ then _"Buy 5
 | Goal                     | Example prompts to the agent                                                                        |
 | ------------------------ | --------------------------------------------------------------------------------------------------- |
 | **Open a perp position** | _"Open a long ETH perp on Hyperliquid"_ / _"Short BTC perp, 10x leverage"_ / _"Place a perp order"_ |
+| **AI perp analysis**     | _"Analyze ETH long or short"_ / _"Should I long BTC?"_ — AI analysis with optional quick order       |
+| **AI autopilot**         | _"Enable AI autopilot for perps"_ / _"Manage my autopilot trading strategy"_                         |
 | **Manage perps**         | _"Show my perp positions"_ / _"Set leverage to 10x for ETH perps"_ / _"Cancel my open perp orders"_ |
 | **Limit order**          | _"Create a limit order: buy ETH when price hits $3000"_ / _"Buy SOL when it reaches $150"_          |
 | **Manage limit orders**  | _"List my Minara limit orders"_ / _"Cancel limit order [id]"_                                       |

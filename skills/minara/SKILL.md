@@ -49,7 +49,8 @@ Triggers: message mentions perps, perpetual, futures, long, short, leverage, mar
 | User intent pattern                                                                       | Action                                                       |
 | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
 | "open a long ETH perp", "short BTC on Hyperliquid", "place a perp order"                  | `minara perps order` (interactive order builder)             |
-| "perp strategy for ETH", "suggest a long/short for SOL", "scalping strategy 10x leverage" | `minara chat "perp strategy for ETH scalping 10x"`           |
+| "analyze ETH long or short", "should I long BTC?", "AI perp analysis for SOL"             | `minara perps ask` — AI analysis with optional quick order   |
+| "enable AI autopilot for perps", "turn on autopilot trading", "manage autopilot strategy"  | `minara perps autopilot`                                     |
 | "check my perp positions", "show my Hyperliquid positions"                                | `minara perps positions`                                     |
 | "set leverage to 10x for ETH perps"                                                       | `minara perps leverage`                                      |
 | "cancel my perp orders"                                                                   | `minara perps cancel`                                        |
@@ -57,6 +58,8 @@ Triggers: message mentions perps, perpetual, futures, long, short, leverage, mar
 | "withdraw USDC from perps"                                                                | `minara perps withdraw -a <amount>`                          |
 | "show my perp trade history"                                                              | `minara perps trades`                                        |
 | "show perps deposit/withdrawal records"                                                   | `minara perps fund-records`                                  |
+
+> **Autopilot note:** When autopilot is ON, manual `minara perps order` is blocked. Turn off autopilot first via `minara perps autopilot`.
 
 ### Limit orders (crypto)
 
@@ -80,7 +83,8 @@ Triggers: message mentions crypto balance, portfolio, assets, wallet, deposit ad
 | "show all my crypto assets" — full overview (spot + perps)                               | `minara assets`        |
 | "show deposit address", "where to send USDC" — spot deposit addresses                    | `minara deposit spot`  |
 | "deposit to perps", "transfer USDC from spot to perps", "fund perps from spot"           | `minara deposit perps` |
-| "how do I deposit crypto" — interactive (spot or perps)                                  | `minara deposit`       |
+| "buy crypto with credit card", "deposit with card", "on-ramp with MoonPay"               | `minara deposit buy`   |
+| "how do I deposit crypto" — interactive (spot, perps, or credit card)                    | `minara deposit`       |
 | "show my Minara account", "my wallet addresses"                                          | `minara account`       |
 
 ### Crypto AI chat / market analysis

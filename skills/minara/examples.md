@@ -54,9 +54,10 @@ minara assets perps            # Perps: equity, margin, positions
 minara assets spot --json      # JSON output
 
 # Deposit
-minara deposit                 # Interactive: Spot (addresses) or Perps (address / transfer)
+minara deposit                 # Interactive: Spot / Perps / Buy with credit card
 minara deposit spot            # Show spot deposit addresses (EVM + Solana)
 minara deposit perps           # Perps: show Arbitrum address, or transfer Spot → Perps
+minara deposit buy             # Buy crypto with credit card via MoonPay (opens browser)
 ```
 
 ## 5 — Perpetual futures
@@ -79,6 +80,12 @@ minara perps cancel
 
 # Withdraw from perps
 minara perps withdraw -a 50
+
+# AI analysis → optional quick order
+minara perps ask
+
+# AI autopilot trading strategy
+minara perps autopilot
 
 # History
 minara perps trades
