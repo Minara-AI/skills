@@ -138,7 +138,29 @@ minara limit-order list            # List all orders
 minara limit-order cancel abc123   # Cancel by ID
 ```
 
-## 9 — Premium & subscription
+## 9 — x402 protocol payment
+
+When an HTTP API returns **402 Payment Required** with x402 headers, the agent
+can pay using the Minara wallet.
+
+```bash
+# 1. Check balance before paying
+minara balance
+
+# 2. Pay the x402 service (USDC transfer to the service's payment address)
+#    Example: service requires 0.01 USDC on Base
+minara transfer
+#    → Token: USDC
+#    → Amount: 0.01
+#    → Recipient: <service payment address from 402 header>
+#    → Chain: base
+
+# 3. Ensure wallet is funded for future x402 payments
+minara deposit buy                 # Credit card on-ramp via MoonPay
+minara deposit spot                # Or show deposit addresses to receive crypto
+```
+
+## 10 — Premium & subscription
 
 ```bash
 minara premium plans               # View plans

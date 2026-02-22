@@ -7,11 +7,12 @@ The ultimate and all-in-one digital finance solution designed for agents: built-
 | Capability                 | Description                                                                                                           |
 | -------------------------- | --------------------------------------------------------------------------------------------------------------------- |
 | **Built-in Wallet**        | No seed phrase, no private key — sign up with email and get a ready-to-use wallet; unified balance with real-time PnL; credit card on-ramp via MoonPay |
-| **Spot Trading**           | Swaps by ticker, name, or contract address; transfers and withdrawals across chains; sell-all support                 |
+| **Spot Trading**           | Swaps by ticker, name, or contract address; transfers, payments, and withdrawals across chains; sell-all support      |
 | **Perpetual Futures**      | Orders, positions, leverage, TP/SL on Hyperliquid; AI autopilot strategy; AI analysis with quick order                |
 | **Limit Orders**           | Price-triggered limit orders with expiry                                                                              |
 | **AI Insights & Research** | Crypto & stock analysis and on-chain research; trending tokens & stocks, Fear & Greed, BTC metrics                    |
 | **Chain Abstraction**      | One flow across EVM and Solana — chain auto-detected from token, no manual selection                                  |
+| **x402 Payment**           | Pay for x402-enabled HTTP APIs with Minara wallet — auto-detect 402, pay USDC, retry                                 |
 | **Gasless**                | Gasless transactions where supported — no gas tokens needed                                                           |
 
 ## Supported Chains
@@ -96,7 +97,7 @@ You can combine with research: _"What's the BTC price?"_ → _"Open a long BTC p
 
 - _"Show my crypto portfolio"_ / _"What's my total balance on Minara?"_
 - _"What tokens are trending?"_ / _"Search for SOL tokens"_
-- _"Withdraw 10 SOL to [your address]"_ / _"Transfer 100 USDC to [address]"_
+- _"Pay 100 USDC to [address]"_ / _"Transfer 100 USDC to [address]"_ / _"Withdraw 10 SOL to [your address]"_
 
 All of the above are phrased as **user prompts to the OpenClaw agent**; the agent uses the Minara skill to run the right actions.
 
@@ -114,7 +115,8 @@ See [`examples.md`](skills/minara/examples.md) for full commands and code:
 | 6   | AI chat                |
 | 7   | Market discovery       |
 | 8   | Limit orders           |
-| 9   | Premium & subscription |
+| 9   | x402 protocol payment  |
+| 10  | Premium & subscription |
 
 ## File Structure
 
