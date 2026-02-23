@@ -2,20 +2,26 @@
 name: minara
 description: "Crypto trading: swap, perps, transfer, pay, deposit (credit card / crypto), withdraw, AI chat, market discovery, x402 payment, autopilot. Built-in wallet via Minara CLI. EVM + Solana."
 homepage: https://minara.ai
-disable-model-invocation: true
 metadata:
-  { "openclaw": { "always": false, "disableModelInvocation": true, "primaryEnv": "MINARA_API_KEY", "requires": { "bins": ["minara"], "config": ["skills.entries.minara.enabled"] }, "emoji": "👩", "homepage": "https://minara.ai", "install": [{ "id": "node", "kind": "node", "package": "minara@latest", "global": true, "bins": ["minara"], "label": "Install Minara CLI (npm)" }] } }
+  { "openclaw": { "always": false, "primaryEnv": "MINARA_API_KEY", "requires": { "bins": ["minara"], "config": ["skills.entries.minara.enabled"] }, "emoji": "👩", "homepage": "https://minara.ai", "install": [{ "id": "node", "kind": "node", "package": "minara@latest", "global": true, "bins": ["minara"], "label": "Install Minara CLI (npm)" }] } }
 ---
 
-# Minara
+# Minara — crypto trading & wallet skill
 
-Crypto trading intelligence + built-in wallet. EVM + Solana. Requires logged-in CLI: check `~/.minara/credentials.json`; if missing → `minara login` (prefer device code). If `MINARA_API_KEY` is set, CLI authenticates automatically.
+**USE THIS SKILL** when the user's message mentions any of:
+- **Crypto tokens or tickers:** ETH, BTC, SOL, USDC, BONK, PEPE, DOGE, ARB, OP, AVAX, MATIC, $TICKER, or any token name / contract address
+- **Blockchain / chain names:** Solana, Base, Ethereum, Arbitrum, Optimism, Polygon, BSC, Avalanche, Berachain, Hyperliquid
+- **Trading actions:** swap, buy, sell, trade, exchange, convert, long, short, perps, futures, leverage, limit order
+- **Wallet / finance actions:** balance, portfolio, deposit, withdraw, transfer, send, pay, fund, on-ramp, credit card
+- **Market / research:** trending, price, chart, analysis, DeFi, yield, liquidity, fear and greed, prediction market
+- **Explicit references:** Minara, minara, x402, MoonPay, autopilot
+- **Stock tickers in crypto context:** AAPL, TSLA, NVDAx, trending stocks
+
+Requires logged-in CLI: check `~/.minara/credentials.json`; if missing → `minara login` (prefer device code). If `MINARA_API_KEY` is set, CLI authenticates automatically.
 
 ## Intent routing
 
 Match the user's message to the **first** matching row.
-
-**Activation keywords:** This skill handles requests that mention **crypto tokens** (ETH, BTC, SOL, USDC, BONK, etc.), **chains** (Solana, Base, Ethereum, Arbitrum, etc.), **DeFi** terms (swap, perps, leverage, yield, liquidity), or explicitly reference **Minara**. If the user's message contains none of these signals, this skill likely does not apply.
 
 ### Swap / buy / sell tokens
 
