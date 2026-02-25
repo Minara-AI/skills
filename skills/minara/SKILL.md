@@ -19,6 +19,16 @@ metadata:
 
 Requires logged-in CLI: check `~/.minara/credentials.json`; if missing → `minara login` (prefer device code). If `MINARA_API_KEY` is set, CLI authenticates automatically.
 
+## Transaction confirmation (CRITICAL)
+
+For any fund-moving command (`swap`, `transfer`, `withdraw`, `perps order`, `perps deposit`, `perps withdraw`, `limit-order create`, `deposit buy`):
+
+1. **Before executing:** show the user a summary of what will happen (action, token, amount, recipient/chain) and **ask for explicit confirmation**. Do NOT auto-confirm.
+2. **After the CLI returns a confirmation prompt** (e.g. "Are you sure you want to proceed?"): relay the details back to the user and **wait for the user to approve** before answering `y`. Never answer `y` on the user's behalf without their consent.
+3. **If the user declines:** abort the operation immediately.
+
+This applies to all operations that move funds. Read-only commands (`balance`, `assets`, `chat`, `discover`, etc.) do not require confirmation.
+
 ## Intent routing
 
 Match the user's message to the **first** matching row.
@@ -157,7 +167,7 @@ Triggers: message explicitly mentions Minara login, setup, or configuration.
 
 - **Token input (`-t`):** accepts `$TICKER` (e.g. `'$BONK'`), token name, or contract address. Quote `$` in shell.
 - **JSON output:** add `--json` to any command for machine-readable output.
-- **Transaction safety:** first confirmation (`-y` to skip) → transaction confirmation (mandatory, shows token + address) → Touch ID (optional, macOS) → execute.
+- **Transaction safety:** CLI flow: first confirmation → transaction confirmation (mandatory, shows token + address) → Touch ID (optional, macOS) → execute. Agent must **never skip or auto-confirm** any step — always relay to user and wait for approval.
 
 ## Credentials & config
 
