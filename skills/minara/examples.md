@@ -2,9 +2,11 @@
 
 ## 1 — Login & account
 
+For device login handoff: if CLI outputs a verification URL and/or device code, pass them to the user verbatim, ask user to finish browser verification, then continue only after user confirms completion.
+
 ```bash
 minara login                       # Interactive (device code default, or email)
-minara login --device              # Device code (opens browser to verify)
+minara login --device              # Device code flow: relay URL/code to user for browser verification
 minara login -e user@example.com   # Email with verification code
 minara account                     # View account info + wallet addresses
 minara deposit spot                # Show spot deposit addresses (EVM + Solana)

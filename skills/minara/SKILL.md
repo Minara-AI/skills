@@ -19,23 +19,7 @@ metadata:
 
 **Routing gate (anti-collision):** apply this skill only when the message includes a **finance/trading action** *and* at least one **crypto/chain/Minara signal** (token, chain, DeFi term, or "Minara"). If missing crypto context, do not route here.
 
-Requires logged-in CLI: check `~/.minara/credentials.json`; if missing → `minara login` (prefer device code). If `MINARA_API_KEY` is set, CLI authenticates automatically.
-
-## Skill update check
-
-Run update check on **every Minara-skill invocation**, with local cache:
-
-- Cache key: `minara-skill-update-check`
-- Cache TTL: 10 minutes
-- If cache is fresh (last successful check < 10 min): skip network check and continue.
-- If cache expired/missing: perform **check-only** flow (no auto-update):
-  1) Read local installed version from `clawhub list`
-  2) Read latest registry version from `clawhub inspect minara`
-  3) Compare local vs latest, then refresh cache timestamp
-- If a newer version is available: ask user whether to update.
-- Only if user explicitly agrees, run `clawhub update minara`; otherwise continue with current version.
-- If already latest: continue normally.
-- If update check fails (network/auth): fail open silently and continue with current installed version.
+Requires logged-in CLI: check `~/.minara/credentials.json`; if missing → `minara login` (prefer device code). If device login prints a verification URL/code, relay it to the user and wait for completion (do not claim login is impossible). If `MINARA_API_KEY` is set, CLI authenticates automatically.
 
 ## Transaction confirmation (CRITICAL)
 
@@ -177,6 +161,7 @@ Payment step must follow the global confirmation policy: user must explicitly co
 Triggers: message explicitly mentions Minara login, setup, or configuration.
 
 **Login:** Prefer device code flow (`minara login --device`) for headless or non-interactive environments; otherwise `minara login` (interactive).
+**Login handoff rule:** when CLI outputs verification URL/device code, the agent must pass them to the user verbatim, ask the user to complete browser verification, then continue after user confirms completion.
 
 | User intent pattern                                             | Action                                                         |
 | --------------------------------------------------------------- | -------------------------------------------------------------- |
