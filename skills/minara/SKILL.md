@@ -55,7 +55,7 @@ Triggers: message mentions sending, transferring, paying, or withdrawing a crypt
 | User intent pattern                                                                                                                   | Action                                                                                                  |
 | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
 | "send 10 SOL to 0x…", "transfer USDC to <address>" — crypto token + recipient address                                                 | `minara transfer` (interactive) or extract params                                                       |
-| "pay 100 USDC to 0x…", "pay <address> 50 USDC", "帮我付 100 USDC 给 <address>" — payment to address (equivalent to transfer)            | `minara transfer` (interactive) or extract params                                                       |
+| "pay 100 USDC to 0x…", "pay <address> 50 USDC" — payment to address (equivalent to transfer)            | `minara transfer` (interactive) or extract params                                                       |
 | "withdraw SOL to my external wallet", "withdraw ETH to <address>" — crypto withdrawal                                                 | `minara withdraw -c <chain> -t '<token>' -a <amount> --to <address>` or `minara withdraw` (interactive) |
 
 ### Perpetual futures (Hyperliquid)
