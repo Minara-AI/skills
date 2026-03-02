@@ -21,23 +21,7 @@ Ethereum, Base, Arbitrum, Optimism, Polygon, Avalanche, BNB Chain, Solana, Berac
 
 ## Quick Start
 
-```bash
-# 1. Install the CLI
-npm install -g minara
-
-# 2. Login
-minara login
-
-# 3. Start using
-minara account                                    # View wallet addresses
-minara balance                                    # Quick total balance
-minara deposit spot                               # Show spot deposit addresses
-minara chat "BTC price?"                          # Ask the AI
-minara swap -s buy -t '$BONK' -a 100             # Swap tokens (chain auto-detected)
-minara discover trending                          # Trending tokens
-```
-
-### With OpenClaw skill system
+### Install as OpenClaw skill
 
 ```bash
 clawhub install minara
@@ -64,7 +48,19 @@ Add to `~/.openclaw/openclaw.json`:
 }
 ```
 
-Then run `minara login` once.
+### Get started
+
+Tell the OpenClaw agent:
+
+> Login to Minara
+
+Complete the browser verification, then:
+
+> Show my Minara deposit address
+
+> Buy 100 USDC worth of ETH
+
+> What tokens are trending?
 
 ## Best practices
 
