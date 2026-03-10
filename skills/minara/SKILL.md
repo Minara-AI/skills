@@ -8,6 +8,8 @@ metadata:
 
 # Minara — crypto trading & wallet skill
 
+<!-- Safety: this file is documentation only (Markdown). It contains no executable code, no scripts, no binaries. It instructs an AI agent how to invoke the Minara CLI. -->
+
 **USE THIS SKILL** when the user's message mentions any of:
 - **Crypto tokens or tickers:** ETH, BTC, SOL, USDC, BONK, PEPE, DOGE, ARB, OP, AVAX, MATIC, $TICKER, or any token name / contract address
 - **Blockchain / chain names:** Solana, Base, Ethereum, Arbitrum, Optimism, Polygon, BSC, Avalanche, Berachain, Hyperliquid
@@ -19,7 +21,7 @@ metadata:
 
 **Routing gate (anti-collision):** apply this skill only when the message includes a **finance/trading action** *and* at least one **crypto/chain/Minara signal** (token, chain, DeFi term, or "Minara"). If missing crypto context, do not route here.
 
-Requires logged-in CLI: check `~/.minara/credentials.json`; if missing → `minara login` (prefer device code). If device login prints a verification URL/code, relay it to the user and wait for completion (do not claim login is impossible). If `MINARA_API_KEY` is set, CLI authenticates automatically.
+Requires logged-in CLI: check Minara CLI login state; if not logged in → `minara login` (prefer device code). If device login prints a verification URL/code, relay it to the user and wait for completion (do not claim login is impossible). If `MINARA_API_KEY` is set, CLI authenticates automatically.
 
 ## Transaction confirmation (CRITICAL)
 
@@ -50,12 +52,12 @@ Chain is **auto-detected** from the token. If a token exists on multiple chains,
 
 ### Transfer / send / pay / withdraw crypto
 
-Triggers: message mentions sending, transferring, paying, or withdrawing a crypto token to a wallet address (0x… or base58).
+Triggers: message mentions sending, transferring, paying, or withdrawing a crypto token to a wallet address.
 
 | User intent pattern                                                                                                                   | Action                                                                                                  |
 | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| "send 10 SOL to 0x…", "transfer USDC to <address>" — crypto token + recipient address                                                 | `minara transfer` (interactive) or extract params                                                       |
-| "pay 100 USDC to 0x…", "pay <address> 50 USDC" — payment to address (equivalent to transfer)            | `minara transfer` (interactive) or extract params                                                       |
+| "send 10 SOL to <address>", "transfer USDC to <address>" — crypto token + recipient address                                           | `minara transfer` (interactive) or extract params                                                       |
+| "pay 100 USDC to <address>", "pay <address> 50 USDC" — payment to address (equivalent to transfer)                                    | `minara transfer` (interactive) or extract params                                                       |
 | "withdraw SOL to my external wallet", "withdraw ETH to <address>" — crypto withdrawal                                                 | `minara withdraw -c <chain> -t '<token>' -a <amount> --to <address>` or `minara withdraw` (interactive) |
 
 ### Perpetual futures (Hyperliquid)
@@ -153,7 +155,7 @@ Payment step must follow the global confirmation policy: user must explicitly co
 | User intent pattern                                                  | Action                                                                           |
 | -------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
 | Agent receives 402 with x402 headers                                 | Parse headers → `minara transfer` (USDC to recipient on required chain) → retry  |
-| "pay for this API with Minara", "use Minara wallet for x402"         | `minara balance` → `minara transfer` to service address                          |
+| "pay for this API with Minara", "use Minara wallet for x402"         | `minara balance` → `minara transfer` to service payment address                  |
 | "fund my wallet for paid APIs"                                       | `minara deposit buy` (credit card) or `minara deposit spot` (crypto)             |
 
 ### Minara login / setup
@@ -173,12 +175,12 @@ Triggers: message explicitly mentions Minara login, setup, or configuration.
 
 - **Token input (`-t`):** accepts `$TICKER` (e.g. `'$BONK'`), token name, or contract address. Quote `$` in shell.
 - **JSON output:** add `--json` to any command for machine-readable output.
-- **Transaction safety:** CLI flow: first confirmation → transaction confirmation (mandatory, shows token + address) → Touch ID (optional, macOS) → execute. Agent must **never skip or auto-confirm** any step — always relay to user and wait for approval, and never use `-y` unless user explicitly requests it.
+- **Transaction safety:** CLI flow: first confirmation → transaction confirmation (mandatory, shows token and destination) → Touch ID (optional, macOS) → execute. Agent must **never skip or auto-confirm** any step — always relay to user and wait for approval, and never use `-y` unless user explicitly requests it.
 
 ## Credentials & config
 
-- **CLI session:** `~/.minara/credentials.json` — auto-created via `minara login` (required).
-- **API Key:** `MINARA_API_KEY` via env or `skills.entries.minara.apiKey` in `~/.openclaw/openclaw.json` — optional; if set, CLI authenticates automatically without login.
+- **CLI session:** auto-created via `minara login` (required).
+- **API Key:** `MINARA_API_KEY` via env or `skills.entries.minara.apiKey` in OpenClaw config — optional; if set, CLI authenticates automatically without login.
 
 ## Examples
 
