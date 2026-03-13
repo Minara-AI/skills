@@ -6,6 +6,7 @@
 set -euo pipefail
 
 MINARA_SKILL_REPO="${MINARA_SKILL_REPO:-https://github.com/Minara-AI/openclaw-skill.git}"
+CLAWHUB_SKILL_URL="${CLAWHUB_SKILL_URL:-https://clawhub.ai/lowesyang/minara}"
 CONFIG_PATH="${OPENCLAW_CONFIG_PATH:-$HOME/.openclaw/openclaw.json}"
 SKILLS_DIR="${OPENCLAW_SKILLS_DIR:-$HOME/.openclaw/skills}"
 WORKSPACE_DIR="${OPENCLAW_WORKSPACE:-$HOME/.openclaw/workspace}"
@@ -35,11 +36,11 @@ _install_minara_from_git() {
 
 _ensure_minara_config() {
   local config_path="$1"
-  node -e '
-const fs = require("fs");
-const path = require("path");
-const configPath = process.argv[2];
-let config = {};
+  MINARA_CONFIG_PATH="$config_path" node -e '
+var fs = require("fs");
+var p = require("path");
+var configPath = process.env.MINARA_CONFIG_PATH;
+var config = {};
 if (fs.existsSync(configPath)) {
   try { config = JSON.parse(fs.readFileSync(configPath, "utf8")); } catch (_) {}
 }
@@ -47,10 +48,10 @@ config.skills = config.skills || {};
 config.skills.entries = config.skills.entries || {};
 config.skills.entries.minara = config.skills.entries.minara || {};
 config.skills.entries.minara.enabled = true;
-fs.mkdirSync(path.dirname(configPath), { recursive: true });
+fs.mkdirSync(p.dirname(configPath), { recursive: true });
 fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
 console.log("    Enabled minara in", configPath);
-' "$config_path"
+'
 }
 
 MINARA_AGENTS_BLOCK='## Minara — crypto, finance & markets routing (highest priority)
@@ -112,14 +113,41 @@ echo ""
 echo "==> [2/5] Installing Minara skill..."
 mkdir -p "$SKILLS_DIR"
 
-if command -v clawhub &>/dev/null; then
-  if clawhub install minara 2>/dev/null; then
+SKILL_INSTALLED=false
+
+# Priority 1: clawhub CLI
+if [[ "$SKILL_INSTALLED" == false ]] && command -v clawhub &>/dev/null; then
+  echo "    Trying clawhub install..."
+  if clawhub install lowesyang/minara 2>/dev/null; then
     echo "    Installed via clawhub"
+    SKILL_INSTALLED=true
   else
-    echo "    clawhub failed, falling back to git..."
-    _install_minara_from_git
+    echo "    clawhub install failed"
   fi
-else
+fi
+
+# Priority 2: download from ClawHub URL
+if [[ "$SKILL_INSTALLED" == false ]]; then
+  echo "    Trying download from ClawHub..."
+  if curl -fsSL "$CLAWHUB_SKILL_URL/archive/main.tar.gz" -o "$TMP_DIR/clawhub-minara.tar.gz" 2>/dev/null; then
+    mkdir -p "$TMP_DIR/clawhub-minara"
+    if tar -xzf "$TMP_DIR/clawhub-minara.tar.gz" -C "$TMP_DIR/clawhub-minara" --strip-components=1 2>/dev/null; then
+      SKILL_SRC=$(find "$TMP_DIR/clawhub-minara" -name "SKILL.md" -path "*/minara/*" -print -quit 2>/dev/null)
+      if [[ -n "$SKILL_SRC" ]]; then
+        cp -r "$(dirname "$SKILL_SRC")" "$SKILLS_DIR/minara"
+        echo "    Installed from ClawHub ($CLAWHUB_SKILL_URL)"
+        SKILL_INSTALLED=true
+      fi
+    fi
+  fi
+  if [[ "$SKILL_INSTALLED" == false ]]; then
+    echo "    ClawHub download failed"
+  fi
+fi
+
+# Priority 3: fallback to GitHub
+if [[ "$SKILL_INSTALLED" == false ]]; then
+  echo "    Falling back to GitHub..."
   _install_minara_from_git
 fi
 
