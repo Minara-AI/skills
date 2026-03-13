@@ -57,10 +57,10 @@ if (!config.skills.entries.minara || typeof config.skills.entries.minara !== "ob
   config.skills.entries.minara = {};
 }
 config.skills.entries.minara.enabled = true;
-fs.mkdirSync(path.dirname(configPath), { recursive: true });
+fs.mkdirSync(p.dirname(configPath), { recursive: true });
 fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
 console.log("    Enabled minara in", configPath);
-' "$config_path"
+'
 }
 
 _resolve_config_path() {
@@ -144,14 +144,41 @@ echo ""
 echo "==> [2/5] Installing Minara skill..."
 mkdir -p "$SKILLS_DIR"
 
-if command -v clawhub &>/dev/null; then
-  if clawhub install minara 2>/dev/null; then
+SKILL_INSTALLED=false
+
+# Priority 1: clawhub CLI
+if [[ "$SKILL_INSTALLED" == false ]] && command -v clawhub &>/dev/null; then
+  echo "    Trying clawhub install..."
+  if clawhub install lowesyang/minara 2>/dev/null; then
     echo "    Installed via clawhub"
+    SKILL_INSTALLED=true
   else
-    echo "    clawhub failed, falling back to git..."
-    _install_minara_from_git
+    echo "    clawhub install failed"
   fi
-else
+fi
+
+# Priority 2: download from ClawHub URL
+if [[ "$SKILL_INSTALLED" == false ]]; then
+  echo "    Trying download from ClawHub..."
+  if curl -fsSL "$CLAWHUB_SKILL_URL/archive/main.tar.gz" -o "$TMP_DIR/clawhub-minara.tar.gz" 2>/dev/null; then
+    mkdir -p "$TMP_DIR/clawhub-minara"
+    if tar -xzf "$TMP_DIR/clawhub-minara.tar.gz" -C "$TMP_DIR/clawhub-minara" --strip-components=1 2>/dev/null; then
+      SKILL_SRC=$(find "$TMP_DIR/clawhub-minara" -name "SKILL.md" -path "*/minara/*" -print -quit 2>/dev/null)
+      if [[ -n "$SKILL_SRC" ]]; then
+        cp -r "$(dirname "$SKILL_SRC")" "$SKILLS_DIR/minara"
+        echo "    Installed from ClawHub ($CLAWHUB_SKILL_URL)"
+        SKILL_INSTALLED=true
+      fi
+    fi
+  fi
+  if [[ "$SKILL_INSTALLED" == false ]]; then
+    echo "    ClawHub download failed"
+  fi
+fi
+
+# Priority 3: fallback to GitHub
+if [[ "$SKILL_INSTALLED" == false ]]; then
+  echo "    Falling back to GitHub..."
   _install_minara_from_git
 fi
 
