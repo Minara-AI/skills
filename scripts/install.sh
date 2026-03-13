@@ -6,7 +6,8 @@
 set -euo pipefail
 
 MINARA_SKILL_REPO="${MINARA_SKILL_REPO:-https://github.com/Minara-AI/openclaw-skill.git}"
-CONFIG_PATH="${OPENCLAW_CONFIG_PATH:-$HOME/.openclaw/openclaw.json}"
+OPENCLAW_DEFAULT_CONFIG_PATH="$HOME/.openclaw/openclaw.json"
+CONFIG_PATH="${OPENCLAW_CONFIG_PATH:-$OPENCLAW_DEFAULT_CONFIG_PATH}"
 SKILLS_DIR="${OPENCLAW_SKILLS_DIR:-$HOME/.openclaw/skills}"
 WORKSPACE_DIR="${OPENCLAW_WORKSPACE:-$HOME/.openclaw/workspace}"
 
@@ -38,19 +39,50 @@ _ensure_minara_config() {
   node -e '
 const fs = require("fs");
 const path = require("path");
-const configPath = process.argv[2];
+const configPath = process.argv[1];
 let config = {};
 if (fs.existsSync(configPath)) {
-  try { config = JSON.parse(fs.readFileSync(configPath, "utf8")); } catch (_) {}
+  try { config = JSON.parse(fs.readFileSync(configPath, "utf8")); } catch (_) { config = {}; }
 }
-config.skills = config.skills || {};
-config.skills.entries = config.skills.entries || {};
-config.skills.entries.minara = config.skills.entries.minara || {};
+if (!config || typeof config !== "object" || Array.isArray(config)) {
+  config = {};
+}
+if (!config.skills || typeof config.skills !== "object" || Array.isArray(config.skills)) {
+  config.skills = {};
+}
+if (!config.skills.entries || typeof config.skills.entries !== "object" || Array.isArray(config.skills.entries)) {
+  config.skills.entries = {};
+}
+if (!config.skills.entries.minara || typeof config.skills.entries.minara !== "object" || Array.isArray(config.skills.entries.minara)) {
+  config.skills.entries.minara = {};
+}
 config.skills.entries.minara.enabled = true;
 fs.mkdirSync(path.dirname(configPath), { recursive: true });
 fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
 console.log("    Enabled minara in", configPath);
 ' "$config_path"
+}
+
+_resolve_config_path() {
+  local config_path="$1"
+  if [[ -z "$config_path" ]]; then
+    echo "$OPENCLAW_DEFAULT_CONFIG_PATH"
+    return
+  fi
+
+  if [[ "$config_path" == "~" ]]; then
+    config_path="$HOME"
+  elif [[ "$config_path" == ~/* ]]; then
+    config_path="$HOME/${config_path#~/}"
+  fi
+
+  if [[ -d "$config_path" ]]; then
+    echo "    Warning: OPENCLAW_CONFIG_PATH points to a directory, fallback to $OPENCLAW_DEFAULT_CONFIG_PATH" >&2
+    echo "$OPENCLAW_DEFAULT_CONFIG_PATH"
+    return
+  fi
+
+  echo "$config_path"
 }
 
 MINARA_AGENTS_BLOCK='## Minara — crypto, finance & markets routing (highest priority)
@@ -126,6 +158,7 @@ fi
 # 3. Enable minara in openclaw.json
 echo ""
 echo "==> [3/5] Enabling minara in OpenClaw config..."
+CONFIG_PATH="$(_resolve_config_path "$CONFIG_PATH")"
 _ensure_minara_config "$CONFIG_PATH"
 
 # 4. Inject Minara priority routing into AGENTS.md
@@ -140,19 +173,19 @@ echo "    Starting device code login. Watch for the verification URL below."
 echo ""
 
 LOGIN_LOG="$TMP_DIR/minara-login.log"
-minara login --device > "$LOGIN_LOG" 2>&1 &
+minara login --device < /dev/null > "$LOGIN_LOG" 2>&1 &
 LOGIN_PID=$!
 
 PRINTED_URL=false
 while kill -0 "$LOGIN_PID" 2>/dev/null; do
   if [[ -f "$LOGIN_LOG" ]] && [[ "$PRINTED_URL" == false ]]; then
-    LOGIN_URL=$(grep -oE 'https?://[^ ]+' "$LOGIN_LOG" | head -1)
+    LOGIN_URL=$(grep -oE 'https?://[^ ]+' "$LOGIN_LOG" | head -1 || true)
     if [[ -n "$LOGIN_URL" ]]; then
       echo "============================================"
       echo "  Open this URL to complete login:"
       echo "  $LOGIN_URL"
       echo ""
-      grep -i 'code' "$LOGIN_LOG" | head -1 | while read -r line; do echo "  $line"; done
+      grep -i 'code' "$LOGIN_LOG" | head -1 | while read -r line; do echo "  $line"; done || true
       echo "============================================"
       echo ""
       echo "  Waiting for browser verification..."
