@@ -21,9 +21,9 @@ Ethereum, Base, Arbitrum, Optimism, Polygon, Avalanche, BNB Chain, Solana, Berac
 
 ## Quick Start
 
-### One-click install via OpenClaw agent(Recommended)
+### One-click install via prompts(Recommended)
 
-If OpenClaw is already running, send this prompt to the agent:
+If your agent is already running, send this prompt to the agent:
 
 > Install and set up Minara: run `bash <(curl -fsSL https://raw.githubusercontent.com/Minara-AI/openclaw-skills/main/scripts/install.sh)` — this installs minara-cli, the minara skill, enables it in config, injects crypto/finance priority routing into AGENTS.md, and starts the login flow. Follow the device code login instructions when prompted.
 
