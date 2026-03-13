@@ -25,7 +25,7 @@ Ethereum, Base, Arbitrum, Optimism, Polygon, Avalanche, BNB Chain, Solana, Berac
 
 If your agent is already running, send this prompt to the agent:
 
-> Run `bash <(curl -fsSL https://raw.githubusercontent.com/Minara-AI/openclaw-skills/main/scripts/install.sh)` to install Minara. Follow the login URL when prompted.
+> Run `curl -fsSL https://raw.githubusercontent.com/Minara-AI/openclaw-skills/main/scripts/install.sh | bash` to install Minara. Follow the login URL when prompted.
 
 ### Install as OpenClaw skill only
 
