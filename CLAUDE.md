@@ -14,8 +14,7 @@ name: <skill-name>
 description: "<concise, keyword-rich description for agent discovery>"
 homepage: <url>
 disable-model-invocation: true|false
-metadata:
-  { <single-line JSON> }
+metadata: { <single-line JSON> }
 ---
 
 <agent-facing instructions>
@@ -43,19 +42,22 @@ metadata:
       "env": ["REQUIRED_ENV_VAR"],
       "config": ["skills.entries.<name>.enabled"]
     },
-    "install": [{
-      "id": "node",
-      "kind": "node",
-      "package": "package-name",
-      "global": true,
-      "bins": ["cli-binary"],
-      "label": "Install via npm"
-    }]
+    "install": [
+      {
+        "id": "node",
+        "kind": "node",
+        "package": "package-name",
+        "global": true,
+        "bins": ["cli-binary"],
+        "label": "Install via npm"
+      }
+    ]
   }
 }
 ```
 
 Key fields:
+
 - `requires.bins` — CLI binaries that must exist on PATH. Skill is excluded if missing.
 - `requires.config` — config paths in `~/.openclaw/openclaw.json` that must be truthy.
 - `primaryEnv` — the env var linked to `skills.entries.<name>.apiKey`.
@@ -71,13 +73,14 @@ The body of SKILL.md is injected into the agent's system prompt. Write it for th
 Use tables to map user intent patterns directly to actions. Every row = one user intent → one executable action. The agent scans this table to decide what to do.
 
 ```markdown
-| User intent pattern | Action |
-|---|---|
-| "do X with Y" | `cli-command --flag value` |
-| "analyze Z" | **IF** `API_KEY` → `POST /endpoint`. **ELSE** → `cli fallback` |
+| User intent pattern | Action                                                         |
+| ------------------- | -------------------------------------------------------------- |
+| "do X with Y"       | `cli-command --flag value`                                     |
+| "analyze Z"         | **IF** `API_KEY` → `POST /endpoint`. **ELSE** → `cli fallback` |
 ```
 
 Principles:
+
 - **First match wins.** Order rows from most specific to most general.
 - **Every row must be executable.** No "consider doing X" — give the exact command or API call.
 - **Conditional on env vars.** When an API key enables a richer path, use `**IF** API_KEY → ... **ELSE** → ...` inline. The fallback must always work.
@@ -87,6 +90,7 @@ Principles:
 ### CLI reference sections
 
 Keep CLI documentation compact:
+
 - One code block per command group, with inline comments.
 - Document flags only when non-obvious.
 - Mention `--json` output flag if the CLI supports it (useful for agent parsing).
@@ -94,6 +98,7 @@ Keep CLI documentation compact:
 ### API reference sections
 
 For each endpoint:
+
 - Method + full URL on one line.
 - Request body as a compact JSON block.
 - Response shape as a one-liner or compact block.
@@ -156,6 +161,7 @@ Keep it minimal. Do not add extra files unless the skill requires them (e.g., a 
 ## README.md
 
 The root README is human-facing (not agent-facing). It should contain:
+
 - One-paragraph description.
 - Features table.
 - Quick start (minimal steps to get running).
@@ -166,3 +172,16 @@ Keep the README concise. The detailed instructions live in SKILL.md.
 ## Token budget awareness
 
 Every eligible skill's name + description is injected into the system prompt (~97 chars + field lengths per skill). The full SKILL.md body is loaded when the skill is invoked. Keep SKILL.md as compact as possible — prefer tables over prose, and reference `{baseDir}/examples.md` for full code instead of inlining it.
+
+## Version management
+
+The project uses a single version number across multiple files. When bumping the version, update **all** of the following locations together:
+
+| File                     | Field / location                             |
+| ------------------------ | -------------------------------------------- |
+| `skills/minara/SKILL.md` | Frontmatter `version:` field                 |
+| `README.md`              | Title line (`# Minara Skills vX.Y`)          |
+| GitHub release tag       | `vX.Y.Z` via `git tag` + `gh release create` |
+| ClawHub publish          | `--version X.Y.Z` via `clawhub publish`      |
+
+After updating all locations, commit, push, create a git tag, publish a GitHub release, and publish to ClawHub. This is the standard release flow for every version bump.

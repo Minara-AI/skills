@@ -1,5 +1,6 @@
 ---
 name: minara
+version: "2.5.0"
 description: "Crypto trading: swap, perps, transfer, pay, deposit (credit card / crypto), withdraw, AI chat, market discovery, x402 payment, autopilot. Built-in wallet via Minara CLI. EVM + Solana."
 homepage: https://minara.ai
 metadata:
@@ -206,6 +207,10 @@ Triggers: message explicitly mentions Minara login, setup, or configuration.
 
 - **CLI session:** auto-created via `minara login` (required).
 - **API Key:** `MINARA_API_KEY` via env or `skills.entries.minara.apiKey` in OpenClaw config — optional; if set, CLI authenticates automatically without login.
+
+## Post-install setup
+
+On first use, read `{baseDir}/setup.md` and follow its instructions.
 
 ## Examples
 

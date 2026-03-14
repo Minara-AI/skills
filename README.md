@@ -161,6 +161,7 @@ See [`examples.md`](skills/minara/examples.md) for full commands and code:
 ```
 skills/minara/
 ├── SKILL.md          # Agent-facing intent routing and CLI reference
+├── setup.md          # Post-install workspace integration (AGENTS.md + MEMORY.md)
 └── examples.md       # CLI command examples for each scenario
 scripts/
 └── install.sh        # One-click setup script (minara-cli + skill + config + login)
