@@ -1,6 +1,6 @@
 ---
 name: minara
-version: "2.5.0"
+version: "2.5.1"
 description: "Crypto trading: swap, perps, transfer, pay, deposit (credit card / crypto), withdraw, AI chat, market discovery, x402 payment, autopilot. Built-in wallet via Minara CLI. EVM + Solana."
 homepage: https://minara.ai
 metadata:
