@@ -65,37 +65,51 @@ minara deposit buy             # Buy crypto with credit card via MoonPay (opens 
 ## 5 — Perpetual futures
 
 ```bash
-# Fund perps account
-minara perps deposit -a 100
+# ── Multi-wallet management (v0.4.0+) ──────────────────────────────────
+minara perps wallets                    # List all sub-wallets with balances + autopilot info
+minara perps create-wallet -n Bot-1     # Create a new sub-wallet
+minara perps rename-wallet              # Rename a wallet interactively
+minara perps sweep                      # Move funds from sub-wallet → default wallet
+minara perps transfer                   # Transfer USDC between any two wallets
 
-# Set leverage
+# ── Fund perps account ─────────────────────────────────────────────────
+minara perps deposit -a 100             # Default wallet
+minara perps deposit -a 100 --wallet Bot-1  # Specific wallet
+
+# ── Set leverage ───────────────────────────────────────────────────────
 minara perps leverage
+minara perps leverage --wallet Bot-1
 
-# Place order (interactive: symbol, side, size, price)
-minara perps order
+# ── Place order (interactive: wallet, symbol, side, size, price) ───────
+minara perps order                      # Wallet picker if multiple exist
+minara perps order --wallet Bot-1       # Target specific wallet
 
-# View positions
-minara perps positions
+# ── View positions ─────────────────────────────────────────────────────
+minara perps positions                  # All wallets
+minara perps positions --wallet Bot-1   # Specific wallet only
 
-# Close positions
-minara perps close                    # Interactive: select position to close
-minara perps close --all              # Close all positions (non-interactive)
-minara perps close --symbol BTC       # Close BTC position (non-interactive)
-minara perps close --all --yes        # Close all, skip confirmation
+# ── Close positions ────────────────────────────────────────────────────
+minara perps close                      # Interactive: select position to close
+minara perps close --all                # Close all positions (non-interactive)
+minara perps close --symbol BTC         # Close BTC position (non-interactive)
+minara perps close --all --yes          # Close all, skip confirmation
 
-# Cancel orders
+# ── Cancel orders ──────────────────────────────────────────────────────
 minara perps cancel
+minara perps cancel --wallet Bot-1
 
-# Withdraw from perps
+# ── Withdraw from perps ────────────────────────────────────────────────
 minara perps withdraw -a 50
 
-# AI analysis → optional quick order
+# ── AI analysis → optional quick order ────────────────────────────────
 minara perps ask
+minara perps ask --wallet Bot-1
 
-# AI autopilot trading strategy
-minara perps autopilot
+# ── AI autopilot (multi-strategy dashboard, per wallet) ───────────────
+minara perps autopilot                  # Pick wallet → view strategy dashboard
+minara perps autopilot --wallet Bot-1   # Jump to Bot-1's strategies directly
 
-# History
+# ── History ────────────────────────────────────────────────────────────
 minara perps trades
 minara perps fund-records
 ```

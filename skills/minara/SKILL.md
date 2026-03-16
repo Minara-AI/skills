@@ -34,7 +34,7 @@ For detailed command syntax, I/O examples, and error handling, read the matching
 | **Auth & Account** | login, logout, account, config, setup | `{baseDir}/references/auth-account.md` |
 | **Wallet & Funds** | balance, assets, portfolio, deposit, withdraw, on-ramp, credit card, MoonPay | `{baseDir}/references/wallet-funds.md` |
 | **Spot Trading** | swap, buy, sell, convert, exchange, transfer, send, pay, x402 | `{baseDir}/references/spot-trading.md` |
-| **Perps Trading** | perps, perpetual, futures, long, short, leverage, autopilot, limit order, Hyperliquid | `{baseDir}/references/perps-trading.md` |
+| **Perps Trading** | perps, perpetual, futures, long, short, leverage, autopilot, multi-wallet, wallets, sweep, transfer, limit order, Hyperliquid | `{baseDir}/references/perps-trading.md` |
 | **AI & Market** | price, analysis, chat, research, trending, fear & greed, BTC metrics, Polymarket, DeFi | `{baseDir}/references/ai-market.md` |
 | **Premium** | plan, subscription, credits, pricing, upgrade, cancel | `{baseDir}/references/premium.md` |
 
@@ -71,7 +71,7 @@ Read-only commands (`balance`, `assets`, `account`, `chat`, `discover`, etc.) ne
 
 
 
-> **Autopilot guard:** When autopilot is ON, manual perps orders are blocked. See `references/perps-trading.md` § Autopilot.
+> **Autopilot guard (v0.4.0+):** Autopilot is per-wallet. When autopilot is ON for a specific wallet, manual orders on that wallet are blocked. Other wallets can still trade freely. See `references/perps-trading.md` § Autopilot.
 
 ## Execution Notes
 
