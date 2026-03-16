@@ -1,10 +1,14 @@
 # Spot Trading Reference
 
-> **You are the executor.** Run all commands yourself via shell exec. Extract parameters from the user's message, construct the command, execute it, and handle the CLI output autonomously. Only pause for user confirmation on fund-moving operations. Never tell the user to run commands themselves.
+> **Execute commands yourself.** Extract params from user message, construct command, run it, handle output. Only pause for fund-moving confirmations.
 
-## Overview
+## Contents
 
-Cross-chain token swap (buy/sell) and transfer/send/pay. These are the core fund-moving spot operations.
+- [Swap](#minara-swap) — buy/sell tokens cross-chain
+- [Transfer](#minara-transfer) — send tokens to an address
+- [x402 Protocol](#x402-protocol-payment) — pay for HTTP 402 responses
+
+---
 
 ---
 
@@ -146,28 +150,6 @@ When an HTTP request returns **402 Payment Required** with x402 headers:
 4. Retry the original request after payment confirms
 
 Always get user confirmation before the transfer step.
-
----
-
-## Agent Command Construction
-
-### Swap intent → command mapping
-
-| User says | Command |
-|---|---|
-| "buy 100 USDC worth of ETH" | `minara swap -s buy -t ETH -a 100` |
-| "sell 0.5 ETH" | `minara swap -s sell -t ETH -a 0.5` |
-| "sell all my BONK" | `minara swap -s sell -t '$BONK' -a all` |
-| "convert 200 USDC to SOL on Solana" | `minara swap -s buy -t SOL -a 200` |
-| "simulate buying 50 USD of PEPE" | `minara swap -s buy -t PEPE -a 50 --dry-run` |
-
-### Transfer intent → command mapping
-
-| User says | Command |
-|---|---|
-| "send 10 SOL to 5xYz..." | `minara transfer -c solana -t SOL -a 10 --to 5xYz...` |
-| "transfer 100 USDC on Base to 0xAbc..." | `minara transfer -c base -t USDC -a 100 --to 0xAbc...` |
-| "pay 50 USDC to 0xDef..." | `minara transfer -c base -t USDC -a 50 --to 0xDef...` |
 
 ---
 

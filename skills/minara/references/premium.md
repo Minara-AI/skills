@@ -1,10 +1,16 @@
 # Premium & Subscription Reference
 
-> **You are the executor.** Run all commands yourself via shell exec. Present results to the user in natural language. For checkout flows that open a browser, relay the URL to the user. Never tell the user to run commands themselves.
+> **Execute commands yourself.** Relay checkout URLs to the user for browser completion.
 
-## Overview
+## Contents
 
-Manage Minara subscription plans, credit packages, and billing.
+- [Plans](#minara-premium-plans) — view available plans
+- [Status](#minara-premium-status) — current subscription
+- [Subscribe](#minara-premium-subscribe) — subscribe or upgrade
+- [Buy Credits](#minara-premium-buy-credits) — one-time credit package
+- [Cancel](#minara-premium-cancel) — cancel subscription
+
+---
 
 ---
 
@@ -152,19 +158,6 @@ $ minara premium cancel
 
 **Errors:**
 - `Failed to cancel subscription` → no active subscription or API error
-
----
-
-## Agent Command Construction
-
-| User says | Command |
-|---|---|
-| "what are Minara's plans?" | `minara premium plans` |
-| "show my subscription" | `minara premium status` |
-| "upgrade to Pro" | `minara premium subscribe` |
-| "buy more credits" | `minara premium buy-credits` |
-| "cancel my Minara subscription" | `minara premium cancel` |
-| "how much does Minara cost?" | `minara premium plans` |
 
 ---
 

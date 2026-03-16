@@ -1,10 +1,17 @@
 # Wallet & Funds Reference
 
-> **You are the executor.** Run all commands yourself via shell exec. Parse the output and present results to the user in natural language. Never tell the user to run commands themselves.
+> **Execute commands yourself.** Present results in natural language.
 
-## Overview
+## Contents
 
-View balances, manage assets, deposit (crypto / credit card), and withdraw tokens. All commands are read-only except deposit-perps (internal transfer) and withdraw.
+- [Balance](#minara-balance) — quick USDC/USDT total
+- [Assets Spot](#minara-assets-spot) — spot holdings with PnL
+- [Assets Perps](#minara-assets-perps) — perps account overview
+- [Assets](#minara-assets) — full spot + perps view
+- [Deposit Spot](#minara-deposit-spot) — show deposit addresses
+- [Deposit Perps](#minara-deposit-perps) — fund perps (address or Spot→Perps transfer)
+- [Deposit Buy](#minara-deposit-buy) — credit card on-ramp (MoonPay)
+- [Withdraw](#minara-withdraw) — withdraw to external wallet
 
 ---
 

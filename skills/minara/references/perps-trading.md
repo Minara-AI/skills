@@ -1,10 +1,21 @@
 # Perpetual Futures Reference
 
-> **You are the executor.** Run all commands yourself via shell exec (`pty: true` for interactive prompts). Read CLI output, respond to prompts autonomously, and only ask the user for confirmation on fund-moving operations. Never tell the user to run commands themselves.
+> **Execute commands yourself.** Use `pty: true` for interactive prompts. Only ask the user for confirmation on fund-moving operations.
 
-## Overview
+## Contents
 
-Hyperliquid perpetual futures: order placement, position management, leverage, autopilot AI trading, and analysis. All perps commands live under `minara perps <subcommand>`.
+- [Order](#minara-perps-order) — place market/limit perps orders
+- [Ask](#minara-perps-ask) — AI long/short analysis + quick order
+- [Positions](#minara-perps-positions) — view open positions
+- [Close](#minara-perps-close) — close positions (single/all/by symbol)
+- [Cancel](#minara-perps-cancel) — cancel open orders
+- [Leverage](#minara-perps-leverage) — set leverage and margin mode
+- [Trades](#minara-perps-trades) — trade fill history
+- [Deposit](#minara-perps-deposit) — deposit USDC to perps
+- [Withdraw](#minara-perps-withdraw) — withdraw USDC from perps
+- [Fund Records](#minara-perps-fund-records) — deposit/withdrawal history
+- [Autopilot](#minara-perps-autopilot) — AI autopilot trading
+- [Limit Orders](#limit-orders-spot) — spot-level conditional orders
 
 ---
 
@@ -377,24 +388,6 @@ List all limit orders. Alias: `minara limit-order ls`
 ### `minara limit-order cancel <id>`
 
 Cancel a specific order by ID. Interactive selection if no ID given.
-
----
-
-## Agent Command Construction
-
-| User says | Command |
-|---|---|
-| "open a long ETH perp" | `minara perps order` (interactive) |
-| "short BTC with 20x leverage" | First `minara perps leverage` for BTC, then `minara perps order` |
-| "should I long or short SOL?" | `minara perps ask` |
-| "check my perp positions" | `minara perps positions` |
-| "close my BTC position" | `minara perps close --symbol BTC` |
-| "close all positions" | `minara perps close --all` |
-| "turn on autopilot" | `minara perps autopilot` |
-| "deposit 500 to perps" | `minara perps deposit -a 500` |
-| "withdraw 200 from perps" | `minara perps withdraw -a 200 --to <address>` |
-| "show my trade history" | `minara perps trades` |
-| "create limit order for PEPE at $0.000012" | `minara limit-order create` |
 
 ---
 
