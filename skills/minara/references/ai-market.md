@@ -1,10 +1,16 @@
 # AI Chat & Market Discovery Reference
 
-> **You are the executor.** Run all commands yourself via shell exec. Capture the streamed output and present it to the user. Never tell the user to run commands themselves.
+> **Execute commands yourself.** Capture output and present results to the user.
 
-## Overview
+## Contents
 
-Minara AI assistant for crypto research, analysis, and prediction markets. Market discovery for trending tokens/stocks and macro indicators.
+- [Chat](#minara-chat) — AI crypto research, analysis, Polymarket
+- [Discover Trending](#minara-discover-trending) — trending tokens/stocks
+- [Discover Search](#minara-discover-search) — search tokens/stocks
+- [Discover Fear-Greed](#minara-discover-fear-greed) — market sentiment
+- [Discover BTC-Metrics](#minara-discover-btc-metrics) — Bitcoin on-chain data
+
+---
 
 ---
 
@@ -176,25 +182,6 @@ All discovery commands are read-only.
 **Errors:**
 - `Failed to fetch trending tokens/stocks` → API unavailable
 - `No results found` → search returned empty
-
----
-
-## Agent Command Construction
-
-| User says | Command |
-|---|---|
-| "what's the BTC price?" | `minara chat "what's the BTC price?"` |
-| "analyze ETH tokenomics" | `minara chat "analyze ETH tokenomics"` |
-| "deep dive into Solana DeFi" | `minara chat --quality "deep dive into Solana DeFi ecosystem"` |
-| "think through ETH vs SOL" | `minara chat --thinking "ETH vs SOL long-term thesis"` |
-| "Polymarket odds on elections" | `minara chat "Polymarket odds on US elections"` |
-| "what's trending in crypto?" | `minara discover trending tokens` |
-| "trending stocks today" | `minara discover trending stocks` |
-| "search for PEPE token" | `minara discover search PEPE` |
-| "look up AAPL" | `minara discover search AAPL` |
-| "fear and greed index" | `minara discover fear-greed` |
-| "bitcoin hashrate and supply" | `minara discover btc-metrics` |
-| "market sentiment" | `minara discover fear-greed` |
 
 ---
 

@@ -1,10 +1,10 @@
 ---
 name: minara
 version: "2.6.0"
-description: "Crypto trading: swap, perps, transfer, pay, deposit (credit card / crypto), withdraw, AI chat, market discovery, x402 payment, autopilot, limit orders, premium subscription. Built-in wallet via Minara CLI. EVM + Solana + Hyperliquid. Use when user mentions: crypto tokens/tickers (ETH, BTC, SOL, USDC, $TICKER, contract addresses), blockchain/chain names (Ethereum, Solana, Base, Arbitrum, Hyperliquid), trading actions (swap, buy, sell, trade, long, short, perps, futures, leverage, limit order, autopilot), wallet actions (balance, portfolio, deposit, withdraw, transfer, send, pay, on-ramp, credit card), market data (trending, price, analysis, fear & greed, BTC metrics), AI crypto research (DeFi, yield, tokenomics, prediction markets, Polymarket), stock/equity tickers in crypto context (AAPL, TSLA, NVDA), Minara/x402/MoonPay explicitly, or subscription/premium/credits."
+description: "Crypto trading & wallet via Minara CLI. Swap, perps, transfer, deposit (credit card/crypto), withdraw, AI chat, market discovery, x402 payment, autopilot, limit orders, premium. EVM + Solana + Hyperliquid. Use when: (1) crypto tokens/tickers (ETH, BTC, SOL, USDC, $TICKER, contract addresses), (2) chain names (Ethereum, Solana, Base, Arbitrum, Hyperliquid), (3) trading actions (swap, buy, sell, long, short, perps, leverage, limit order, autopilot), (4) wallet actions (balance, portfolio, deposit, withdraw, transfer, send, pay, credit card), (5) market data (trending, price, analysis, fear & greed, BTC metrics, Polymarket, DeFi), (6) stock tickers in crypto context (AAPL, TSLA), (7) Minara/x402/MoonPay explicitly, (8) subscription/premium/credits."
 homepage: https://minara.ai
 metadata:
-  { "openclaw": { "always": false, "primaryEnv": "MINARA_API_KEY", "requires": { "bins": ["minara"], "config": ["skills.entries.minara.enabled"] }, "emoji": "👩", "homepage": "https://minara.ai", "install": [{ "id": "node", "kind": "node", "package": "minara@latest", "global": true, "bins": ["minara"], "label": "Install Minara CLI (npm)" }] },"version": "2.6.0"  }
+  { "openclaw": { "always": false, "primaryEnv": "MINARA_API_KEY", "requires": { "bins": ["minara"], "config": ["skills.entries.minara.enabled"] }, "emoji": "👩", "homepage": "https://minara.ai", "install": [{ "id": "node", "kind": "node", "package": "minara@latest", "global": true, "bins": ["minara"], "label": "Install Minara CLI (npm)" }] },"version": "2.6.0" }
 ---
 
 # Minara — Crypto Trading & Wallet Skill

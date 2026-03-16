@@ -1,10 +1,15 @@
 # Auth & Account Reference
 
-> **You are the executor.** Run all commands yourself via shell exec. Never instruct the user to run CLI commands — execute them, read the output, and act on it.
+> **Execute commands yourself.** Only relay verification URLs/codes for user to complete in browser.
 
-## Overview
+## Contents
 
-Manage Minara CLI authentication, user identity, and local configuration.
+- [Login](#minara-login) — authenticate (device code preferred)
+- [Logout](#minara-logout) — clear credentials
+- [Account](#minara-account) — view profile and wallets
+- [Config](#minara-config) — CLI settings (Touch ID, base URL)
+
+---
 
 ---
 
