@@ -92,6 +92,8 @@ Triggers: message mentions perps, perpetual, futures, long, short, leverage, mar
 | "open a long ETH perp", "short BTC on Hyperliquid", "place a perp order"                  | `minara perps order` (interactive order builder)                                                          |
 | "long 0.1 BTC at market", "short ETH size 5", "buy SOL perp size 10"                      | `minara perps order -S <long/buy/short/sell> -s <SYMBOL> -z <size>` (non-interactive)                     |
 | "limit buy ETH at $3000 size 2", "limit short BTC at $95000"                              | `minara perps order -S buy -s ETH -T limit -p 3000 -z 2` (non-interactive limit order)                    |
+| "stop loss BTC at $90000", "set stop market order for ETH at $2800"                       | `minara perps order -S <side> -s <SYMBOL> -T market -p <trigger_price> -z <size> --tpsl sl`               |
+| "take profit BTC at $100000", "set TP order for SOL at $200"                              | `minara perps order -S <side> -s <SYMBOL> -T market -p <trigger_price> -z <size> --tpsl tp`               |
 | "place reduce-only order for BTC", "reduce-only short SOL"                                | `minara perps order -S <side> -s <SYMBOL> -z <size> --reduce-only`                                        |
 | "analyze ETH long or short", "should I long BTC?", "AI perp analysis for SOL"             | `minara perps ask` — AI analysis with optional quick order                                                |
 | "enable AI autopilot for perps", "turn on autopilot trading", "manage autopilot strategy" | `minara perps autopilot`                                                                                  |
@@ -106,7 +108,7 @@ Triggers: message mentions perps, perpetual, futures, long, short, leverage, mar
 | "show my perp trade history"                                                              | `minara perps trades`                                                                                     |
 | "show perps deposit/withdrawal records"                                                   | `minara perps fund-records`                                                                               |
 
-> **Perps order flags:** `-S/--side` (long/buy/short/sell), `-s/--symbol` (BTC, ETH, SOL), `-T/--type` (market/limit, default: market), `-p/--price` (required for limit), `-z/--size` (contracts), `-r/--reduce-only`, `-g/--grouping` (na/normalTpsl/positionTpsl), `-y/--yes` (skip confirmation).
+> **Perps order flags:** `-S/--side` (long/buy/short/sell), `-s/--symbol` (BTC, ETH, SOL), `-T/--type` (market/limit, default: market), `-p/--price` (required for limit, trigger price for market), `-z/--size` (contracts), `-r/--reduce-only`, `--tpsl` (tp/sl, trigger type for market orders: tp=take profit, sl=stop loss, default: tp), `-g/--grouping` (na/normalTpsl/positionTpsl), `-y/--yes` (skip confirmation).
 > **Autopilot note:** When autopilot is ON, manual `minara perps order` is blocked. Turn off autopilot first via `minara perps autopilot`.
 
 ### Limit orders (crypto)

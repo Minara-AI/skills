@@ -88,6 +88,11 @@ minara perps order -S short -s BTC -T limit -p 100000 -z 0.1 # Short BTC at $100
 minara perps order -S long -s BTC -z 0.1 --reduce-only       # Reduce-only long BTC
 minara perps order -S short -s ETH -z 1 -r                   # Reduce-only short ETH (shorthand)
 
+# Stop loss / Take profit orders (trigger market orders)
+minara perps order -S sell -s BTC -T market -p 90000 -z 0.1 --tpsl sl   # Stop loss BTC at $90000
+minara perps order -S sell -s ETH -T market -p 2800 -z 1 --tpsl sl       # Stop loss ETH at $2800
+minara perps order -S sell -s SOL -T market -p 150 -z 10 --tpsl tp        # Take profit SOL at $150
+
 # With TP/SL grouping
 minara perps order -S long -s BTC -z 0.1 -g normalTpsl       # With normal TP/SL grouping
 minara perps order -S long -s ETH -z 1 -g positionTpsl       # With position TP/SL grouping
@@ -131,7 +136,8 @@ minara perps fund-records
 | `--side <side>` | `-S` | Order side: long, buy, short, or sell | — |
 | `--symbol <symbol>` | `-s` | Asset symbol (e.g. BTC, ETH, SOL) | — |
 | `--type <type>` | `-T` | Order type: market or limit | market |
-| `--price <price>` | `-p` | Limit price (required for limit orders) | — |
+| `--price <price>` | `-p` | Limit price (required for limit orders) / trigger price for market orders | — |
+| `--tpsl <type>` | | Trigger type for market orders: tp (take profit) or sl (stop loss) | tp |
 | `--size <size>` | `-z` | Position size in contracts | — |
 | `--reduce-only` | `-r` | Reduce-only order flag | false |
 | `--grouping <grouping>` | `-g` | TP/SL grouping: na, normalTpsl, positionTpsl | na |
