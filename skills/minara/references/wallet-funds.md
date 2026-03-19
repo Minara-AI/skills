@@ -215,7 +215,6 @@ Shows current assets for reference before prompting. Interactive if no flags giv
 ## Supported Chains
 
 ethereum, base, arbitrum, optimism, polygon, avalanche, solana, bsc, berachain, blast, manta, mode, sonic, conflux, merlin, monad, polymarket, xlayer
-
 ---
 
 ## JSON Output

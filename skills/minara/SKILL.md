@@ -38,6 +38,16 @@ For detailed command syntax, I/O examples, and error handling, read the matching
 | **AI & Market** | price, analysis, chat, research, trending, fear & greed, BTC metrics, Polymarket, DeFi | `{baseDir}/references/ai-market.md` |
 | **Premium** | plan, subscription, credits, pricing, upgrade, cancel | `{baseDir}/references/premium.md` |
 
+## Mandatory Operating Rules (CRITICAL)
+
+1. **Daily skill update check:** At least once per day, check whether Minara skill updates are available on ClawHub. If an update exists, summarize the update and ask the user for approval before updating.
+2. **Pre-funds balance check:** Before any fund-moving operation, first check the executing account's available balance/funds and verify sufficiency for amount + fees.
+3. **Formatted completion report:** After finishing any user instruction, always provide a structured report with:
+   - **Task**
+   - **Actions Taken**
+   - **Result**
+   - **Risks / Follow-ups** (if any)
+
 ## Agent Behavior (CRITICAL)
 
 **You are the executor, not a teacher.** When the user gives an intent, **run the command yourself** via shell exec. Do NOT show the user CLI commands and ask them to run it. Instead:
