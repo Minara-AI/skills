@@ -36,7 +36,7 @@ $ minara perps positions --wallet Bot-1
 
 ### `minara perps wallets`
 
-List all sub-wallets with equity, margin, PnL, and autopilot status.
+List all sub-wallets with equity, margin, PnL, and autopilot status. Alias: `minara perps w`
 
 ```
 $ minara perps wallets
@@ -499,15 +499,15 @@ Limit Order:
 
 ### `minara limit-order list`
 
-List all limit orders. Alias: `minara limit-order ls`
+List all limit orders. Aliases: `minara limit-order ls`, `minara lo list`
 
 ### `minara limit-order cancel <id>`
 
-Cancel a specific order by ID. Interactive selection if no ID given.
+Cancel a specific order by ID. Interactive selection if no ID given. Alias: `minara lo cancel`
 
 ---
 
-## Execution Rules
+## Module-Specific Notes
 
 1. **Execute commands yourself** — never show CLI syntax and ask the user to run it
 2. **Never auto-confirm** any fund-moving perps command — relay summary, wait for user approval

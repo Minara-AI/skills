@@ -12,8 +12,6 @@
 
 ---
 
----
-
 ## Commands
 
 ### `minara premium plans`
@@ -161,7 +159,7 @@ $ minara premium cancel
 
 ---
 
-## Execution Notes
+## Module-Specific Notes
 
 - **Execute commands yourself** — never tell the user to run `minara premium` commands
 - Checkout flows open browser — run the command, capture the URL, and relay it to the user

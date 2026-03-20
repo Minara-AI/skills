@@ -221,7 +221,5 @@ ethereum, base, arbitrum, optimism, polygon, avalanche, solana, bsc, berachain, 
 
 Add `--json` to any command for machine-readable output:
 
-```bash
-minara balance --json
-minara assets spot --json
-```
+- Add `--json` to `balance` or `assets` for machine-readable output
+- `deposit perps` and `perps deposit` are equivalent entry points

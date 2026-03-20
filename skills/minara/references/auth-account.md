@@ -11,8 +11,6 @@
 
 ---
 
----
-
 ## Commands
 
 ### `minara login`
