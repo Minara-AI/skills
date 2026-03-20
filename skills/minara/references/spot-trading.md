@@ -1,14 +1,12 @@
 # Spot Trading Reference
 
-> **Execute commands yourself.** Extract params from user message, construct command, run it, handle output. Only pause for fund-moving confirmations.
+> **Execute commands yourself.** Extract params from user message, construct command, run it, never ask the user to run ithandle output. Only pause for fund-moving confirmations.
 
 ## Contents
 
 - [Swap](#minara-swap) — buy/sell tokens cross-chain
 - [Transfer](#minara-transfer) — send tokens to an address
 - [x402 Protocol](#x402-protocol-payment) — pay for HTTP 402 responses
-
----
 
 ---
 
@@ -153,12 +151,10 @@ Always get user confirmation before the transfer step.
 
 ---
 
-## Execution Rules
-
-1. **Execute commands yourself** — never show CLI syntax and ask the user to run it
-2. **Never auto-confirm** fund-moving ops — show summary and wait for user approval
-3. **Never add `-y`** unless user explicitly requests skipping confirmation
-4. **Quote `$` in tickers** — use `'$BONK'` not `$BONK` (shell expansion)
-5. **Relay Touch ID prompts** — if CLI blocks on Touch ID, inform user
-6. **Dry-run first** when user is unsure — execute `--dry-run` to simulate, then report results
-7. **Handle errors autonomously** — read error output, diagnose, retry or inform user
+## Module-Specific Notes
+1. **Never auto-confirm** fund-moving ops — show summary and wait for user approval
+2. **Never add `-y`** unless user explicitly requests skipping confirmation
+3. **Quote `$` in tickers** — use `'$BONK'` not `$BONK` (shell expansion)
+4. **Relay Touch ID prompts** — if CLI blocks on Touch ID, inform user
+5. **Dry-run first** when user is unsure — execute `--dry-run` to simulate, then report results
+6. **Handle errors autonomously** — read error output, diagnose, retry or inform user

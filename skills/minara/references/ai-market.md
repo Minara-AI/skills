@@ -12,8 +12,6 @@
 
 ---
 
----
-
 ## AI Chat Commands
 
 ### `minara chat "<message>"`

@@ -8,8 +8,9 @@ For device login handoff: if CLI outputs a verification URL and/or device code, 
 minara login                       # Interactive (device code default, or email)
 minara login --device              # Device code flow: relay URL/code to user for browser verification
 minara login -e user@example.com   # Email with verification code
-minara account                     # View account info + wallet addresses
-minara deposit spot                # Show spot deposit addresses (EVM + Solana)
+minara account                     # View account info + wallet addresses (alias: minara me)
+minara logout                      # Clear local credentials
+minara config                      # View/update CLI settings (Touch ID, base URL, tx confirmation)
 ```
 
 ## 2 — Swap tokens
@@ -66,7 +67,7 @@ minara deposit buy             # Buy crypto with credit card via MoonPay (opens 
 
 ```bash
 # ── Multi-wallet management (v0.4.0+) ──────────────────────────────────
-minara perps wallets                    # List all sub-wallets with balances + autopilot info
+minara perps wallets                    # List all sub-wallets (alias: minara perps w)
 minara perps create-wallet -n Bot-1     # Create a new sub-wallet
 minara perps rename-wallet              # Rename a wallet interactively
 minara perps sweep                      # Move funds from sub-wallet → default wallet
@@ -114,8 +115,8 @@ minara perps order -S long -s BTC -z 0.1 -y                  # Long BTC, skip co
 minara perps order -S long -s ETH -T limit -p 2500 -z 2 -r -y
 
 # ── View positions ─────────────────────────────────────────────────────
-minara perps positions                  # All wallets
-minara perps positions --wallet Bot-1   # Specific wallet only
+minara perps positions                  # All wallets (alias: minara perps pos)
+minara perps positions -w Bot-1         # Specific wallet only
 
 # ── Close positions ────────────────────────────────────────────────────
 minara perps close                      # Interactive: select position to close
@@ -135,8 +136,8 @@ minara perps ask
 minara perps ask --wallet Bot-1
 
 # ── AI autopilot (multi-strategy dashboard, per wallet) ───────────────
-minara perps autopilot                  # Pick wallet → view strategy dashboard
-minara perps autopilot --wallet Bot-1   # Jump to Bot-1's strategies directly
+minara perps autopilot                  # Pick wallet → dashboard (alias: minara perps ap)
+minara perps autopilot -w Bot-1         # Jump to Bot-1's strategies directly
 
 # ── History ────────────────────────────────────────────────────────────
 minara perps trades
@@ -199,8 +200,8 @@ minara discover trending --json    # JSON output
 
 ```bash
 minara limit-order create          # Interactive: token, price, side, amount, expiry
-minara limit-order list            # List all orders
-minara limit-order cancel abc123   # Cancel by ID
+minara limit-order list            # List all orders (aliases: lo list, lo ls)
+minara limit-order cancel abc123   # Cancel by ID (alias: lo cancel)
 ```
 
 ## 9 — x402 protocol payment
