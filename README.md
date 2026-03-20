@@ -1,23 +1,25 @@
-# Minara Skills v2.5
+# Minara Skills v2.6
 
-The ultimate and all-in-one digital finance solution designed for agents: built-in crypto wallet, assets management, transfers, trading crypto & stock, and institution-grade real-time market insights. Powered by [Minara](https://minara.ai).
+Crypto trading and wallet operations for agents via the [Minara](https://minara.ai) CLI: swap, perps, transfer, deposit (crypto or credit card), withdraw, AI chat, market discovery, x402 payment, autopilot, limit orders, and premium features. Supports EVM, Solana, and Hyperliquid-based perps workflows.
 
 ## Features
 
 | Capability                 | Description                                                                                                                                            |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Built-in Wallet**        | No seed phrase, no private key — sign up with email and get a ready-to-use wallet; unified balance with real-time PnL; credit card on-ramp via MoonPay |
-| **Spot Trading**           | Swaps by ticker, name, or contract address; transfers, payments, and withdrawals across chains; sell-all support                                       |
-| **Perpetual Futures**      | Orders, positions, leverage, TP/SL on Hyperliquid; AI autopilot strategy; AI analysis with quick order                                                 |
-| **Limit Orders**           | Price-triggered limit orders with expiry                                                                                                               |
-| **AI Insights & Research** | Crypto & stock analysis and on-chain research; trending tokens & stocks, Fear & Greed, BTC metrics                                                     |
-| **Chain Abstraction**      | One flow across EVM and Solana — chain auto-detected from token, no manual selection                                                                   |
-| **x402 Payment**           | Pay for x402-enabled HTTP APIs with Minara wallet — auto-detect 402, pay USDC, retry                                                                   |
-| **Gasless**                | Gasless transactions where supported — no gas tokens needed                                                                                            |
+| **Wallet & Funds**         | Built-in wallet, balance, portfolio, deposit addresses, spot/perps funding, withdrawals, transfers, and credit card on-ramp via MoonPay              |
+| **Spot Trading**           | Buy, sell, swap, convert, and transfer by ticker, token name, or contract address across supported chains                                              |
+| **Perpetual Futures**      | Open/close perps, manage leverage, wallets, transfers, trade history, and Hyperliquid workflows with AI-assisted execution                             |
+| **Limit Orders**           | Create, list, and cancel spot limit orders                                                                                                             |
+| **AI Insights & Market**   | AI chat for price and market outlook, trending tokens/stocks, token search, Fear & Greed, BTC metrics, and broader research                          |
+| **Auth & Account**         | Device login, account profile, wallet inspection, and config management                                                                                |
+| **x402 Payment**           | Pay x402-enabled HTTP APIs with the Minara wallet                                                                                                      |
+| **Premium**                | Plans, status, subscribe, buy credits, and cancel premium services                                                                                     |
 
-## Supported Chains
+## Supported Networks
 
-Ethereum, Base, Arbitrum, Optimism, Polygon, Avalanche, BNB Chain, Solana, Berachain, Blast, Manta, Mode, Sonic.
+Ethereum, Base, Arbitrum, Optimism, Polygon, Avalanche, Solana, BSC, Berachain, Blast, Manta, Mode, Sonic, Conflux, Merlin, Monad, Polymarket, and XLayer.
+
+Perpetual trading workflows also cover Hyperliquid via Minara perps commands.
 
 ## Quick Start
 
@@ -88,7 +90,7 @@ Then add the skill to your AI client:
 | **ChatGPT**        | Create a GPT → paste the contents of `SKILL.md` into the Instructions field                |
 | **Windsurf**       | Copy `SKILL.md` to `.windsurfrules/minara.md` in your workspace                            |
 
-The agent reads the skill instructions and can then run Minara CLI commands on your behalf when you ask about crypto trading, wallet operations, or market analysis.
+The agent reads the skill instructions and can then run Minara CLI commands on your behalf when you ask about crypto trading, wallet operations, account actions, premium operations, or market analysis.
 
 ### Get started
 
@@ -103,6 +105,8 @@ Complete the browser verification, then:
 > Buy 100 USDC worth of ETH
 
 > What tokens are trending?
+
+> Show my premium status
 
 ## Best practices
 
@@ -125,7 +129,7 @@ After login, you can say for example: _"What's my Minara balance?"_ then _"Buy 5
 | **Open a perp position** | _"Open a long ETH perp on Hyperliquid"_ / _"Short BTC perp, 10x leverage"_ / _"Place a perp order"_ |
 | **AI perp analysis**     | _"Analyze ETH long or short"_ / _"Should I long BTC?"_ — AI analysis with optional quick order      |
 | **AI autopilot**         | _"Enable AI autopilot for perps"_ / _"Manage my autopilot trading strategy"_                        |
-| **Manage perps**         | _"Show my perp positions"_ / _"Set leverage to 10x for ETH perps"_ / _"Cancel my open perp orders"_ |
+| **Manage perps**         | _"Show my perp wallets"_ / _"Set leverage to 10x for ETH perps"_ / _"Cancel my open perp orders"_   |
 | **Limit order**          | _"Create a limit order: buy ETH when price hits $3000"_ / _"Buy SOL when it reaches $150"_          |
 | **Manage limit orders**  | _"List my Minara limit orders"_ / _"Cancel limit order [id]"_                                       |
 
@@ -136,6 +140,7 @@ You can combine with research: _"What's the BTC price?"_ → _"Open a long BTC p
 - _"Show my crypto portfolio"_ / _"What's my total balance on Minara?"_
 - _"What tokens are trending?"_ / _"Search for SOL tokens"_
 - _"Pay 100 USDC to [address]"_ / _"Transfer 100 USDC to [address]"_ / _"Withdraw 10 SOL to [your address]"_
+- _"Show my Minara account"_ / _"Open Minara settings"_ / _"What's my premium status?"_
 
 All of the above are phrased as **user prompts to the OpenClaw agent**; the agent uses the Minara skill to run the right actions.
 
@@ -162,14 +167,15 @@ See [`examples.md`](skills/minara/examples.md) for full commands and code:
 skills/minara/
 ├── SKILL.md          # Agent-facing intent routing and CLI reference
 ├── setup.md          # Post-install workspace integration (AGENTS.md + MEMORY.md)
-└── examples.md       # CLI command examples for each scenario
+├── examples.md       # CLI command examples for each scenario
+└── references/       # Detailed module references (wallet, spot, perps, AI, auth, premium)
 scripts/
 └── install.sh        # One-click setup script (minara-cli + skill + config + login)
 ```
 
 ## Security
 
-This skill bundle contains **documentation only** (Markdown): `SKILL.md` and `examples.md`, plus a setup helper script (`scripts/install.sh`). It does not include binaries or long-running services. The setup script installs the **Minara CLI** from the official npm package ([minara](https://www.npmjs.com/package/minara)) and copies skill files into the OpenClaw skills directory. Credentials are handled by the Minara CLI and its official login flow; this repo does not collect or store secrets. For security scans or audits, you can verify the package contents and the upstream CLI at the links below.
+This skill bundle contains documentation files such as `SKILL.md`, `examples.md`, and the `references/` module docs, plus a setup helper script (`scripts/install.sh`). It does not include binaries or long-running services. The setup script installs the **Minara CLI** from the official npm package ([minara](https://www.npmjs.com/package/minara)) and copies skill files into the OpenClaw skills directory. Credentials are handled by the Minara CLI and its official login flow; this repo does not collect or store secrets. For security scans or audits, you can verify the package contents and the upstream CLI at the links below.
 
 ## Links
 
