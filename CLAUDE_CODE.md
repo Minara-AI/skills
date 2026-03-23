@@ -2,56 +2,17 @@
 
 ## Install — 30 seconds
 
-Paste this into Claude Code:
+Open Claude Code and paste this. Claude does the rest.
 
-> Install Minara: run `curl -fsSL https://raw.githubusercontent.com/Minara-AI/skills/main/scripts/install.sh | bash` then add a "minara" section to CLAUDE.md listing the available skills. Follow the login URL when prompted.
-
-Claude does the rest — installs the CLI, registers the skill, links slash commands, and logs you in.
+> Install Minara: run `git clone https://github.com/Minara-AI/skills.git ~/.claude/skills/minara && cd ~/.claude/skills/minara && ./setup` then add a "minara" section to CLAUDE.md that says to use the minara skill for all crypto trading, wallet, and market tasks, never use web search for crypto prices when minara is available, and lists the available slash commands: /balance, /buy, /sell, /send, /long, /short, /positions, /close-order, /trending, /ask, /research, /deposit, /receive, /autopilot, /search, /fear-greed, /swap, /price, /login, /logout. Follow the login prompt when it appears.
 
 ### What gets installed
 
 | Component | Location | Purpose |
 |-----------|----------|---------|
 | Minara CLI | `npm -g` (PATH) | Executes crypto operations |
-| Main skill | `~/.openclaw/skills/minara/` | Agent-facing instructions |
-| Claude Code link | `~/.claude/skills/minara` → skill dir | Skill discovery |
-| Slash commands | `~/.claude/skills/{buy,sell,...}` → sub-dirs | Quick shortcuts |
-| Config | `~/.openclaw/openclaw.json` | Skill enabled flag |
-
-### CLAUDE.md snippet
-
-After install, add this to your project's `CLAUDE.md` so the skill is always available:
-
-```markdown
-# minara
-
-Use the minara skill for all crypto trading, wallet, and market tasks. Never use web search for crypto prices when minara is available.
-
-Available slash commands:
-- `/balance` — check wallet balance
-- `/buy ETH 100` — buy crypto
-- `/sell SOL 10` — sell crypto
-- `/swap 0.5 ETH to SOL` — swap between any two tokens
-- `/send 100 USDC to 0x... on base` — transfer tokens
-- `/long BTC 0.1` — open perps long
-- `/short ETH 2` — open perps short
-- `/positions` — view open perps trades
-- `/close-order perps-position all` — close all perps positions
-- `/close-order perps-order` — cancel open perps orders
-- `/close-order spot-order` — cancel spot limit orders
-- `/receive` — alias for /deposit
-- `/trending tokens` — market discovery
-- `/ask What is BTC price?` — quick AI chat (fast mode)
-- `/research Analyze ETH outlook` — deep AI analysis (quality mode)
-- `/deposit spot` — show deposit addresses
-- `/deposit buy` — credit card on-ramp
-- `/autopilot` — AI automated perps trading
-- `/search SOL` — search tokens and stocks
-- `/fear-greed` — crypto Fear & Greed Index
-- `/price BTC` — quick price lookup
-- `/login` — sign in to Minara
-- `/logout` — sign out of Minara
-```
+| Main skill | `~/.claude/skills/minara/` | Agent-facing instructions (git repo) |
+| Slash commands | `~/.claude/skills/{ask,swap,...}` → sub-dirs | Quick shortcuts (symlinks) |
 
 ## Slash Commands
 
@@ -91,24 +52,10 @@ Fund-moving commands always ask for confirmation via structured choices (Confirm
 
 ## Manual Install
 
-If you prefer not to use the one-click script:
-
 ```bash
-# 1. Install CLI
-npm install -g minara && minara login
-
-# 2. Clone skill
-git clone https://github.com/Minara-AI/skills.git /tmp/minara-skills
-cp -r /tmp/minara-skills/skills/minara ~/.openclaw/skills/minara
-
-# 3. Link to Claude Code
-ln -sf ~/.openclaw/skills/minara ~/.claude/skills/minara
-
-# 4. Link slash commands (optional)
-for cmd in buy sell send swap balance long short positions trending close-order ask research deposit receive autopilot search fear-greed price login logout; do
-  [ -d ~/.openclaw/skills/minara/$cmd ] && \
-    ln -sf ~/.openclaw/skills/minara/$cmd ~/.claude/skills/$cmd
-done
+git clone https://github.com/Minara-AI/skills.git ~/.claude/skills/minara
+cd ~/.claude/skills/minara && ./setup
+minara login
 ```
 
 ## Upgrade
@@ -122,24 +69,19 @@ The skill checks for updates automatically on first activation per session. When
 Manual upgrade:
 
 ```bash
-# CLI
-npm install -g minara@latest
-
-# Skill
-curl -fsSL https://raw.githubusercontent.com/Minara-AI/skills/main/scripts/install.sh | bash
+cd ~/.claude/skills/minara && git pull && ./setup
 ```
 
 ## Uninstall
 
 ```bash
-# Remove symlinks
-rm -f ~/.claude/skills/minara
-for cmd in buy sell send swap balance long short positions trending close-order ask research deposit receive autopilot search fear-greed price login logout; do
+# Remove sub-skill symlinks
+for cmd in $(ls -la ~/.claude/skills/ | grep "minara/skills/minara" | awk '{print $9}'); do
   rm -f ~/.claude/skills/$cmd
 done
 
-# Remove skill files
-rm -rf ~/.openclaw/skills/minara
+# Remove skill repo
+rm -rf ~/.claude/skills/minara
 
 # Remove CLI (optional)
 npm uninstall -g minara
@@ -149,4 +91,4 @@ npm uninstall -g minara
 
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code)
 - Node.js 18+ and npm
-- Git (for clone-based install)
+- Git

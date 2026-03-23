@@ -1,19 +1,24 @@
-# Minara Skills v2.6
+# Minara Skills
 
-Crypto trading and wallet operations for agents via the [Minara](https://minara.ai) CLI: swap, perps, transfer, deposit (crypto), withdraw, AI chat, market discovery, x402 payment, autopilot, limit orders, and premium features. Supports EVM, Solana, and Hyperliquid-based perps workflows.
+Crypto trading and wallet operations for agents via the [Minara](https://minara.ai) CLI: swap, perps, transfer, deposit (crypto or credit card), withdraw, AI chat, market discovery, x402 payment, autopilot, limit orders, and premium features. Supports EVM, Solana, and Hyperliquid-based perps workflows.
+
+- [OpenClaw Install](#install-for-openclaw)
+- [Claude Code Install](#install-for-claude-code)
+- [Slash Commands](CLAUDE_CODE.md#slash-commands)
+- [Examples](#examples)
 
 ## Features
 
-| Capability                 | Description                                                                                                                                            |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Wallet & Funds**         | Built-in wallet, balance, portfolio, deposit addresses, spot/perps funding, withdrawals, and transfers                                                |
-| **Spot Trading**           | Buy, sell, swap, convert, and transfer by ticker, token name, or contract address across supported chains                                              |
-| **Perpetual Futures**      | Open/close perps, manage leverage, wallets, transfers, trade history, and Hyperliquid workflows with AI-assisted execution                             |
-| **Limit Orders**           | Create, list, and cancel spot limit orders                                                                                                             |
-| **AI Insights & Market**   | AI chat for price and market outlook, trending tokens/stocks, token search, Fear & Greed, BTC metrics, and broader research                          |
-| **Auth & Account**         | Device login, account profile, wallet inspection, and config management                                                                                |
-| **x402 Payment**           | Pay x402-enabled HTTP APIs with the Minara wallet                                                                                                      |
-| **Premium**                | Plans, status, subscribe, buy credits, and cancel premium services                                                                                     |
+| Capability               | Description                                                                                                                                                                                                              |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Wallet & Funds**       | Built-in wallet, balance, portfolio, deposit addresses, spot/perps funding, withdrawals, transfers, and credit card on-ramp via MoonPay                                                                                  |
+| **Spot Trading**         | Buy, sell, swap, convert, and transfer by ticker, token name, or contract address across supported chains                                                                                                                |
+| **Perpetual Futures**    | Open/close perps, manage leverage, wallets, transfers, trade history, and Hyperliquid workflows with AI-assisted execution                                                                                               |
+| **Limit Orders**         | Create, list, and cancel spot limit orders                                                                                                                                                                               |
+| **AI Insights & Market** | Real-time on-chain data, token fundamentals, whale flows, Fear & Greed, BTC metrics, trending tokens/stocks, equity research, commodities, forex, and prediction markets — data a general-purpose LLM cannot access on its own |
+| **Auth & Account**       | Device login, account profile, wallet inspection, and config management                                                                                                                                                  |
+| **x402 Payment**         | Pay x402-enabled HTTP APIs with the Minara wallet                                                                                                                                                                        |
+| **Premium**              | Plans, status, subscribe, buy credits, and cancel premium services                                                                                                                                                       |
 
 ## Supported Networks
 
@@ -21,23 +26,23 @@ Ethereum, Base, Arbitrum, Optimism, Polygon, Avalanche, Solana, BSC, Berachain, 
 
 Perpetual trading workflows also cover Hyperliquid via Minara perps commands.
 
-## Quick Start
+## Install for OpenClaw
 
-### One-click install (Recommended)
+### Option A: One-click install
 
-Send this prompt to your agent:
+Send this prompt to your OpenClaw agent:
 
 ```
 Run "curl -fsSL https://raw.githubusercontent.com/Minara-AI/skills/main/scripts/install.sh | bash" to install Minara. Follow the login URL when prompted.
 ```
 
-### Install as OpenClaw skill only
+### Option B: ClawHub
 
 ```bash
 clawhub install minara
 ```
 
-Or clone manually:
+### Option C: Manual clone
 
 ```bash
 git clone https://github.com/Minara-AI/openclaw-skill.git
@@ -58,55 +63,51 @@ Add to `~/.openclaw/openclaw.json`:
 }
 ```
 
-### Use with OpenClaw cloud bots
+## Install for Claude Code
 
-[KimiClaw](https://www.kimi.com/bot), [MaxClaw](https://agent.minimax.io/), and [Manus](https://manus.im) are cloud-hosted AI agents with ClawHub / Agent Skills support. Tell your cloud agent:
+Open Claude Code and paste this. Claude does the rest.
 
-> Install the minara skill from https://clawhub.com/skills/minara
+> Install Minara: run `git clone https://github.com/Minara-AI/skills.git ~/.claude/skills/minara && cd ~/.claude/skills/minara && ./setup` then add a "minara" section to CLAUDE.md that says to use the minara skill for all crypto trading, wallet, and market tasks, never use web search for crypto prices when minara is available, and lists the available slash commands: /balance, /buy, /sell, /send, /long, /short, /positions, /close-order, /trending, /ask, /research, /deposit, /receive, /autopilot, /search, /fear-greed, /swap, /price, /login, /logout. Follow the login prompt when it appears.
 
-Or search and install from the skill library UI. The skill is available on [ClawHub](https://clawhub.ai) as `minara`. Once installed, the agent can run all Minara commands — no local CLI setup needed on cloud bots.
+After install you get these slash commands:
 
-| Cloud bot    | Platform                                      | How to install skill                                                            |
-| ------------ | --------------------------------------------- | ------------------------------------------------------------------------------- |
-| **KimiClaw** | [kimi.com/bot](https://www.kimi.com/bot)      | Skill Library → search "minara" → install, or ask the agent                     |
-| **MaxClaw**  | [agent.minimax.io](https://agent.minimax.io/) | Ask the agent to install minara from ClawHub                                    |
-| **Manus**    | [manus.im](https://manus.im)                  | Skills tab → + Add → Import from GitHub → `https://github.com/Minara-AI/skills` |
+| Command                           | What it does                                                                                                                                |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/balance`                        | Check wallet balance                                                                                                                        |
+| `/buy ETH 100`                    | Buy crypto                                                                                                                                  |
+| `/sell SOL 10`                    | Sell crypto                                                                                                                                 |
+| `/swap 0.5 ETH to SOL`           | Swap between any two tokens                                                                                                                 |
+| `/send 100 USDC to 0x... on base` | Transfer tokens                                                                                                                             |
+| `/long BTC 0.1`                   | Open perps long                                                                                                                             |
+| `/short ETH 2`                    | Open perps short                                                                                                                            |
+| `/positions`                      | View open perps trades                                                                                                                      |
+| `/close-order`                    | Close positions or cancel orders                                                                                                            |
+| `/trending tokens`                | Market discovery                                                                                                                            |
+| `/ask What is BTC price?`         | Quick AI analysis — real-time on-chain data, crypto/stock prices, sentiment, and macro signals that a general-purpose agent cannot access |
+| `/research Analyze ETH outlook`   | Deep AI analysis (`--quality` mode) — on-chain metrics, token fundamentals, whale flows, equity research, commodities, and macro context  |
+| `/deposit` / `/receive`           | Fund wallet                                                                                                                                 |
+| `/autopilot`                      | AI automated perps trading                                                                                                                  |
+| `/search SOL`                     | Search tokens and stocks                                                                                                                    |
+| `/fear-greed`                     | Crypto Fear & Greed Index                                                                                                                   |
+| `/price BTC`                      | Quick price lookup                                                                                                                          |
+| `/login`                          | Sign in to Minara                                                                                                                           |
+| `/logout`                         | Sign out of Minara                                                                                                                          |
 
-### Use with other AI clients
-
-The Minara skill also works with any AI client that supports custom instructions or tool use. Install the CLI first:
-
-```bash
-npm install -g minara && minara login
-```
-
-Then add the skill to your AI client:
-
-| Client             | How to add                                                                                 |
-| ------------------ | ------------------------------------------------------------------------------------------ |
-| **Claude Desktop** | Settings → Projects → create a project → add `skills/minara/SKILL.md` as project knowledge |
-| **Claude Code**    | Copy `SKILL.md` to your project's `.claude/` directory or add it via `/add-file`           |
-| **Cursor**         | Copy `SKILL.md` to `.cursor/rules/minara.md` in your workspace                             |
-| **ChatGPT**        | Create a GPT → paste the contents of `SKILL.md` into the Instructions field                |
-| **Windsurf**       | Copy `SKILL.md` to `.windsurfrules/minara.md` in your workspace                            |
-
-The agent reads the skill instructions and can then run Minara CLI commands on your behalf when you ask about crypto trading, wallet operations, account actions, premium operations, or market analysis.
+See **[CLAUDE_CODE.md](CLAUDE_CODE.md)** for the full guide — manual install, upgrade, and uninstall.
 
 ### Get started
 
-Tell the OpenClaw agent:
+Tell your agent:
 
 > Login to Minara
 
-Complete the browser verification, then:
+Complete the browser verification, then try:
 
 > Show my Minara deposit address
 
 > Buy 100 USDC worth of ETH
 
 > What tokens are trending?
-
-> Show my premium status
 
 ## Best practices
 
@@ -117,7 +118,7 @@ Once the Minara skill is enabled, you talk to the OpenClaw agent in natural lang
 | Step           | What you want                                                        | Example prompts to the agent                                                                                      |
 | -------------- | -------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | **1. Login**   | Sign in to Minara (first time or new session)                        | _"Login to Minara"_ / _"Sign in to Minara"_ / _"Help me set up Minara"_                                           |
-| **2. Deposit** | Get an address to send funds or move USDC into perps | _"Show my Minara deposit address"_ / _"Deposit 500 USDC from my spot to perps"_ |
+| **2. Deposit** | Get an address to send funds, buy with card, or move USDC into perps | _"Show my Minara deposit address"_ / _"Buy crypto with credit card"_ / _"Deposit 500 USDC from my spot to perps"_ |
 | **3. Trade**   | Buy or sell tokens                                                   | _"Buy 100 USDC worth of ETH"_ / _"Swap 0.1 ETH to USDC"_ / _"Sell 50 SOL for USDC"_                               |
 
 After login, you can say for example: _"What's my Minara balance?"_ then _"Buy 50 USDC of BONK on Solana"_ — the agent will run the commands and show you the result.
@@ -164,13 +165,27 @@ See [`examples.md`](skills/minara/examples.md) for full commands and code:
 ## File Structure
 
 ```
+CLAUDE_CODE.md              # Claude Code full guide (slash commands, upgrade, uninstall)
+README.md                   # This file
 skills/minara/
-├── SKILL.md          # Agent-facing intent routing and CLI reference
-├── setup.md          # Post-install workspace integration (AGENTS.md + MEMORY.md)
-├── examples.md       # CLI command examples for each scenario
-└── references/       # Detailed module references (wallet, spot, perps, AI, auth, premium)
+├── SKILL.md                # Agent-facing intent routing and CLI reference
+├── setup.md                # Post-install workspace integration
+├── examples.md             # CLI command examples
+├── ask/SKILL.md            # /ask — quick AI chat
+├── research/SKILL.md       # /research — deep AI analysis
+├── buy/SKILL.md            # /buy — buy crypto
+├── sell/SKILL.md           # /sell — sell crypto
+├── send/SKILL.md           # /send — transfer tokens
+├── long/SKILL.md           # /long — perps long
+├── short/SKILL.md          # /short — perps short
+├── positions/SKILL.md      # /positions — view trades
+├── close-order/SKILL.md    # /close-order — close/cancel orders
+├── trending/SKILL.md       # /trending — market discovery
+├── balance/SKILL.md        # /balance — wallet balance
+├── deposit/SKILL.md        # /deposit — fund wallet
+└── receive/SKILL.md        # /receive — alias for /deposit
 scripts/
-└── install.sh        # One-click setup script (minara-cli + skill + config + login)
+└── install.sh              # One-click setup (CLI + skill + config + links + login)
 ```
 
 ## Security
