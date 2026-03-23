@@ -233,7 +233,7 @@ fi
 # ---------------------------------------------------------------------------
 # Step 1: Install or update Minara CLI
 # ---------------------------------------------------------------------------
-echo "==> [1/5] Minara CLI..."
+echo "==> [1/6] Minara CLI..."
 if command -v minara &>/dev/null; then
   CURRENT_CLI_VER=$(minara --version 2>/dev/null || echo "0.0.0")
   CURRENT_CLI_VER="${CURRENT_CLI_VER#v}"
@@ -257,7 +257,7 @@ fi
 # Step 2: Install or update Minara skill
 # ---------------------------------------------------------------------------
 echo ""
-echo "==> [2/5] Minara skill..."
+echo "==> [2/6] Minara skill..."
 mkdir -p "$SKILLS_DIR"
 
 SKILL_ACTION="none"
@@ -303,7 +303,7 @@ fi
 # Step 3: Enable minara in openclaw.json
 # ---------------------------------------------------------------------------
 echo ""
-echo "==> [3/5] OpenClaw config..."
+echo "==> [3/6] OpenClaw config..."
 CONFIG_PATH="$(_resolve_config_path "$CONFIG_PATH")"
 _ensure_minara_config "$CONFIG_PATH"
 
@@ -311,7 +311,7 @@ _ensure_minara_config "$CONFIG_PATH"
 # Step 4: Workspace integration (AGENTS.md + MEMORY.md)
 # ---------------------------------------------------------------------------
 echo ""
-echo "==> [4/5] Workspace integration..."
+echo "==> [4/6] Workspace integration..."
 _inject_agents_prompt
 
 MEMORY_FILE="$WORKSPACE_DIR/MEMORY.md"
@@ -332,7 +332,7 @@ fi
 # Step 5: Login (skip if already logged in)
 # ---------------------------------------------------------------------------
 echo ""
-echo "==> [5/5] Minara login..."
+echo "==> [5/6] Minara login..."
 
 ALREADY_LOGGED_IN=false
 if command -v minara &>/dev/null; then
@@ -384,6 +384,38 @@ if [[ "$ALREADY_LOGGED_IN" == false ]]; then
 fi
 
 # ---------------------------------------------------------------------------
+# Step 6: Claude Code slash command symlinks
+# ---------------------------------------------------------------------------
+echo ""
+echo "==> [6/6] Claude Code shortcuts..."
+
+CLAUDE_SKILLS_DIR="$HOME/.claude/skills"
+MINARA_COMMANDS="buy sell send swap balance long short positions trending close-order ask research deposit receive autopilot search fear-greed price login logout"
+
+if [[ -d "$CLAUDE_SKILLS_DIR" ]]; then
+  # Symlink main skill
+  if [[ ! -L "$CLAUDE_SKILLS_DIR/minara" ]] || [[ "$(readlink "$CLAUDE_SKILLS_DIR/minara")" != "$SKILLS_DIR/minara" ]]; then
+    ln -sf "$SKILLS_DIR/minara" "$CLAUDE_SKILLS_DIR/minara" 2>/dev/null || true
+  fi
+
+  # Symlink slash commands
+  LINKED=0
+  for cmd in $MINARA_COMMANDS; do
+    if [[ -d "$SKILLS_DIR/minara/$cmd" ]]; then
+      ln -sf "$SKILLS_DIR/minara/$cmd" "$CLAUDE_SKILLS_DIR/$cmd" 2>/dev/null && LINKED=$((LINKED + 1)) || true
+    fi
+  done
+
+  if [[ "$LINKED" -gt 0 ]]; then
+    echo "    Linked $LINKED slash commands for Claude Code"
+  else
+    echo "    Slash commands already linked"
+  fi
+else
+  echo "    Claude Code not detected (no ~/.claude/skills/), skipping"
+fi
+
+# ---------------------------------------------------------------------------
 # Summary
 # ---------------------------------------------------------------------------
 echo ""
@@ -409,7 +441,11 @@ echo ""
 echo '  - "What are the top DeFi projects on Solana right now?"'
 echo '  - "Show my portfolio"'
 echo '  - "Buy 100 USDC worth of ETH"'
-echo '  - "Is NVDA still a good buy after the latest earnings?"'
 echo '  - "BTC just dropped 5% — should I buy the dip or wait?"'
-echo '  - "What are the odds that the Fed cuts rates in June?"'
+echo ""
+echo "  Quick slash commands (Claude Code):"
+echo ""
+echo "  /balance  /buy ETH 100  /sell SOL 10  /send 100 USDC to 0x..."
+echo "  /long BTC 0.1  /short ETH 2  /positions  /close all"
+echo "  /trending tokens  /ask What is BTC price?"
 echo ""
