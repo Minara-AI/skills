@@ -50,4 +50,4 @@ Run `minara limit-order list`. No confirmation needed.
 
 ## Note — spot vs perps
 
-This command manages **spot** limit orders only. For **perps** orders on Hyperliquid, use `/close-order perps-order` to cancel or `/perps` to manage.
+This command manages **spot** limit orders only. For **perps** limit orders, use `/perps-limit-order`. To cancel open perps orders, use `/perps-close-order`.

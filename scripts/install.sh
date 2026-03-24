@@ -390,7 +390,7 @@ echo ""
 echo "==> [6/6] Claude Code shortcuts..."
 
 CLAUDE_SKILLS_DIR="$HOME/.claude/skills"
-MINARA_COMMANDS="buy sell send swap balance long short positions trending close-order ask research deposit receive autopilot search fear-greed price login logout"
+MINARA_COMMANDS="buy sell fi-invest fi-exit send swap balance long short positions trending close-order perps-close-order fi-ask fi-research deposit receive autopilot fi-search price limit-order perps-limit-order minara-account minara-premium minara-login minara-logout minara-setup"
 
 if [[ -d "$CLAUDE_SKILLS_DIR" ]]; then
   # Symlink main skill
@@ -447,5 +447,5 @@ echo "  Quick slash commands (Claude Code):"
 echo ""
 echo "  /balance  /buy ETH 100  /sell SOL 10  /send 100 USDC to 0x..."
 echo "  /long BTC 0.1  /short ETH 2  /positions  /close all"
-echo "  /trending tokens  /ask What is BTC price?"
+echo "  /trending tokens  /fi-ask What is BTC price?"
 echo ""

@@ -32,7 +32,7 @@ Examples:
 
 This is a **read-only** command — no confirmation needed.
 
-If the user wants more detail, suggest `/search ASSET` for full results or `/ask` for analysis.
+If the user wants more detail, suggest `/fi-search ASSET` for full results or `/fi-ask` for analysis.
 
 ## Reference
 

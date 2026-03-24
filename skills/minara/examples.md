@@ -134,8 +134,6 @@ minara discover trending           # Trending tokens
 minara discover trending stocks    # Trending stocks
 minara discover search SOL         # Search tokens / stocks
 minara discover search AAPL        # Search stocks by name
-minara discover fear-greed         # Crypto Fear & Greed Index
-minara discover btc-metrics        # Bitcoin on-chain metrics
 minara discover trending --json    # JSON output
 ```
 

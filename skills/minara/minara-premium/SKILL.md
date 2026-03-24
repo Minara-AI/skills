@@ -1,15 +1,15 @@
 ---
-name: premium
+name: minara-premium
 description: "Manage Minara subscription — view plans, subscribe, buy credits, check status, cancel. Use when: Minara plan, subscription, pricing, credits, upgrade, downgrade."
 ---
 
-# /premium — Manage Minara subscription
+# /minara-premium — Manage Minara subscription
 
 **Shortcut for `minara premium`**
 
 ## Usage
 
-`/premium [plans|status|subscribe|buy-credits|cancel]`
+`/minara-premium [plans|status|subscribe|buy-credits|cancel]`
 
 | Arg | Maps to |
 |-----|---------|
@@ -33,24 +33,24 @@ Use **AskUserQuestion**:
   - D) Buy a credit package
   - E) Cancel subscription
 
-### `/premium plans` — read-only
+### `/minara-premium plans` — read-only
 
 Run `minara premium plans`. Display plan options.
 
-### `/premium status` — read-only
+### `/minara-premium status` — read-only
 
 Run `minara premium status`. Display current subscription info.
 
-### `/premium subscribe` — payment action
+### `/minara-premium subscribe` — payment action
 
 1. Run `minara premium plans` to show options first
 2. Run `minara premium subscribe` with `pty: true` (interactive plan picker)
 
-### `/premium buy-credits` — payment action
+### `/minara-premium buy-credits` — payment action
 
 Run `minara premium buy-credits` with `pty: true`.
 
-### `/premium cancel` — destructive
+### `/minara-premium cancel` — destructive
 
 1. Use **AskUserQuestion**:
    - Context: "This will cancel your Minara subscription. You will lose access to premium features at the end of the billing period."

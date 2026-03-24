@@ -1,26 +1,26 @@
 ---
-name: research
+name: fi-research
 description: "Deep AI research for crypto, stocks, commodities, forex, macro. On-chain metrics, token fundamentals, whale flows, equity analysis. Use when: research, deep analysis, detailed report, in-depth, stock research, AAPL, TSLA, gold, macro outlook."
 ---
 
-# /research — Deep AI market research (quality mode)
+# /fi-research — Deep AI market research (quality mode)
 
 **Shortcut for `minara chat --quality`** — in-depth analysis powered by Minara's real-time financial data engine. Covers crypto, stocks, commodities, forex, and macro. Unlike a general-purpose LLM, Minara accesses live on-chain metrics, token fundamentals, whale flows, equity data, and cross-asset correlations.
 
 ## Usage
 
-`/research [QUESTION]`
+`/fi-research [QUESTION]`
 
-Everything after `/research` becomes the chat message.
+Everything after `/fi-research` becomes the chat message.
 
 Examples:
-- `/research Detailed report on Solana DeFi ecosystem`
-- `/research Compare ETH vs SOL long-term investment thesis`
-- `/research Analyze BTC halving impact on price cycle`
-- `/research What are the risks of longing ETH at current levels?`
-- `/research NVDA vs AMD — which semiconductor stock has better risk-reward?`
-- `/research How do Fed rate decisions impact BTC and gold correlation?`
-- `/research Crude oil supply-demand outlook for Q2`
+- `/fi-research Detailed report on Solana DeFi ecosystem`
+- `/fi-research Compare ETH vs SOL long-term investment thesis`
+- `/fi-research Analyze BTC halving impact on price cycle`
+- `/fi-research What are the risks of longing ETH at current levels?`
+- `/fi-research NVDA vs AMD — which semiconductor stock has better risk-reward?`
+- `/fi-research How do Fed rate decisions impact BTC and gold correlation?`
+- `/fi-research Crude oil supply-demand outlook for Q2`
 
 ## Execution
 
@@ -34,9 +34,9 @@ Examples:
 
 This is a **read-only** command — no confirmation needed.
 
-`--quality` mode produces longer, more detailed responses with deeper analysis compared to `/ask`.
+`--quality` mode produces longer, more detailed responses with deeper analysis compared to `/fi-ask`.
 
-For quick price checks or simple questions, suggest `/ask` instead.
+For quick price checks or simple questions, suggest `/fi-ask` instead.
 
 ## Reference
 

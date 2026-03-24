@@ -1,15 +1,15 @@
 ---
-name: account
+name: minara-account
 description: "View Minara account info — wallet addresses, login status, email. Use when: my account, account info, wallet address, who am I, Minara profile."
 ---
 
-# /account — View account info
+# /minara-account — View account info
 
 **Shortcut for `minara account`**
 
 ## Usage
 
-`/account`
+`/minara-account`
 
 No arguments needed.
 

@@ -1,15 +1,15 @@
 ---
-name: logout
+name: minara-logout
 description: "Logout from Minara — clear credentials and session. Use when: logout, sign out, disconnect Minara."
 ---
 
-# /logout — Sign out of Minara
+# /minara-logout — Sign out of Minara
 
 **Shortcut for `minara logout`**
 
 ## Usage
 
-`/logout`
+`/minara-logout`
 
 No arguments needed.
 

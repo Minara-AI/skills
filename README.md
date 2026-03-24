@@ -67,31 +67,63 @@ Add to `~/.openclaw/openclaw.json`:
 
 Open Claude Code and paste this. Claude does the rest.
 
-> Install Minara: run `git clone https://github.com/Minara-AI/skills.git ~/.claude/skills/minara && cd ~/.claude/skills/minara && ./setup` then add a "minara" section to CLAUDE.md that says to use the minara skill for all crypto trading, wallet, and market tasks, never use web search for crypto prices when minara is available, and lists the available slash commands: /balance, /buy, /sell, /send, /long, /short, /positions, /close-order, /trending, /ask, /research, /deposit, /receive, /autopilot, /search, /fear-greed, /swap, /price, /login, /logout. Follow the login prompt when it appears.
+> Install Minara: run `git clone https://github.com/Minara-AI/skills.git ~/.claude/skills/minara && cd ~/.claude/skills/minara && ./setup` then add a "minara" section to CLAUDE.md that says to use the minara skill for all crypto trading, wallet, and market tasks, never use web search for crypto prices when minara is available, and lists the available slash commands: /balance, /buy, /sell, /fi-invest, /fi-exit, /send, /long, /short, /positions, /close-order, /perps-close-order, /trending, /fi-ask, /fi-research, /deposit, /receive, /autopilot, /fi-search, /swap, /price, /limit-order, /perps-limit-order, /minara-account, /minara-premium, /minara-login, /minara-logout, /minara-setup. Follow the login prompt when it appears.
 
 After install you get these slash commands:
 
-| Command                           | What it does                                                                                                                                |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/balance`                        | Check wallet balance                                                                                                                        |
-| `/buy ETH 100`                    | Buy crypto                                                                                                                                  |
-| `/sell SOL 10`                    | Sell crypto                                                                                                                                 |
-| `/swap 0.5 ETH to SOL`           | Swap between any two tokens                                                                                                                 |
-| `/send 100 USDC to 0x... on base` | Transfer tokens                                                                                                                             |
-| `/long BTC 0.1`                   | Open perps long                                                                                                                             |
-| `/short ETH 2`                    | Open perps short                                                                                                                            |
-| `/positions`                      | View open perps trades                                                                                                                      |
-| `/close-order`                    | Close positions or cancel orders                                                                                                            |
-| `/trending tokens`                | Market discovery                                                                                                                            |
-| `/ask What is BTC price?`         | Quick AI analysis — real-time on-chain data, crypto/stock prices, sentiment, and macro signals that a general-purpose agent cannot access |
-| `/research Analyze ETH outlook`   | Deep AI analysis (`--quality` mode) — on-chain metrics, token fundamentals, whale flows, equity research, commodities, and macro context  |
-| `/deposit` / `/receive`           | Fund wallet                                                                                                                                 |
-| `/autopilot`                      | AI automated perps trading                                                                                                                  |
-| `/search SOL`                     | Search tokens and stocks                                                                                                                    |
-| `/fear-greed`                     | Crypto Fear & Greed Index                                                                                                                   |
-| `/price BTC`                      | Quick price lookup                                                                                                                          |
-| `/login`                          | Sign in to Minara                                                                                                                           |
-| `/logout`                         | Sign out of Minara                                                                                                                          |
+### Spot Trading
+
+| Command | What it does | Example |
+|---------|-------------|---------|
+| `/buy` | Buy any token with USDC. Specify token and USDC amount. | `/buy ETH 100` |
+| `/sell` | Sell any token to USDC. Supports `all` to sell entire balance. | `/sell SOL all` |
+| `/fi-invest` | Alias for `/buy` — prefixed to avoid collision with other skills. | `/fi-invest ETH 100` |
+| `/fi-exit` | Alias for `/sell` — prefixed to avoid collision with other skills. | `/fi-exit SOL all` |
+| `/swap` | Swap between any two tokens directly (not just USDC pairs). | `/swap 0.5 ETH to SOL` |
+| `/send` | Transfer tokens to an external address. Specify chain if needed. | `/send 50 USDC to 0xAbc... on base` |
+| `/limit-order` | Spot limit orders — create, list, cancel. | `/limit-order create` |
+| `/close-order` | Cancel spot limit orders. | `/close-order` |
+
+All spot trading commands require user confirmation before executing.
+
+### Perpetual Futures (Hyperliquid)
+
+| Command | What it does | Example |
+|---------|-------------|---------|
+| `/long` | Open a leveraged long position on Hyperliquid. | `/long BTC 0.1` |
+| `/short` | Open a leveraged short position on Hyperliquid. | `/short ETH 2` |
+| `/positions` | View all open perps positions with PnL. | `/positions` |
+| `/perps-limit-order` | Place perps limit orders. | `/perps-limit-order long BTC 1 95000` |
+| `/perps-close-order` | Close perps positions or cancel perps orders. | `/perps-close-order position all` |
+| `/autopilot` | Enable or manage AI-driven automated perps trading. | `/autopilot` or `/autopilot Bot-1` |
+
+### AI Analysis & Market Data
+
+| Command | What it does | Example |
+|---------|-------------|---------|
+| `/fi-ask` | Quick AI chat — real-time on-chain data, crypto/stock prices, sentiment, and macro signals that a general-purpose LLM cannot access. | `/fi-ask Should I buy ETH?` |
+| `/fi-research` | Deep AI analysis (`--quality` mode) — in-depth on-chain metrics, token fundamentals, whale flows, equity research, commodities, and macro context. | `/fi-research Analyze Solana DeFi ecosystem` |
+| `/fi-search` | Search for any token, coin, or stock ticker with real-time data. | `/fi-search SOL` or `/fi-search AAPL` |
+| `/price` | Quick price lookup — returns a concise one-line price summary. | `/price BTC` or `/price TSLA` |
+| `/trending` | Discover trending tokens or stocks by volume and momentum. | `/trending tokens` |
+
+### Wallet & Funds
+
+| Command | What it does | Example |
+|---------|-------------|---------|
+| `/balance` | Show spot and perps wallet balances. | `/balance` |
+| `/deposit` | Show deposit addresses, transfer spot→perps, or buy crypto with credit card (MoonPay). | `/deposit spot` or `/deposit buy` |
+| `/receive` | Alias for `/deposit`. | `/receive spot` |
+
+### Account Management
+
+| Command | What it does | Example |
+|---------|-------------|---------|
+| `/minara-account` | View account info — wallet addresses, login status, email. | `/minara-account` |
+| `/minara-premium` | Manage subscription — view plans, subscribe, buy credits, cancel. | `/minara-premium` |
+| `/minara-login` | Sign in to Minara via device code. Auto-runs `/minara-setup` if first time. | `/minara-login` |
+| `/minara-logout` | Sign out and clear local session. Asks for confirmation before proceeding. | `/minara-logout` |
+| `/minara-setup` | Auto-detect and fix Minara environment: CLI install, slash command symlinks, and `CLAUDE.md` injection. Safe to re-run. | `/minara-setup` |
 
 See **[CLAUDE_CODE.md](CLAUDE_CODE.md)** for the full guide — manual install, upgrade, and uninstall.
 
@@ -165,27 +197,42 @@ See [`examples.md`](skills/minara/examples.md) for full commands and code:
 ## File Structure
 
 ```
-CLAUDE_CODE.md              # Claude Code full guide (slash commands, upgrade, uninstall)
-README.md                   # This file
+CLAUDE_CODE.md                  # Claude Code full guide (slash commands, upgrade, uninstall)
+README.md                       # This file
+setup                           # Setup script (symlinks + CLI install)
 skills/minara/
-├── SKILL.md                # Agent-facing intent routing and CLI reference
-├── setup.md                # Post-install workspace integration
-├── examples.md             # CLI command examples
-├── ask/SKILL.md            # /ask — quick AI chat
-├── research/SKILL.md       # /research — deep AI analysis
-├── buy/SKILL.md            # /buy — buy crypto
-├── sell/SKILL.md           # /sell — sell crypto
-├── send/SKILL.md           # /send — transfer tokens
-├── long/SKILL.md           # /long — perps long
-├── short/SKILL.md          # /short — perps short
-├── positions/SKILL.md      # /positions — view trades
-├── close-order/SKILL.md    # /close-order — close/cancel orders
-├── trending/SKILL.md       # /trending — market discovery
-├── balance/SKILL.md        # /balance — wallet balance
-├── deposit/SKILL.md        # /deposit — fund wallet
-└── receive/SKILL.md        # /receive — alias for /deposit
+├── SKILL.md                    # Agent-facing intent routing and CLI reference
+├── setup.md                    # Post-install workspace integration (OpenClaw)
+├── examples.md                 # CLI command examples
+├── buy/SKILL.md                # /buy — buy crypto with USDC
+├── sell/SKILL.md               # /sell — sell crypto to USDC
+├── fi-invest/SKILL.md          # /fi-invest — buy crypto (prefixed alias)
+├── fi-exit/SKILL.md            # /fi-exit — sell crypto (prefixed alias)
+├── swap/SKILL.md               # /swap — swap between any two tokens
+├── send/SKILL.md               # /send — transfer tokens
+├── long/SKILL.md               # /long — open perps long
+├── short/SKILL.md              # /short — open perps short
+├── positions/SKILL.md          # /positions — view perps positions
+├── close-order/SKILL.md        # /close-order — cancel spot limit orders
+├── perps-close-order/SKILL.md  # /perps-close-order — close perps positions/orders
+├── autopilot/SKILL.md          # /autopilot — AI automated trading
+├── fi-ask/SKILL.md             # /fi-ask — quick AI market chat
+├── fi-research/SKILL.md        # /fi-research — deep AI analysis
+├── fi-search/SKILL.md          # /fi-search — search tokens and stocks
+├── price/SKILL.md              # /price — quick price lookup
+├── trending/SKILL.md           # /trending — trending tokens/stocks
+├── limit-order/SKILL.md        # /limit-order — spot limit orders
+├── perps-limit-order/SKILL.md  # /perps-limit-order — perps limit orders
+├── minara-account/SKILL.md     # /minara-account — view account info
+├── minara-premium/SKILL.md     # /minara-premium — manage subscription
+├── balance/SKILL.md            # /balance — wallet balance
+├── deposit/SKILL.md            # /deposit — fund wallet
+├── receive/SKILL.md            # /receive — alias for /deposit
+├── minara-login/SKILL.md       # /minara-login — sign in (auto-setup on first use)
+├── minara-logout/SKILL.md      # /minara-logout — sign out
+└── minara-setup/SKILL.md       # /minara-setup — environment setup & CLAUDE.md injection
 scripts/
-└── install.sh              # One-click setup (CLI + skill + config + links + login)
+└── install.sh                  # One-click setup (CLI + skill + config + links + login)
 ```
 
 ## Security

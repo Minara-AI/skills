@@ -107,24 +107,25 @@ while IFS='=' read -r skill cli; do
     fail "$skill → '$cli' NOT in main SKILL.md intent routing"
   fi
 done <<'ROUTES'
-login=minara login
-logout=minara logout
+minara-login=minara login
+minara-logout=minara logout
+minara-setup=setup
 swap=minara swap
 deposit=minara deposit
 withdraw=minara withdraw
 autopilot=minara perps autopilot
-search=minara discover search
-fear-greed=minara discover fear-greed
-btc-metrics=minara discover btc-metrics
-account=minara account
+fi-search=minara discover search
+minara-account=minara account
 assets=minara assets
-premium=minara premium
+minara-premium=minara premium
 limit-order=minara limit-order
-close-order=minara perps close
+perps-limit-order=minara perps order --type limit
+close-order=minara limit-order list
+perps-close-order=minara perps close
 perps=minara perps
 price=minara discover search
-ask=minara chat
-research=minara chat --quality
+fi-ask=minara chat
+fi-research=minara chat --quality
 ROUTES
 
 # ─── 2. Live integration tests (costs API credits) ───
@@ -141,7 +142,7 @@ if $LIVE; then
   # Test 1: Skill discovery — does Claude know about /swap?
   echo "--- Test: skill discovery ---"
   result=$(claude -p --model "$MODEL" --max-budget-usd "$BUDGET" \
-    "List all available slash commands that start with /swap, /deposit, /perps, /login. Just list the names, one per line. No explanation." 2>/dev/null || echo "ERROR")
+    "List all available slash commands that start with /swap, /deposit, /perps, /minara-login. Just list the names, one per line. No explanation." 2>/dev/null || echo "ERROR")
   if echo "$result" | grep -qi "swap"; then
     pass "Claude discovers /swap skill"
   else
