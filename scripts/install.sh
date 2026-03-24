@@ -390,7 +390,7 @@ echo ""
 echo "==> [6/6] Claude Code shortcuts..."
 
 CLAUDE_SKILLS_DIR="$HOME/.claude/skills"
-MINARA_COMMANDS="buy sell fi-invest fi-exit send swap balance long short positions trending close-order perps-close-order fi-ask fi-research deposit receive autopilot fi-search price limit-order perps-limit-order minara-account minara-premium minara-login minara-logout minara-setup"
+MINARA_COMMANDS="buy sell fi-invest fi-exit send pay swap balance long short positions trending close-order perps-close-order fi-ask fi-research deposit receive autopilot fi-search price limit-order perps-limit-order minara-account minara-premium minara-login minara-logout minara-setup"
 
 if [[ -d "$CLAUDE_SKILLS_DIR" ]]; then
   # Symlink main skill

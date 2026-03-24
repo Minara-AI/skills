@@ -4,7 +4,7 @@
 
 Open Claude Code and paste this. Claude does the rest.
 
-> Install Minara: run `git clone https://github.com/Minara-AI/skills.git ~/.claude/skills/minara && cd ~/.claude/skills/minara && ./setup` then add a "minara" section to CLAUDE.md that says to use the minara skill for all crypto trading, wallet, and market tasks, never use web search for crypto prices when minara is available, and lists the available slash commands: /balance, /buy, /sell, /fi-invest, /fi-exit, /send, /long, /short, /positions, /close-order, /perps-close-order, /trending, /fi-ask, /fi-research, /deposit, /receive, /autopilot, /fi-search, /swap, /price, /limit-order, /perps-limit-order, /minara-account, /minara-premium, /minara-login, /minara-logout, /minara-setup. Follow the login prompt when it appears.
+> Install Minara: run `git clone https://github.com/Minara-AI/skills.git ~/.claude/skills/minara && cd ~/.claude/skills/minara && ./setup` then add a "minara" section to CLAUDE.md that says to use the minara skill for all crypto trading, wallet, and market tasks, never use web search for crypto prices when minara is available, and lists the available slash commands: /balance, /buy, /sell, /fi-invest, /fi-exit, /send, /pay, /long, /short, /positions, /close-order, /perps-close-order, /trending, /fi-ask, /fi-research, /deposit, /receive, /autopilot, /fi-search, /swap, /price, /limit-order, /perps-limit-order, /minara-account, /minara-premium, /minara-login, /minara-logout, /minara-setup. Follow the login prompt when it appears.
 
 ### What gets installed
 
@@ -45,6 +45,7 @@ Open Claude Code and paste this. Claude does the rest.
 | `/fi-exit` | Sell crypto to USDC (alias) | `/fi-exit SOL all` |
 | `/swap` | Swap between any two tokens | `/swap 0.5 ETH to SOL` |
 | `/send` | Transfer to address | `/send 50 USDC to 0xAbc... on base` |
+| `/pay` | Pay with USDC (default) | `/pay 100 0xAbc...` |
 | `/long` | Open perps long | `/long BTC 0.1` |
 | `/short` | Open perps short | `/short ETH 2` |
 | `/close-order` | Cancel spot limit orders | `/close-order` |

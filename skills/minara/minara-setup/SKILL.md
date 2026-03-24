@@ -52,6 +52,7 @@ Read `~/CLAUDE.md`. Check if it contains a `# minara` section (case-insensitive 
 - `/fi-invest` — buy crypto with USDC (alias for /buy)
 - `/fi-exit` — sell crypto to USDC (alias for /sell)
 - `/send` — send tokens to an address
+- `/pay` — pay with USDC
 - `/long` — open a long perps position
 - `/short` — open a short perps position
 - `/positions` — view open perps positions
@@ -91,6 +92,7 @@ Available minara slash commands:
 - `/fi-invest` — buy crypto with USDC (alias for /buy)
 - `/fi-exit` — sell crypto to USDC (alias for /sell)
 - `/send` — send tokens to an address
+- `/pay` — pay with USDC
 - `/long` — open a long perps position
 - `/short` — open a short perps position
 - `/positions` — view open perps positions

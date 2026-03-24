@@ -67,7 +67,7 @@ Add to `~/.openclaw/openclaw.json`:
 
 Open Claude Code and paste this. Claude does the rest.
 
-> Install Minara: run `git clone https://github.com/Minara-AI/skills.git ~/.claude/skills/minara && cd ~/.claude/skills/minara && ./setup` then add a "minara" section to CLAUDE.md that says to use the minara skill for all crypto trading, wallet, and market tasks, never use web search for crypto prices when minara is available, and lists the available slash commands: /balance, /buy, /sell, /fi-invest, /fi-exit, /send, /long, /short, /positions, /close-order, /perps-close-order, /trending, /fi-ask, /fi-research, /deposit, /receive, /autopilot, /fi-search, /swap, /price, /limit-order, /perps-limit-order, /minara-account, /minara-premium, /minara-login, /minara-logout, /minara-setup. Follow the login prompt when it appears.
+> Install Minara: run `git clone https://github.com/Minara-AI/skills.git ~/.claude/skills/minara && cd ~/.claude/skills/minara && ./setup` then add a "minara" section to CLAUDE.md that says to use the minara skill for all crypto trading, wallet, and market tasks, never use web search for crypto prices when minara is available, and lists the available slash commands: /balance, /buy, /sell, /fi-invest, /fi-exit, /send, /pay, /long, /short, /positions, /close-order, /perps-close-order, /trending, /fi-ask, /fi-research, /deposit, /receive, /autopilot, /fi-search, /swap, /price, /limit-order, /perps-limit-order, /minara-account, /minara-premium, /minara-login, /minara-logout, /minara-setup. Follow the login prompt when it appears.
 
 After install you get these slash commands:
 
@@ -81,6 +81,7 @@ After install you get these slash commands:
 | `/fi-exit` | Alias for `/sell` — prefixed to avoid collision with other skills. | `/fi-exit SOL all` |
 | `/swap` | Swap between any two tokens directly (not just USDC pairs). | `/swap 0.5 ETH to SOL` |
 | `/send` | Transfer tokens to an external address. Specify chain if needed. | `/send 50 USDC to 0xAbc... on base` |
+| `/pay` | Pay with USDC — defaults to USDC, just provide address and amount. | `/pay 100 0xAbc...` |
 | `/limit-order` | Spot limit orders — create, list, cancel. | `/limit-order create` |
 | `/close-order` | Cancel spot limit orders. | `/close-order` |
 
@@ -210,6 +211,7 @@ skills/minara/
 ├── fi-exit/SKILL.md            # /fi-exit — sell crypto (prefixed alias)
 ├── swap/SKILL.md               # /swap — swap between any two tokens
 ├── send/SKILL.md               # /send — transfer tokens
+├── pay/SKILL.md                # /pay — pay with USDC
 ├── long/SKILL.md               # /long — open perps long
 ├── short/SKILL.md              # /short — open perps short
 ├── positions/SKILL.md          # /positions — view perps positions
