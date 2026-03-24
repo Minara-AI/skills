@@ -183,5 +183,6 @@ The project uses a single version number across multiple files. When bumping the
 | `README.md`              | Title line (`# Minara Skills vX.Y`)          |
 | GitHub release tag       | `vX.Y.Z` via `git tag` + `gh release create` |
 | ClawHub publish          | `--version X.Y.Z` via `clawhub publish`      |
+| skills.sh                | Auto-indexed from GitHub; ensure repo is public |
 
-After updating all locations, commit, push, create a git tag, publish a GitHub release, and publish to ClawHub. This is the standard release flow for every version bump.
+After updating all locations, commit, push, create a git tag, publish a GitHub release, publish to ClawHub, and verify the repo is discoverable on skills.sh (users install via `npx skills add lowesyang/openclaw-skills`). This is the standard release flow for every version bump.

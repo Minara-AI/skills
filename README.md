@@ -9,16 +9,18 @@ Crypto trading and wallet operations for agents via the [Minara](https://minara.
 
 ## Features
 
-| Capability               | Description                                                                                                                                                                                                              |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Wallet & Funds**       | Built-in wallet, balance, portfolio, deposit addresses, spot/perps funding, withdrawals, transfers, and credit card on-ramp via MoonPay                                                                                  |
-| **Spot Trading**         | Buy, sell, swap, convert, and transfer by ticker, token name, or contract address across supported chains                                                                                                                |
-| **Perpetual Futures**    | Open/close perps, manage leverage, wallets, transfers, trade history, and Hyperliquid workflows with AI-assisted execution                                                                                               |
-| **Limit Orders**         | Create, list, and cancel spot limit orders                                                                                                                                                                               |
+
+| Capability               | Description                                                                                                                                                                                                                    |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Wallet & Funds**       | Built-in wallet, balance, portfolio, deposit addresses, spot/perps funding, withdrawals, transfers, and credit card on-ramp via MoonPay                                                                                        |
+| **Spot Trading**         | Buy, sell, swap, convert, and transfer by ticker, token name, or contract address across supported chains                                                                                                                      |
+| **Perpetual Futures**    | Open/close perps, manage leverage, wallets, transfers, trade history, and Hyperliquid workflows with AI-assisted execution                                                                                                     |
+| **Limit Orders**         | Create, list, and cancel spot limit orders                                                                                                                                                                                     |
 | **AI Insights & Market** | Real-time on-chain data, token fundamentals, whale flows, Fear & Greed, BTC metrics, trending tokens/stocks, equity research, commodities, forex, and prediction markets — data a general-purpose LLM cannot access on its own |
-| **Auth & Account**       | Device login, account profile, wallet inspection, and config management                                                                                                                                                  |
-| **x402 Payment**         | Pay x402-enabled HTTP APIs with the Minara wallet                                                                                                                                                                        |
-| **Premium**              | Plans, status, subscribe, buy credits, and cancel premium services                                                                                                                                                       |
+| **Auth & Account**       | Device login, account profile, wallet inspection, and config management                                                                                                                                                        |
+| **x402 Payment**         | Pay x402-enabled HTTP APIs with the Minara wallet                                                                                                                                                                              |
+| **Premium**              | Plans, status, subscribe, buy credits, and cancel premium services                                                                                                                                                             |
+
 
 ## Supported Networks
 
@@ -67,64 +69,75 @@ Add to `~/.openclaw/openclaw.json`:
 
 Open Claude Code and paste this. Claude does the rest.
 
-> Install Minara: run `git clone https://github.com/Minara-AI/skills.git ~/.claude/skills/minara && cd ~/.claude/skills/minara && ./setup` then add a "minara" section to CLAUDE.md that says to use the minara skill for all crypto trading, wallet, and market tasks, never use web search for crypto prices when minara is available, and lists the available slash commands: /balance, /buy, /sell, /fi-invest, /fi-exit, /send, /pay, /long, /short, /positions, /close-order, /perps-close-order, /trending, /fi-ask, /fi-research, /deposit, /receive, /autopilot, /fi-search, /swap, /price, /limit-order, /perps-limit-order, /minara-account, /minara-premium, /minara-login, /minara-logout, /minara-setup. Follow the login prompt when it appears.
+> Install Minara: run `git clone https://github.com/Minara-AI/skills.git ~/.claude/skills/minara && cd ~/.claude/skills/minara && ./setup` then add a "minara" section to CLAUDE.md that says to use the minara skill for all crypto trading, wallet, and market tasks, never use web search for crypto prices when minara is available, and lists the available slash commands: /balance, /assets, /buy, /sell, /fi-invest, /fi-exit, /send, /pay, /long, /short, /positions, /close-order, /perps-close-order, /trending, /fi-ask, /fi-research, /deposit, /receive, /autopilot, /fi-search, /swap, /price, /limit-order, /perps-limit-order, /minara-account, /minara-premium, /minara-login, /minara-logout, /minara-setup. Follow the login prompt when it appears.
 
 After install you get these slash commands:
 
 ### Spot Trading
 
-| Command | What it does | Example |
-|---------|-------------|---------|
-| `/buy` | Buy any token with USDC. Specify token and USDC amount. | `/buy ETH 100` |
-| `/sell` | Sell any token to USDC. Supports `all` to sell entire balance. | `/sell SOL all` |
-| `/fi-invest` | Alias for `/buy` — prefixed to avoid collision with other skills. | `/fi-invest ETH 100` |
-| `/fi-exit` | Alias for `/sell` — prefixed to avoid collision with other skills. | `/fi-exit SOL all` |
-| `/swap` | Swap between any two tokens directly (not just USDC pairs). | `/swap 0.5 ETH to SOL` |
-| `/send` | Transfer tokens to an external address. Specify chain if needed. | `/send 50 USDC to 0xAbc... on base` |
-| `/pay` | Pay with USDC — defaults to USDC, just provide address and amount. | `/pay 100 0xAbc...` |
-| `/limit-order` | Spot limit orders — create, list, cancel. | `/limit-order create` |
-| `/close-order` | Cancel spot limit orders. | `/close-order` |
+
+| Command        | What it does                                                       | Example                             |
+| -------------- | ------------------------------------------------------------------ | ----------------------------------- |
+| `/buy`         | Buy any token with USDC. Specify token and USDC amount.            | `/buy ETH 100`                      |
+| `/sell`        | Sell any token to USDC. Supports `all` to sell entire balance.     | `/sell SOL all`                     |
+| `/fi-invest`   | Alias for `/buy` — prefixed to avoid collision with other skills.  | `/fi-invest ETH 100`                |
+| `/fi-exit`     | Alias for `/sell` — prefixed to avoid collision with other skills. | `/fi-exit SOL all`                  |
+| `/swap`        | Swap between any two tokens directly (not just USDC pairs).        | `/swap 0.5 ETH to SOL`              |
+| `/send`        | Transfer tokens to an external address. Specify chain if needed.   | `/send 50 USDC to 0xAbc... on base` |
+| `/pay`         | Pay with USDC — defaults to USDC, just provide address and amount. | `/pay 100 0xAbc...`                 |
+| `/limit-order` | Spot limit orders — create, list, cancel.                          | `/limit-order create`               |
+| `/close-order` | Cancel spot limit orders.                                          | `/close-order`                      |
+
 
 All spot trading commands require user confirmation before executing.
 
 ### Perpetual Futures (Hyperliquid)
 
-| Command | What it does | Example |
-|---------|-------------|---------|
-| `/long` | Open a leveraged long position on Hyperliquid. | `/long BTC 0.1` |
-| `/short` | Open a leveraged short position on Hyperliquid. | `/short ETH 2` |
-| `/positions` | View all open perps positions with PnL. | `/positions` |
-| `/perps-limit-order` | Place perps limit orders. | `/perps-limit-order long BTC 1 95000` |
-| `/perps-close-order` | Close perps positions or cancel perps orders. | `/perps-close-order position all` |
-| `/autopilot` | Enable or manage AI-driven automated perps trading. | `/autopilot` or `/autopilot Bot-1` |
+
+| Command              | What it does                                        | Example                               |
+| -------------------- | --------------------------------------------------- | ------------------------------------- |
+| `/long`              | Open a leveraged long position on Hyperliquid.      | `/long BTC 0.1`                       |
+| `/short`             | Open a leveraged short position on Hyperliquid.     | `/short ETH 2`                        |
+| `/positions`         | View all open perps positions with PnL.             | `/positions`                          |
+| `/perps-limit-order` | Place perps limit orders.                           | `/perps-limit-order long BTC 1 95000` |
+| `/perps-close-order` | Close perps positions or cancel perps orders.       | `/perps-close-order position all`     |
+| `/autopilot`         | Enable or manage AI-driven automated perps trading. | `/autopilot` or `/autopilot Bot-1`    |
+
 
 ### AI Analysis & Market Data
 
-| Command | What it does | Example |
-|---------|-------------|---------|
-| `/fi-ask` | Quick AI chat — real-time on-chain data, crypto/stock prices, sentiment, and macro signals that a general-purpose LLM cannot access. | `/fi-ask Should I buy ETH?` |
+
+| Command        | What it does                                                                                                                                       | Example                                      |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| `/fi-ask`      | Quick AI chat — real-time on-chain data, crypto/stock prices, sentiment, and macro signals that a general-purpose LLM cannot access.               | `/fi-ask Should I buy ETH?`                  |
 | `/fi-research` | Deep AI analysis (`--quality` mode) — in-depth on-chain metrics, token fundamentals, whale flows, equity research, commodities, and macro context. | `/fi-research Analyze Solana DeFi ecosystem` |
-| `/fi-search` | Search for any token, coin, or stock ticker with real-time data. | `/fi-search SOL` or `/fi-search AAPL` |
-| `/price` | Quick price lookup — returns a concise one-line price summary. | `/price BTC` or `/price TSLA` |
-| `/trending` | Discover trending tokens or stocks by volume and momentum. | `/trending tokens` |
+| `/fi-search`   | Search for any token, coin, or stock ticker with real-time data.                                                                                   | `/fi-search SOL` or `/fi-search AAPL`        |
+| `/price`       | Quick price lookup — returns a concise one-line price summary.                                                                                     | `/price BTC` or `/price TSLA`                |
+| `/trending`    | Discover trending tokens or stocks by volume and momentum.                                                                                         | `/trending tokens`                           |
+
 
 ### Wallet & Funds
 
-| Command | What it does | Example |
-|---------|-------------|---------|
-| `/balance` | Show spot and perps wallet balances. | `/balance` |
+
+| Command    | What it does                                                                           | Example                           |
+| ---------- | -------------------------------------------------------------------------------------- | --------------------------------- |
+| `/balance` | Show spot and perps wallet balances.                                                   | `/balance`                        |
+| `/assets`  | View spot token holdings across chains.                                                | `/assets`                         |
 | `/deposit` | Show deposit addresses, transfer spot→perps, or buy crypto with credit card (MoonPay). | `/deposit spot` or `/deposit buy` |
-| `/receive` | Alias for `/deposit`. | `/receive spot` |
+| `/receive` | Alias for `/deposit`.                                                                  | `/receive spot`                   |
+
 
 ### Account Management
 
-| Command | What it does | Example |
-|---------|-------------|---------|
-| `/minara-account` | View account info — wallet addresses, login status, email. | `/minara-account` |
-| `/minara-premium` | Manage subscription — view plans, subscribe, buy credits, cancel. | `/minara-premium` |
-| `/minara-login` | Sign in to Minara via device code. Auto-runs `/minara-setup` if first time. | `/minara-login` |
-| `/minara-logout` | Sign out and clear local session. Asks for confirmation before proceeding. | `/minara-logout` |
-| `/minara-setup` | Auto-detect and fix Minara environment: CLI install, slash command symlinks, and `CLAUDE.md` injection. Safe to re-run. | `/minara-setup` |
+
+| Command           | What it does                                                                                                            | Example           |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------- | ----------------- |
+| `/minara-account` | View account info — wallet addresses, login status, email.                                                              | `/minara-account` |
+| `/minara-premium` | Manage subscription — view plans, subscribe, buy credits, cancel.                                                       | `/minara-premium` |
+| `/minara-login`   | Sign in to Minara via device code. Auto-runs `/minara-setup` if first time.                                             | `/minara-login`   |
+| `/minara-logout`  | Sign out and clear local session. Asks for confirmation before proceeding.                                              | `/minara-logout`  |
+| `/minara-setup`   | Auto-detect and fix Minara environment: CLI install, slash command symlinks, and `CLAUDE.md` injection. Safe to re-run. | `/minara-setup`   |
+
 
 See **[CLAUDE_CODE.md](CLAUDE_CODE.md)** for the full guide — manual install, upgrade, and uninstall.
 
@@ -134,7 +147,7 @@ Tell your agent:
 
 > Login to Minara
 
-Complete the browser verification, then try:
+aComplete the browser verification, then try:
 
 > Show my Minara deposit address
 
@@ -148,39 +161,44 @@ Once the Minara skill is enabled, you talk to the OpenClaw agent in natural lang
 
 ### Basic flow: login → deposit → trade
 
+
 | Step           | What you want                                                        | Example prompts to the agent                                                                                      |
 | -------------- | -------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| **1. Login**   | Sign in to Minara (first time or new session)                        | _"Login to Minara"_ / _"Sign in to Minara"_ / _"Help me set up Minara"_                                           |
-| **2. Deposit** | Get an address to send funds, buy with card, or move USDC into perps | _"Show my Minara deposit address"_ / _"Buy crypto with credit card"_ / _"Deposit 500 USDC from my spot to perps"_ |
-| **3. Trade**   | Buy or sell tokens                                                   | _"Buy 100 USDC worth of ETH"_ / _"Swap 0.1 ETH to USDC"_ / _"Sell 50 SOL for USDC"_                               |
+| **1. Login**   | Sign in to Minara (first time or new session)                        | *"Login to Minara"* / *"Sign in to Minara"* / *"Help me set up Minara"*                                           |
+| **2. Deposit** | Get an address to send funds, buy with card, or move USDC into perps | *"Show my Minara deposit address"* / *"Buy crypto with credit card"* / *"Deposit 500 USDC from my spot to perps"* |
+| **3. Trade**   | Buy or sell tokens                                                   | *"Buy 100 USDC worth of ETH"* / *"Swap 0.1 ETH to USDC"* / *"Sell 50 SOL for USDC"*                               |
 
-After login, you can say for example: _"What's my Minara balance?"_ then _"Buy 50 USDC of BONK on Solana"_ — the agent will run the commands and show you the result.
+
+After login, you can say for example: *"What's my Minara balance?"* then *"Buy 50 USDC of BONK on Solana"* — the agent will run the commands and show you the result.
 
 ### Advanced: perps and limit orders
 
+
 | Goal                     | Example prompts to the agent                                                                        |
 | ------------------------ | --------------------------------------------------------------------------------------------------- |
-| **Open a perp position** | _"Open a long ETH perp on Hyperliquid"_ / _"Short BTC perp, 10x leverage"_ / _"Place a perp order"_ |
-| **AI perp analysis**     | _"Analyze ETH long or short"_ / _"Should I long BTC?"_ — AI analysis with optional quick order      |
-| **AI autopilot**         | _"Enable AI autopilot for perps"_ / _"Manage my autopilot trading strategy"_                        |
-| **Manage perps**         | _"Show my perp wallets"_ / _"Set leverage to 10x for ETH perps"_ / _"Cancel my open perp orders"_   |
-| **Limit order**          | _"Create a limit order: buy ETH when price hits $3000"_ / _"Buy SOL when it reaches $150"_          |
-| **Manage limit orders**  | _"List my Minara limit orders"_ / _"Cancel limit order [id]"_                                       |
+| **Open a perp position** | *"Open a long ETH perp on Hyperliquid"* / *"Short BTC perp, 10x leverage"* / *"Place a perp order"* |
+| **AI perp analysis**     | *"Analyze ETH long or short"* / *"Should I long BTC?"* — AI analysis with optional quick order      |
+| **AI autopilot**         | *"Enable AI autopilot for perps"* / *"Manage my autopilot trading strategy"*                        |
+| **Manage perps**         | *"Show my perp wallets"* / *"Set leverage to 10x for ETH perps"* / *"Cancel my open perp orders"*   |
+| **Limit order**          | *"Create a limit order: buy ETH when price hits $3000"* / *"Buy SOL when it reaches $150"*          |
+| **Manage limit orders**  | *"List my Minara limit orders"* / *"Cancel limit order [id]"*                                       |
 
-You can combine with research: _"What's the BTC price?"_ → _"Open a long BTC perp with 5x leverage"_.
+
+You can combine with research: *"What's the BTC price?"* → *"Open a long BTC perp with 5x leverage"*.
 
 ### Other useful prompts
 
-- _"Show my crypto portfolio"_ / _"What's my total balance on Minara?"_
-- _"What tokens are trending?"_ / _"Search for SOL tokens"_
-- _"Pay 100 USDC to [address]"_ / _"Transfer 100 USDC to [address]"_ / _"Withdraw 10 SOL to [your address]"_
-- _"Show my Minara account"_ / _"Open Minara settings"_ / _"What's my premium status?"_
+- *"Show my crypto portfolio"* / *"What's my total balance on Minara?"*
+- *"What tokens are trending?"* / *"Search for SOL tokens"*
+- *"Pay 100 USDC to [address]"* / *"Transfer 100 USDC to [address]"* / *"Withdraw 10 SOL to [your address]"*
+- *"Show my Minara account"* / *"Open Minara settings"* / *"What's my premium status?"*
 
 All of the above are phrased as **user prompts to the OpenClaw agent**; the agent uses the Minara skill to run the right actions.
 
 ## Examples
 
-See [`examples.md`](skills/minara/examples.md) for full commands and code:
+See `[examples.md](skills/minara/examples.md)` for full commands and code:
+
 
 | #   | Scenario               |
 | --- | ---------------------- |
@@ -194,6 +212,7 @@ See [`examples.md`](skills/minara/examples.md) for full commands and code:
 | 8   | Limit orders           |
 | 9   | x402 protocol payment  |
 | 10  | Premium & subscription |
+
 
 ## File Structure
 

@@ -47,6 +47,7 @@ Read `~/CLAUDE.md`. Check if it contains a `# minara` section (case-insensitive 
 
 ```
 - `/balance` — check wallet balances
+- `/assets` — view spot token holdings
 - `/buy` — buy tokens
 - `/sell` — sell tokens
 - `/fi-invest` — buy crypto with USDC (alias for /buy)
@@ -87,6 +88,7 @@ Use the minara skill for all crypto trading, wallet, and market tasks. Never use
 
 Available minara slash commands:
 - `/balance` — check wallet balances
+- `/assets` — view spot token holdings
 - `/buy` — buy tokens
 - `/sell` — sell tokens
 - `/fi-invest` — buy crypto with USDC (alias for /buy)

@@ -4,7 +4,7 @@
 
 Open Claude Code and paste this. Claude does the rest.
 
-> Install Minara: run `git clone https://github.com/Minara-AI/skills.git ~/.claude/skills/minara && cd ~/.claude/skills/minara && ./setup` then add a "minara" section to CLAUDE.md that says to use the minara skill for all crypto trading, wallet, and market tasks, never use web search for crypto prices when minara is available, and lists the available slash commands: /balance, /buy, /sell, /fi-invest, /fi-exit, /send, /pay, /long, /short, /positions, /close-order, /perps-close-order, /trending, /fi-ask, /fi-research, /deposit, /receive, /autopilot, /fi-search, /swap, /price, /limit-order, /perps-limit-order, /minara-account, /minara-premium, /minara-login, /minara-logout, /minara-setup. Follow the login prompt when it appears.
+> Install Minara: run `git clone https://github.com/Minara-AI/skills.git ~/.claude/skills/minara && cd ~/.claude/skills/minara && ./setup` then add a "minara" section to CLAUDE.md that says to use the minara skill for all crypto trading, wallet, and market tasks, never use web search for crypto prices when minara is available, and lists the available slash commands: /balance, /assets, /buy, /sell, /fi-invest, /fi-exit, /send, /pay, /long, /short, /positions, /close-order, /perps-close-order, /trending, /fi-ask, /fi-research, /deposit, /receive, /autopilot, /fi-search, /swap, /price, /limit-order, /perps-limit-order, /minara-account, /minara-premium, /minara-login, /minara-logout, /minara-setup. Follow the login prompt when it appears.
 
 ### What gets installed
 
@@ -21,6 +21,7 @@ Open Claude Code and paste this. Claude does the rest.
 | Command | What it does | Example |
 |---------|-------------|---------|
 | `/balance` | Spot + perps balance | `/balance` |
+| `/assets` | Spot token holdings | `/assets` |
 | `/positions` | Open perps positions | `/positions` |
 | `/trending` | Trending tokens or stocks | `/trending tokens` |
 | `/fi-ask` | Quick AI chat (fast mode) | `/fi-ask Should I buy ETH?` |
