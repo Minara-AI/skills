@@ -1,298 +1,186 @@
 ---
 name: minara
 version: "2.6.1"
-description: "Crypto trading: swap, perps, transfer, pay, deposit (credit card / crypto), withdraw, AI chat, market discovery, x402 payment, autopilot. Built-in wallet via Minara CLI. EVM + Solana."
+description: "Crypto trading & wallet, and AI market analysis via Minara CLI. Swap, perps, transfer, deposit (credit card/crypto), withdraw, AI chat, market discovery, x402 payment, autopilot, limit orders, premium. EVM + Solana + Hyperliquid. Use when: (1) crypto tokens/tickers (ETH, BTC, SOL, USDC, $TICKER, contract addresses), (2) chain names (Ethereum, Solana, Base, Arbitrum, Hyperliquid), (3) trading actions (swap, buy, sell, long, short, perps, leverage, limit order, autopilot), (4) wallet actions (balance, portfolio, deposit, withdraw, transfer, send, pay, credit card), (5) market data (trending, price, analysis, fear & greed, BTC metrics, Polymarket, DeFi), (6) stock tickers in crypto context (AAPL, TSLA), (7) Minara/x402/MoonPay explicitly, (8) subscription/premium/credits."
 homepage: https://minara.ai
-metadata:
-  {
-    "openclaw":
-      {
-        "always": false,
-        "primaryEnv": "MINARA_API_KEY",
-        "requires":
-          { "bins": ["minara"], "config": ["skills.entries.minara.enabled"] },
-        "emoji": "👩",
-        "homepage": "https://minara.ai",
-        "install":
-          [
-            {
-              "id": "node",
-              "kind": "node",
-              "package": "minara@latest",
-              "global": true,
-              "bins": ["minara"],
-              "label": "Install Minara CLI (npm)",
-            },
-          ],
-      },
-  }
+metadata: { "openclaw": { "always": false, "primaryEnv": "MINARA_API_KEY", "requires": { "bins": ["minara"], "config": ["skills.entries.minara.enabled"] }, "emoji": "👩", "homepage": "https://minara.ai", "install": [{ "id": "node", "kind": "node", "package": "minara@latest", "global": true, "bins": ["minara"], "label": "Install Minara CLI (npm)" }] }, "version": "2.6.1" }
 ---
 
-# Minara — crypto trading & wallet skill
+# Minara — Your Personal Crypto AI Financial Officer for Crypto Trading & Wallet Management
 
-<!-- Safety: this file is documentation only (Markdown). It contains no executable code, no scripts, no binaries. It instructs an AI agent how to invoke the Minara CLI. -->
+<!-- Safety: this file is documentation only. No executable code. -->
+
+## Post-install Setup
+
+On first activation, read `{baseDir}/setup.md` and follow its instructions.
 
 ## Preamble — run once on first activation per session
 
-Before handling the user's first request, execute the version check below. Do NOT skip this step.
-
-### Version check
-
 ```bash
-#!/usr/bin/env bash
-set -euo pipefail
-
-CHECK_FILE="$HOME/.minara/.last-update-check"
-SNOOZE_FILE="$HOME/.minara/.update-snooze"
-mkdir -p "$HOME/.minara"
-
-# 1. Honor snooze
-if [ -f "$SNOOZE_FILE" ]; then
-  SNOOZE_UNTIL=$(cat "$SNOOZE_FILE" 2>/dev/null || echo 0)
-  [ "$(date +%s)" -lt "$SNOOZE_UNTIL" ] && echo "SNOOZED" && exit 0
-fi
-
-# 2. Honor 24h cache
-if [ -f "$CHECK_FILE" ]; then
-  STALE=$(find "$CHECK_FILE" -mmin +1440 2>/dev/null || true)
-  if [ -z "$STALE" ]; then
-    cat "$CHECK_FILE"
-    exit 0
-  fi
-fi
-
-# 3. Semver compare: returns 0 if $1 < $2
-_semver_lt() {
-  local IFS=. i a=($1) b=($2)
-  for ((i=0;i<3;i++)); do
-    local av="${a[i]:-0}" bv="${b[i]:-0}"
-    av="${av%%[^0-9]*}"; bv="${bv%%[^0-9]*}"
-    ((av < bv)) && return 0
-    ((av > bv)) && return 1
-  done
-  return 1
-}
-
-# 4. Gather versions
-CLI_LOCAL=$(minara --version 2>/dev/null | tr -d 'v[:space:]' || echo "0.0.0")
-CLI_REMOTE=$(npm view minara version 2>/dev/null | tr -d '[:space:]' || echo "")
-
-SKILL_DIR="${SKILL_DIR:-$HOME/.openclaw/skills/minara}"
-SKILL_LOCAL=$(grep -m1 '^version:' "$SKILL_DIR/SKILL.md" 2>/dev/null | sed 's/^version:[[:space:]]*["'"'"']*\([^"'"'"']*\).*/\1/' || echo "0.0.0")
-SKILL_REMOTE=$(curl -fsSL -m 5 "https://api.github.com/repos/Minara-AI/skills/releases/latest" 2>/dev/null | grep -o '"tag_name":[[:space:]]*"[^"]*"' | sed 's/.*"v\{0,1\}\([^"]*\)"/\1/' || echo "")
-
-# 5. Build result (only flag upgrade when local < remote)
-RESULT="UP_TO_DATE"
-if [ -n "$CLI_REMOTE" ] && _semver_lt "$CLI_LOCAL" "$CLI_REMOTE"; then
-  RESULT="UPGRADE cli:$CLI_LOCAL->$CLI_REMOTE"
-fi
-if [ -n "$SKILL_REMOTE" ] && _semver_lt "$SKILL_LOCAL" "$SKILL_REMOTE"; then
-  RESULT="$RESULT skill:$SKILL_LOCAL->$SKILL_REMOTE"
-fi
-echo "$RESULT" > "$CHECK_FILE"
-echo "$RESULT"
+bash {baseDir}/scripts/version-check.sh
 ```
 
-### Interpreting the output
+- `UP_TO_DATE` or `SNOOZED` → **continue silently**.
+- Contains `UPGRADE` → parse which components need updating, then **ask the user**:
 
-- `UP_TO_DATE` or `SNOOZED` → **continue silently** to the user's request. Do not mention the check.
-- Contains `UPGRADE` → use **AskUserQuestion** to present upgrade options:
-  - Context: List what's new (e.g. "Minara CLI v1.2.3 → v1.3.0" and/or "Skill v2.5.2 → v2.6.0").
-  - Options:
-    - **A) Update now (Recommended)** — update everything that has a newer version
-    - **B) Skip, remind me tomorrow**
-    - **C) Snooze for a week**
+> "Minara update available — [cli: X→Y] [skill: X→Y]. What would you like to do?
+> A) Update now  B) Skip  C) Snooze 1 week"
 
-### Actions per choice
+Handle each response:
 
-| Choice | Action |
-|--------|--------|
-| A — CLI update | `npm install -g minara@latest` then verify with `minara --version` |
-| A — Skill update | `clawhub update minara` or fallback: `curl -fsSL https://raw.githubusercontent.com/Minara-AI/skills/main/scripts/install.sh \| bash` |
-| A — after upgrade | `rm -f ~/.minara/.last-update-check ~/.minara/.update-snooze` |
-| B — skip | `touch ~/.minara/.last-update-check` (resets 24h timer) |
-| C — snooze | `echo $(($(date +%s) + 604800)) > ~/.minara/.update-snooze` |
+| Choice | CLI (`cli:` in output) | Skill (`skill:` in output) |
+|--------|------------------------|---------------------------|
+| **A) Update now** | `npm install -g minara@latest` | `cd {baseDir} && git pull` |
+| **B) Skip** | do nothing | do nothing |
+| **C) Snooze 1 week** | `echo "$(( $(date +%s) + 604800 ))" > ~/.minara/.update-snooze` | same |
 
-After upgrading, report the new version(s) to the user, then proceed with their original request.
+After a successful upgrade, invalidate the cache so the next session re-detects correctly:
+```bash
+rm -f ~/.minara/.last-update-check
+```
 
-**USE THIS SKILL** when the user's message mentions any of:
+Only prompt for the components listed in the `UPGRADE` output (e.g. if only `cli:` is present, don't mention skill).
 
-- **Crypto tokens or tickers:** ETH, BTC, SOL, USDC, BONK, PEPE, DOGE, ARB, OP, AVAX, MATIC, $TICKER, or any token name / contract address
-- **Blockchain / chain names:** Solana, Base, Ethereum, Arbitrum, Optimism, Polygon, BSC, Avalanche, Berachain, Hyperliquid
-- **Trading actions:** swap, buy, sell, trade, exchange, convert, long, short, perps, futures, leverage, limit order
-- **Wallet / finance actions:** balance, portfolio, deposit, withdraw, transfer, send, pay, fund, on-ramp, credit card
-- **Market / research:** trending, price, chart, analysis, DeFi, yield, liquidity, fear and greed, prediction market
-- **Explicit references:** Minara, minara, x402, MoonPay, autopilot
-- **Stock tickers in crypto context:** AAPL, TSLA, NVDAx, trending stocks
+## Activation triggers
 
-**Routing gate (anti-collision):** apply this skill only when the message includes a **finance/trading action** _and_ at least one **crypto/chain/Minara signal** (token, chain, DeFi term, or "Minara"). If missing crypto context, do not route here.
+**USE THIS SKILL** when the user's message mentions:
 
-Requires logged-in CLI: check Minara CLI login state; if not logged in → `minara login` (prefer device code). If device login prints a verification URL/code, relay it to the user and wait for completion (do not claim login is impossible). If `MINARA_API_KEY` is set, CLI authenticates automatically.
+- **Crypto tokens/tickers:** ETH, BTC, SOL, USDC, BONK, PEPE, DOGE, ARB, OP, AVAX, MATIC, $TICKER, any token name, MEME coin, or contract address
+- **Chain names:** Ethereum, Solana, Base, Arbitrum, Optimism, Polygon, BSC, Avalanche, Berachain, Hyperliquid
+- **Trading actions:** swap, buy, sell, trade, exchange, convert, long, short, perps, futures, leverage, limit order, autopilot
+- **Wallet/finance actions:** balance, portfolio, deposit, withdraw, transfer, send, pay, fund, on-ramp, credit card
+- **Market/research:** trending, price, analysis, fear and greed, DeFi, yield, liquidity, prediction market, Polymarket
+- **Explicit references:** Minara, x402, MoonPay, subscription, premium, credits
+- **Stock tickers in crypto context:** AAPL, TSLA, NVDA, trending stocks
+
+**Routing gate:** requires a finance/trading action **AND** at least one crypto/chain/Minara signal.
+
+## Prerequisites
+
+- CLI: `minara` in PATH
+- Auth: `minara account` succeeds. If not → run `minara login --device` and relay URL/code to user
+- `MINARA_API_KEY` env var bypasses login
+
+## Agent behavior (CRITICAL)
+
+**You are the executor,run the command yourself** Match intent → read the reference doc → run the command → report result.
+
+1. Match user intent → find command in table below
+2. **Read the linked reference doc** for execution details
+3. Execute the command yourself (use `pty: true` for interactive commands)
+4. Read CLI output → decide next step autonomously
+5. If confirmation prompt → relay summary, wait for user approval
+6. If error → diagnose, retry or report
+7. Return: **Task** → **Actions** → **Result** → **Follow-ups**
+
+**Never** show CLI commands and ask the user to run it themself.
 
 ## Transaction confirmation (CRITICAL)
 
-For any fund-moving command (`swap`, `transfer`, `withdraw`, `perps order`, `perps deposit`, `perps withdraw`, `limit-order create`, `deposit buy`):
+**Fund-moving** (require user confirmation before executing):
+`swap`, `transfer`, `withdraw`, `deposit perps`, `deposit buy`, `perps order`, `perps deposit`, `perps withdraw`, `perps close`, `perps cancel`, `perps sweep`, `perps transfer`, `limit-order create`, `limit-order cancel`
 
-1. **Before executing:** show the user a summary of what will happen (action, token, amount, recipient/chain) and **ask for explicit confirmation**. Do NOT auto-confirm.
-2. **After the CLI returns a confirmation prompt** (e.g. "Are you sure you want to proceed?"): relay the details back to the user and **wait for the user to approve** before answering `y`. Never answer `y` on the user's behalf without their consent.
-3. **`-y` / `--yes` policy:** never add `-y` (or any auto-confirm flag) unless the user explicitly asks to skip confirmation.
-4. **If the user declines:** abort the operation immediately.
+1. **Before executing:** check user's account balance first and show user a summary (action, token, amount, chain, recipient) and **ask for explicit confirmation**
+2. **After CLI returns a confirmation prompt:** relay details and **wait for user to approve** before answering `y`
+3. **Never add `-y` / `--yes`** unless user explicitly asks to skip confirmation
+4. **If user declines:** abort immediately
 
-This applies to all operations that move funds. Read-only commands (`balance`, `assets`, `chat`, `discover`, etc.) do not require confirmation.
+**Read-only** (no confirmation): `balance`, `assets`, `account`, `ask`, `research`, `chat`, `discover`, `perps wallets`, `perps positions`, `perps trades`, `perps fund-records`, `premium plans`, `premium status`, `config`
 
-## Intent routing
+> **Autopilot guard:** Per-wallet. When ON, manual orders on that wallet are blocked. See `{baseDir}/references/perps-autopilot.md`.
 
-Match the user's message to the **first** matching row.
+## Command reference
 
-### Swap / buy / sell tokens
+Match user intent → read the **Reference** for full execution flow. All CLI commands prefixed with `minara`.
 
-Triggers: message contains token names/tickers + action words (swap, buy, sell, convert, exchange, trade) + optionally a chain name.
+### Spot trading
 
-Chain is **auto-detected** from the token. If a token exists on multiple chains, the CLI prompts the user to pick one (sorted by gas cost). Sell mode supports `-a all` to sell entire balance.
-
-| User intent pattern                                                                                                                                      | Action                                                                 |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| "swap 0.1 ETH to USDC", "buy me 100 USDC worth of ETH", "sell 50 SOL for USDC", "convert 200 USDC to BONK on Solana" — natural-language or explicit swap | Extract params → `minara swap -s <buy\|sell> -t '<token>' -a <amount>` |
-| "sell all my BONK", "dump entire SOL position"                                                                                                           | `minara swap -s sell -t '<token>' -a all`                              |
-| Simulate a crypto swap without executing                                                                                                                 | `minara swap -s <side> -t '<token>' -a <amount> --dry-run`             |
-
-### Transfer / send / pay / withdraw crypto
-
-Triggers: message mentions sending, transferring, paying, or withdrawing a crypto token to a wallet address.
-
-| User intent pattern                                                                                | Action                                                                                                  |
-| -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| "send 10 SOL to <address>", "transfer USDC to <address>" — crypto token + recipient address        | `minara transfer` (interactive) or extract params                                                       |
-| "pay 100 USDC to <address>", "pay <address> 50 USDC" — payment to address (equivalent to transfer) | `minara transfer` (interactive) or extract params                                                       |
-| "withdraw SOL to my external wallet", "withdraw ETH to <address>" — crypto withdrawal              | `minara withdraw -c <chain> -t '<token>' -a <amount> --to <address>` or `minara withdraw` (interactive) |
+| Triggers (User Intent) | CLI Command | Reference |
+|------------------------|-------------|-----------|
+| "buy ETH", "buy $100 of SOL", "invest in BONK", "purchase some PEPE" | `swap -s buy -t TOKEN -a AMT` | `{baseDir}/references/swap.md` |
+| "sell my ETH", "sell all SOL", "cash out PEPE", "exit my BONK" | `swap -s sell -t TOKEN -a AMT` | `{baseDir}/references/swap.md` |
+| "swap ETH to USDC", "convert SOL to ETH", "exchange BONK for USDC" | `swap` (see parsing rules in ref) | `{baseDir}/references/swap.md` |
+| "send 0.5 ETH to 0x...", "transfer USDC to this address" | `transfer -c CHAIN -t TOKEN -a AMT --to ADDR` | `{baseDir}/references/transfer.md` |
+| "pay 50 USDC to 0x...", "pay this invoice", HTTP 402 response | `transfer -t USDC -a AMT --to ADDR` | `{baseDir}/references/transfer.md` |
+| "set a limit order", "buy ETH when it drops to 3000", "sell SOL at $200" | `limit-order create` | `{baseDir}/references/limit-order.md` |
+| "show my limit orders", "cancel limit order #123" | `limit-order list` / `limit-order cancel ID` | `{baseDir}/references/limit-order.md` |
 
 ### Perpetual futures (Hyperliquid)
 
-Triggers: message mentions perps, perpetual, futures, long, short, leverage, margin, or Hyperliquid.
+| Triggers (User Intent) | CLI Command | Reference |
+|------------------------|-------------|-----------|
+| "long BTC", "go long on ETH", "open a long position" | `perps order` (interactive) or `perps order -S long -s SYM -z SIZE` (direct) | `{baseDir}/references/perps-order.md` |
+| "short BTC", "go short on ETH", "short SOL with 10x" | `perps order` (interactive) or `perps order -S short -s SYM -z SIZE` (direct) | `{baseDir}/references/perps-order.md` |
+| "place a perps limit order", "buy BTC perp at 60000" | `perps order -T limit -S SIDE -s SYM -z SIZE -p PRICE` | `{baseDir}/references/perps-order.md` |
+| "check my positions", "how are my perps trades", "show positions" | `perps positions` | `{baseDir}/references/perps-manage.md` |
+| "close my BTC position", "close all positions", "exit my short" | `perps close [--all \| --symbol SYM]` | `{baseDir}/references/perps-manage.md` |
+| "cancel my perps order" | `perps cancel` | `{baseDir}/references/perps-manage.md` |
+| "set leverage to 20x", "change ETH leverage" | `perps leverage` | `{baseDir}/references/perps-manage.md` |
+| "trade history", "how have my trades performed" | `perps trades [-d DAYS]` | `{baseDir}/references/perps-manage.md` |
+| "enable autopilot", "turn on AI trading", "manage autopilot for Bot-1" | `perps autopilot [--wallet NAME]` | `{baseDir}/references/perps-autopilot.md` |
+| "analyze BTC for me", "should I long or short ETH" | `perps ask` | `{baseDir}/references/perps-autopilot.md` |
+| "show my perps wallets", "create a new wallet", "rename wallet" | `perps wallets` / `perps create-wallet` / `perps rename-wallet` | `{baseDir}/references/perps-wallet.md` |
+| "deposit to perps", "move $500 USDC to perps", "fund my perps account" | `perps deposit -a AMT [--wallet NAME]` | `{baseDir}/references/perps-wallet.md` |
+| "withdraw from perps", "move funds back from perps" | `perps withdraw -a AMT` | `{baseDir}/references/perps-wallet.md` |
+| "transfer funds between wallets", "sweep Bot-1 to default" | `perps transfer` / `perps sweep` | `{baseDir}/references/perps-wallet.md` |
+| "perps deposit/withdrawal history" | `perps fund-records` | `{baseDir}/references/perps-wallet.md` |
 
-| User intent pattern                                                                       | Action                                                       |
-| ----------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| "open a long ETH perp", "short BTC on Hyperliquid", "place a perp order"                  | `minara perps order` (interactive order builder)             |
-| "analyze ETH long or short", "should I long BTC?", "AI perp analysis for SOL"             | `minara perps ask` — AI analysis with optional quick order   |
-| "enable AI autopilot for perps", "turn on autopilot trading", "manage autopilot strategy" | `minara perps autopilot`                                     |
-| "check my perp positions", "show my Hyperliquid positions"                                | `minara perps positions`                                     |
-| "close my perp position", "exit perps trade"                                              | `minara perps close` (interactive)                           |
-| "close all my perp positions", "exit all perps trades"                                    | `minara perps close --all`                                   |
-| "close BTC perp position", "exit ETH perps"                                               | `minara perps close --symbol <SYMBOL>`                       |
-| "set leverage to 10x for ETH perps"                                                       | `minara perps leverage`                                      |
-| "cancel my perp orders"                                                                   | `minara perps cancel`                                        |
-| "deposit USDC to perps account", "fund my Hyperliquid account"                            | `minara deposit perps` or `minara perps deposit -a <amount>` |
-| "withdraw USDC from perps"                                                                | `minara perps withdraw -a <amount>`                          |
-| "show my perp trade history"                                                              | `minara perps trades`                                        |
-| "show perps deposit/withdrawal records"                                                   | `minara perps fund-records`                                  |
+### AI analysis & market data
 
-> **Autopilot note:** When autopilot is ON, manual `minara perps order` is blocked. Turn off autopilot first via `minara perps autopilot`.
+| Triggers (User Intent) | CLI Command | Reference |
+|------------------------|-------------|-----------|
+| "what's the BTC price?", "how much is ETH?", "SOL price" | `discover search ASSET --type tokens` | `{baseDir}/references/discover.md` |
+| "should I buy ETH?", "quick take on BTC", "what's happening with SOL?" | `ask "QUESTION"` | `{baseDir}/references/chat.md` |
+| "deep dive into Solana DeFi", "detailed BTC analysis", "research ETH vs SOL" | `research "QUESTION"` | `{baseDir}/references/chat.md` |
+| "what's trending?", "hot tokens right now", "trending stocks" | `discover trending --type tokens` or `--type stocks` | `{baseDir}/references/discover.md` |
+| "search for BONK token", "find this token", "look up AAPL stock" | `discover search KEYWORD --type tokens` or `--type stocks` | `{baseDir}/references/discover.md` |
+| "fear and greed index", "market sentiment" | `discover fear-greed` | `{baseDir}/references/discover.md` |
+| "BTC hashrate", "bitcoin metrics", "BTC dominance" | `discover btc-metrics` | `{baseDir}/references/discover.md` |
 
-### Limit orders (crypto)
+### Wallet & funds
 
-Triggers: message mentions limit order + crypto token/price.
+| Triggers (User Intent) | CLI Command | Reference |
+|------------------------|-------------|-----------|
+| "what's my balance?", "how much do I have?" | `balance` | `{baseDir}/references/balance.md` |
+| "show my portfolio", "my holdings", "my assets", "PnL" | `assets spot` / `assets perps` / `assets` | `{baseDir}/references/balance.md` |
+| "deposit address", "how do I receive crypto?", "receive" | `deposit spot` | `{baseDir}/references/deposit.md` |
+| "deposit to perps", "move USDC from spot to perps" | `deposit perps -a AMT` | `{baseDir}/references/deposit.md` |
+| "buy crypto with credit card", "on-ramp", "MoonPay" | `deposit buy` | `{baseDir}/references/deposit.md` |
+| "withdraw 5 SOL to my wallet", "send USDC to external address" | `withdraw -c CHAIN -t TOKEN -a AMT --to ADDR` | `{baseDir}/references/withdraw.md` |
 
-| User intent pattern                                                  | Action                           |
-| -------------------------------------------------------------------- | -------------------------------- |
-| "create a limit order for ETH at $3000", "buy SOL when it hits $150" | `minara limit-order create`      |
-| "list my crypto limit orders"                                        | `minara limit-order list`        |
-| "cancel limit order <id>"                                            | `minara limit-order cancel <id>` |
+### Account & premium
 
-### Crypto wallet / portfolio / account
+| Triggers (User Intent) | CLI Command | Reference |
+|------------------------|-------------|-----------|
+| "login", "sign in", "connect my Minara account" | `login --device` | `{baseDir}/references/auth.md` |
+| "logout", "sign out", "disconnect" | `logout` | `{baseDir}/references/auth.md` |
+| "my account", "wallet address", "who am I" | `account [--show-all]` | `{baseDir}/references/auth.md` |
+| "setup minara", "configure", "install" | read `{baseDir}/setup.md` | `{baseDir}/references/auth.md` |
+| "subscription plans", "upgrade to Pro", "buy credits", "cancel subscription" | `premium plans\|status\|subscribe\|buy-credits\|cancel` | `{baseDir}/references/premium.md` |
 
-Triggers: message mentions crypto balance, portfolio, assets, wallet, deposit address, or Minara account.
+## Execution notes
 
-| User intent pattern                                                                      | Action                 |
-| ---------------------------------------------------------------------------------------- | ---------------------- |
-| "what's my total balance", "how much USDC do I have" — quick balance check               | `minara balance`       |
-| "show my crypto portfolio", "spot holdings with PnL", "how much ETH do I have in Minara" | `minara assets spot`   |
-| "show my perps balance", "Hyperliquid account equity"                                    | `minara assets perps`  |
-| "show all my crypto assets" — full overview (spot + perps)                               | `minara assets`        |
-| "show deposit address", "where to send USDC" — spot deposit addresses                    | `minara deposit spot`  |
-| "deposit to perps", "transfer USDC from spot to perps", "fund perps from spot"           | `minara deposit perps` |
-| "buy crypto with credit card", "deposit with card", "on-ramp with MoonPay"               | `minara deposit buy`   |
-| "how do I deposit crypto" — interactive (spot, perps, or credit card)                    | `minara deposit`       |
-| "show my Minara account", "my wallet addresses"                                          | `minara account`       |
+- **Token input:** `'$BONK'` (quote `$`), ticker, address, or name
+- **JSON output:** `--json` on root command
+- **Interactive commands:** use `pty: true` — never use it to auto-confirm
+- **Non-interactive discover:** `--type tokens|stocks` skips category prompt
+- **Non-interactive perps order:** `-S SIDE -s SYMBOL -z SIZE` skips all prompts
+- **Supported chains:** ethereum, base, arbitrum, optimism, polygon, avalanche, solana, bsc, berachain, blast, manta, mode, sonic, conflux, merlin, monad, polymarket, xlayer
+- **Transaction safety:** CLI confirm → Touch ID → execute. Never skip.
+- **Chat timeout:** 900s for `ask`, `research`, `chat`
+- **Wallet flag:** `--wallet Bot-1` when user mentions a wallet name
+- **Dry-run:** `--dry-run` on `swap` to simulate
+- **Aliases:** `send` = `transfer`, `receive` = `deposit`, `ask` = fast chat, `research` = quality chat
 
-### Crypto AI chat / market analysis
+## Credentials
 
-Triggers: message asks about crypto prices, token analysis, DeFi research, on-chain data, crypto market insights, or prediction market analysis.
-
-> **Timeout:** AI chat responses can be long-running. Set shell execution timeout to **15 minutes** (900 s) for all `minara chat` commands.
-
-| User intent pattern                                                                                                                  | Action                                 |
-| ------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------- |
-| "what's the BTC price", "analyze ETH tokenomics", "DeFi yield opportunities", crypto research, on-chain analysis                     | `minara chat "<user text>"`            |
-| "analyze this Polymarket event", "prediction market odds on <topic>", "what are the chances of <event>" — prediction market insights | `minara chat "<user text or URL>"`     |
-| Deep crypto analysis requiring reasoning — "think through ETH vs SOL long-term"                                                      | `minara chat --thinking "<user text>"` |
-| High-quality detailed crypto analysis — "detailed report on Solana DeFi ecosystem"                                                   | `minara chat --quality "<user text>"`  |
-| "continue our previous Minara chat"                                                                                                  | `minara chat -c <chatId>`              |
-| "list my Minara chat history"                                                                                                        | `minara chat --list`                   |
-
-### Crypto & stock market discovery
-
-Triggers: message mentions trending tokens, trending stocks, crypto market sentiment, fear and greed, or Bitcoin metrics.
-
-| User intent pattern                                                           | Action                            |
-| ----------------------------------------------------------------------------- | --------------------------------- |
-| "what crypto tokens are trending", "hot tokens right now"                     | `minara discover trending`        |
-| "what stocks are trending", "trending stocks", "top stocks today"             | `minara discover trending stocks` |
-| "search for SOL tokens", "find crypto token X", "look up AAPL", "search TSLA" | `minara discover search <query>`  |
-
-### Minara premium / subscription
-
-Triggers: message explicitly mentions Minara plan, subscription, credits, or pricing.
-
-| User intent pattern                          | Action                       |
-| -------------------------------------------- | ---------------------------- |
-| "show Minara plans", "Minara pricing"        | `minara premium plans`       |
-| "my Minara subscription status"              | `minara premium status`      |
-| "subscribe to Minara", "upgrade Minara plan" | `minara premium subscribe`   |
-| "buy Minara credits"                         | `minara premium buy-credits` |
-| "cancel Minara subscription"                 | `minara premium cancel`      |
-
-### x402 protocol payment
-
-Triggers: agent receives HTTP **402 Payment Required**, or user mentions x402, paid API, or paying for API access with crypto. [x402 spec](https://docs.cdp.coinbase.com/x402/quickstart-for-buyers).
-
-Flow: parse `PAYMENT-REQUIRED` header (amount, token, recipient, chain) → `minara balance` → `minara transfer` to pay → retry request.
-
-Payment step must follow the global confirmation policy: user must explicitly confirm before any `minara transfer`.
-
-| User intent pattern                                          | Action                                                                          |
-| ------------------------------------------------------------ | ------------------------------------------------------------------------------- |
-| Agent receives 402 with x402 headers                         | Parse headers → `minara transfer` (USDC to recipient on required chain) → retry |
-| "pay for this API with Minara", "use Minara wallet for x402" | `minara balance` → `minara transfer` to service payment address                 |
-| "fund my wallet for paid APIs"                               | `minara deposit buy` (credit card) or `minara deposit spot` (crypto)            |
-
-### Minara login / setup
-
-Triggers: message explicitly mentions Minara login, setup, or configuration.
-
-**Login:** Prefer device code flow (`minara login --device`) for headless or non-interactive environments; otherwise `minara login` (interactive).
-**Login handoff rule:** when CLI outputs verification URL/device code, the agent must pass them to the user verbatim, ask the user to complete browser verification, then continue after user confirms completion.
-
-| User intent pattern                                             | Action                                                         |
-| --------------------------------------------------------------- | -------------------------------------------------------------- |
-| "login to Minara", "sign in to Minara", first-time Minara setup | `minara login` (prefer device code) or `minara login --device` |
-| "logout from Minara"                                            | `minara logout`                                                |
-| "configure Minara settings"                                     | `minara config`                                                |
-
-## Notes
-
-- **Token input (`-t`):** accepts `$TICKER` (e.g. `'$BONK'`), token name, or contract address. Quote `$` in shell.
-- **JSON output:** add `--json` to any command for machine-readable output.
-- **Transaction safety:** CLI flow: first confirmation → transaction confirmation (mandatory, shows token and destination) → Touch ID (optional, macOS) → execute. Agent must **never skip or auto-confirm** any step — always relay to user and wait for approval, and never use `-y` unless user explicitly requests it.
-
-## Credentials & config
-
-- **CLI session:** auto-created via `minara login` (required).
-- **API Key:** `MINARA_API_KEY` via env or `skills.entries.minara.apiKey` in OpenClaw config — optional; if set, CLI authenticates automatically without login.
+- `minara login` → saved to `~/.minara/`
+- `MINARA_API_KEY` env var or `skills.entries.minara.apiKey` in OpenClaw or Claude Code config
 
 ## Post-install setup
 
-On first activation, read `{baseDir}/setup.md` and follow its instructions. The setup adds a Minara routing section to the user's workspace `AGENTS.md` so finance-related queries are routed to this skill. **Always inform the user** before writing to any workspace file.
+On first activation, read `{baseDir}/setup.md` and follow instructions. **Inform user** before writing to workspace files.
 
 ## Examples
 
-Full command examples: `{baseDir}/examples.md`
+`{baseDir}/references/examples.md`
