@@ -8,9 +8,8 @@ For device login handoff: if CLI outputs a verification URL and/or device code, 
 minara login                       # Interactive (device code default, or email)
 minara login --device              # Device code flow: relay URL/code to user for browser verification
 minara login -e user@example.com   # Email with verification code
-minara account                     # View account info + wallet addresses (alias: minara me)
-minara logout                      # Clear local credentials
-minara config                      # View/update CLI settings (Touch ID, base URL, tx confirmation)
+minara account                     # View account info + wallet addresses
+minara deposit spot                # Show spot deposit addresses (EVM + Solana)
 ```
 
 ## 2 — Swap tokens
@@ -67,97 +66,40 @@ minara deposit perps -a 100    # Transfer 100 USDC from Spot → Perps
 ## 5 — Perpetual futures
 
 ```bash
-# ── Multi-wallet management (v0.4.0+) ──────────────────────────────────
-minara perps wallets                    # List all sub-wallets (alias: minara perps w)
-minara perps create-wallet -n Bot-1     # Create a new sub-wallet
-minara perps rename-wallet              # Rename a wallet interactively
-minara perps sweep                      # Move funds from sub-wallet → default wallet
-minara perps transfer                   # Transfer USDC between any two wallets
+# Fund perps account
+minara perps deposit -a 100
 
-# ── Fund perps account ─────────────────────────────────────────────────
-minara perps deposit -a 100             # Default wallet
-minara perps deposit -a 100 --wallet Bot-1  # Specific wallet
-
-# ── Set leverage ───────────────────────────────────────────────────────
+# Set leverage
 minara perps leverage
-minara perps leverage --wallet Bot-1
 
-# ── Place order (interactive: wallet, symbol, side, size, price) ───────
-minara perps order                      # Wallet picker if multiple exist
-minara perps order --wallet Bot-1       # Target specific wallet
+# Place order (interactive: symbol, side, size, price)
+minara perps order
 
-# Place order (non-interactive with flags)
-minara perps order -S long -s BTC -z 0.1                    # Long BTC, size 0.1, market order
-minara perps order -S buy -s ETH -z 1                        # Buy ETH, size 1, market order
-minara perps order -S short -s SOL -z 10                     # Short SOL, size 10, market order
-minara perps order -S sell -s BTC -z 0.5                     # Sell BTC, size 0.5, market order
+# View positions
+minara perps positions
 
-# Limit orders (non-interactive)
-minara perps order -S long -s ETH -T limit -p 3000 -z 2      # Long ETH at $3000, size 2
-minara perps order -S short -s BTC -T limit -p 100000 -z 0.1 # Short BTC at $100000, size 0.1
+# Close positions
+minara perps close                    # Interactive: select position to close
+minara perps close --all              # Close all positions (non-interactive)
+minara perps close --symbol BTC       # Close BTC position (non-interactive)
+minara perps close --all --yes        # Close all, skip confirmation
 
-# Reduce-only orders
-minara perps order -S long -s BTC -z 0.1 --reduce-only       # Reduce-only long BTC
-minara perps order -S short -s ETH -z 1 -r                   # Reduce-only short ETH (shorthand)
-
-# Stop loss / Take profit orders (trigger market orders)
-minara perps order -S sell -s BTC -T market -p 90000 -z 0.1 --tpsl sl   # Stop loss BTC at $90000
-minara perps order -S sell -s ETH -T market -p 2800 -z 1 --tpsl sl       # Stop loss ETH at $2800
-minara perps order -S sell -s SOL -T market -p 150 -z 10 --tpsl tp        # Take profit SOL at $150
-
-# With TP/SL grouping
-minara perps order -S long -s BTC -z 0.1 -g normalTpsl       # With normal TP/SL grouping
-minara perps order -S long -s ETH -z 1 -g positionTpsl       # With position TP/SL grouping
-
-# Skip confirmation
-minara perps order -S long -s BTC -z 0.1 -y                  # Long BTC, skip confirmation
-
-# Combined example
-minara perps order -S long -s ETH -T limit -p 2500 -z 2 -r -y
-
-# ── View positions ─────────────────────────────────────────────────────
-minara perps positions                  # All wallets (alias: minara perps pos)
-minara perps positions -w Bot-1         # Specific wallet only
-
-# ── Close positions ────────────────────────────────────────────────────
-minara perps close                      # Interactive: select position to close
-minara perps close --all                # Close all positions (non-interactive)
-minara perps close --symbol BTC         # Close BTC position (non-interactive)
-minara perps close --all --yes          # Close all, skip confirmation
-
-# ── Cancel orders ──────────────────────────────────────────────────────
+# Cancel orders
 minara perps cancel
-minara perps cancel --wallet Bot-1
 
-# ── Withdraw from perps ────────────────────────────────────────────────
+# Withdraw from perps
 minara perps withdraw -a 50
 
-# ── AI analysis → optional quick order ────────────────────────────────
+# AI analysis → optional quick order
 minara perps ask
-minara perps ask --wallet Bot-1
 
-# ── AI autopilot (multi-strategy dashboard, per wallet) ───────────────
-minara perps autopilot                  # Pick wallet → dashboard (alias: minara perps ap)
-minara perps autopilot -w Bot-1         # Jump to Bot-1's strategies directly
+# AI autopilot trading strategy
+minara perps autopilot
 
-# ── History ────────────────────────────────────────────────────────────
+# History
 minara perps trades
 minara perps fund-records
 ```
-
-### Perps order flags reference
-
-| Flag | Alias | Description | Default |
-|------|-------|-------------|---------|
-| `--side <side>` | `-S` | Order side: long, buy, short, or sell | — |
-| `--symbol <symbol>` | `-s` | Asset symbol (e.g. BTC, ETH, SOL) | — |
-| `--type <type>` | `-T` | Order type: market or limit | market |
-| `--price <price>` | `-p` | Limit price (required for limit orders) / trigger price for market orders | — |
-| `--tpsl <type>` | | Trigger type for market orders: tp (take profit) or sl (stop loss) | tp |
-| `--size <size>` | `-z` | Position size in contracts | — |
-| `--reduce-only` | `-r` | Reduce-only order flag | false |
-| `--grouping <grouping>` | `-g` | TP/SL grouping: na, normalTpsl, positionTpsl | na |
-| `--yes` | `-y` | Skip confirmation | false |
 
 ## 6 — AI chat
 
@@ -192,8 +134,6 @@ minara discover trending           # Trending tokens
 minara discover trending stocks    # Trending stocks
 minara discover search SOL         # Search tokens / stocks
 minara discover search AAPL        # Search stocks by name
-minara discover fear-greed         # Crypto Fear & Greed Index
-minara discover btc-metrics        # Bitcoin on-chain metrics
 minara discover trending --json    # JSON output
 ```
 
@@ -201,8 +141,8 @@ minara discover trending --json    # JSON output
 
 ```bash
 minara limit-order create          # Interactive: token, price, side, amount, expiry
-minara limit-order list            # List all orders (aliases: lo list, lo ls)
-minara limit-order cancel abc123   # Cancel by ID (alias: lo cancel)
+minara limit-order list            # List all orders
+minara limit-order cancel abc123   # Cancel by ID
 ```
 
 ## 9 — x402 protocol payment

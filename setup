@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+# Minara setup for Claude Code — register skills + install CLI
+# Usage: git clone <repo> ~/.claude/skills/minara && cd ~/.claude/skills/minara && ./setup
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SKILL_SRC="$SCRIPT_DIR/skills/minara"
+CLAUDE_SKILLS_DIR="$HOME/.claude/skills"
+
+# ─── Verify skill source exists ──────────────────────────────────────
+if [[ ! -f "$SKILL_SRC/SKILL.md" ]]; then
+  echo "Error: skills/minara/SKILL.md not found in $SCRIPT_DIR" >&2
+  exit 1
+fi
+
+# ─── 1. Make SKILL.md discoverable at repo root ─────────────────────
+# Claude Code looks for ~/.claude/skills/<name>/SKILL.md — one level deep.
+# The repo nests the skill under skills/minara/, so symlink it to root.
+if [[ ! -e "$SCRIPT_DIR/SKILL.md" ]]; then
+  ln -sf skills/minara/SKILL.md "$SCRIPT_DIR/SKILL.md"
+  echo "  Linked root SKILL.md"
+fi
+
+# Also link examples.md if present
+if [[ -f "$SKILL_SRC/examples.md" && ! -e "$SCRIPT_DIR/examples.md" ]]; then
+  ln -sf skills/minara/examples.md "$SCRIPT_DIR/examples.md"
+fi
+
+# ─── 2. Link sub-skill slash commands into ~/.claude/skills/ ────────
+# Follows gstack pattern: relative symlinks like minara/skills/minara/<cmd>
+INSTALL_DIR_NAME="$(basename "$SCRIPT_DIR")"
+INSTALL_PARENT="$(dirname "$SCRIPT_DIR")"
+linked=()
+
+if [[ "$INSTALL_PARENT" == "$CLAUDE_SKILLS_DIR" ]]; then
+  for cmd_dir in "$SKILL_SRC"/*/; do
+    [[ -f "$cmd_dir/SKILL.md" ]] || continue
+    cmd_name="$(basename "$cmd_dir")"
+    target="$CLAUDE_SKILLS_DIR/$cmd_name"
+    if [[ -L "$target" ]] || [[ ! -e "$target" ]]; then
+      ln -snf "$INSTALL_DIR_NAME/skills/minara/$cmd_name" "$target"
+      linked+=("$cmd_name")
+    fi
+  done
+else
+  # Cloned outside ~/.claude/skills/ — use absolute symlinks
+  # First link the main skill
+  if [[ ! -L "$CLAUDE_SKILLS_DIR/minara" ]] || [[ "$(readlink "$CLAUDE_SKILLS_DIR/minara" 2>/dev/null)" != "$SCRIPT_DIR" ]]; then
+    mkdir -p "$CLAUDE_SKILLS_DIR"
+    ln -snf "$SCRIPT_DIR" "$CLAUDE_SKILLS_DIR/minara"
+    echo "  Linked minara → $SCRIPT_DIR"
+  fi
+  # Then link sub-skills
+  for cmd_dir in "$SKILL_SRC"/*/; do
+    [[ -f "$cmd_dir/SKILL.md" ]] || continue
+    cmd_name="$(basename "$cmd_dir")"
+    target="$CLAUDE_SKILLS_DIR/$cmd_name"
+    if [[ -L "$target" ]] || [[ ! -e "$target" ]]; then
+      ln -snf "$cmd_dir" "$target"
+      linked+=("$cmd_name")
+    fi
+  done
+fi
+
+if [[ ${#linked[@]} -gt 0 ]]; then
+  echo "  Linked ${#linked[@]} slash commands: ${linked[*]}"
+else
+  echo "  Slash commands already linked"
+fi
+
+# ─── 3. Install Minara CLI ──────────────────────────────────────────
+if ! command -v node &>/dev/null || ! command -v npm &>/dev/null; then
+  echo "Warning: node/npm not found — skip CLI install. Install Node.js 18+ first." >&2
+elif ! command -v minara &>/dev/null; then
+  echo "  Installing Minara CLI..."
+  npm install -g minara@latest
+  echo "  Installed: $(minara --version 2>/dev/null || echo 'ok')"
+else
+  echo "  CLI already installed: $(minara --version 2>/dev/null || echo 'ok')"
+fi
+
+# ─── 4. Login prompt ────────────────────────────────────────────────
+if command -v minara &>/dev/null; then
+  if minara whoami &>/dev/null 2>&1; then
+    WHOAMI=$(minara whoami 2>/dev/null || echo "")
+    echo "  Logged in${WHOAMI:+ as $WHOAMI}"
+  else
+    echo ""
+    echo "  Run 'minara login' to authenticate."
+  fi
+fi
+
+# ─── Done ────────────────────────────────────────────────────────────
+echo ""
+echo "Minara ready (claude)."
+echo "  Skill: $SKILL_SRC"
+echo "  CLI:   $(command -v minara 2>/dev/null || echo 'not installed')"
