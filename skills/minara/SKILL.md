@@ -86,19 +86,28 @@ Run `minara account` to check login state:
 
 **Never** show CLI commands and ask the user to run it themself.
 
-## Transaction confirmation (CRITICAL)
+## Transaction confirmation (CRITICAL — MUST follow exactly)
 
-**Fund-moving** (require user confirmation before executing):
+**Fund-moving commands** (MUST confirm before executing):
 `swap`, `transfer`, `withdraw`, `deposit perps`, `perps order`, `perps deposit`, `perps withdraw`, `perps close`, `perps cancel`, `perps sweep`, `perps transfer`, `limit-order create`, `limit-order cancel`
 
-1. **Before executing:** check user's account balance first, then present a summary with structured choices (use **AskUserQuestion** if available, otherwise present in chat):
-   - Context: summary of the operation (action, token, amount, chain, recipient)
-   - Options: A) Confirm and execute (Recommended) / B) Dry-run (simulate only, if supported) / C) Abort
-2. **After CLI returns a confirmation prompt:** relay details with structured choices and **wait for user to approve** before answering `y`
-3. **Never add `-y` / `--yes`** unless user explicitly asks to skip confirmation
-4. **If user declines:** abort immediately
+### Confirmation flow (mandatory for ALL fund-moving commands)
 
-> **Structured choices rule:** When presenting options to the user (confirmations, disambiguation, or any pick-from-a-set scenario), always use structured choices. In Claude Code, use the **AskUserQuestion** tool. In other environments, present numbered options in chat. Never use free-text prompts when a finite set of choices exists.
+1. **Check balance:** run `minara balance` first
+2. **Present structured choices** to get explicit confirmation before executing:
+   - **Claude Code:** MUST use the **AskUserQuestion** tool. Do NOT use plain text chat.
+   - **OpenClaw / other agents:** present numbered options in chat (e.g. "1) Confirm  2) Dry-run  3) Abort").
+   - Include in the prompt: summary of the operation (action, token, amount, chain, recipient, current balance)
+   - Options: A) Confirm and execute (Recommended) / B) Abort
+3. **Wait for user's choice** before proceeding
+4. **If user selects Confirm:** execute the CLI command WITHOUT `-y`. Let the CLI show its own confirmation prompt, then answer `y` on the user's behalf (since they already confirmed)
+5. **If user selects Abort:** stop immediately
+
+### Banned behaviors
+
+- **NEVER add `-y` or `--yes`** to any command. The CLI's built-in confirmation is a safety net, not something to bypass.
+- **NEVER skip the structured choice step.** In Claude Code, always use the AskUserQuestion tool. If the user responds with "yes", "是的", or similar confirmation in plain chat after seeing the structured choices, treat it as Confirm.
+- **NEVER auto-confirm** without the user's explicit choice from structured options.
 
 **Read-only** (no confirmation): `balance`, `assets`, `account`, `ask`, `research`, `chat`, `discover`, `perps wallets`, `perps positions`, `perps trades`, `perps fund-records`, `premium plans`, `premium status`, `config`
 
