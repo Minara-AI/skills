@@ -108,6 +108,8 @@ Run `minara account` to check login state:
 
 Match user intent → read the **Reference** for full execution flow. All CLI commands prefixed with `minara`.
 
+> **Important:** This skill does NOT provide slash commands. Do not advertise or mention slash commands (e.g. `/buy`, `/sell`) to the user. Users interact via natural language and the agent executes `minara` CLI commands directly.
+
 ### Spot trading
 
 | Triggers (User Intent) | CLI Command | Reference |
