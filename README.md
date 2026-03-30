@@ -16,38 +16,6 @@ Turn your AI agent into a personal AI CFO. [Minara](https://minara.ai) skills gi
 
 Ethereum, Base, Arbitrum, Optimism, Polygon, Avalanche, Solana, BSC, Berachain, Blast, Manta, Mode, Sonic, Conflux, Merlin, Monad, Polymarket, XLayer, and Hyperliquid (perps).
 
-## Repository Structure
-
-```
-skills/
-├── README.md
-├── scripts/
-│   ├── claudecode-minara-skill-setup.sh   # One-click installer for Claude Code
-│   └── openclaw-minara-skill-setup.sh     # One-click installer for OpenClaw
-└── skills/
-    └── minara/
-        ├── SKILL.md                   # Main skill definition (routing, triggers, command reference)
-        ├── setup.md                   # Post-install workspace integration guide
-        ├── scripts/
-        │   └── version-check.sh       # CLI & skill version detector (run once per session)
-        └── references/
-            ├── swap.md                # Spot buy/sell/swap
-            ├── transfer.md            # Send/transfer tokens
-            ├── limit-order.md         # Spot limit orders
-            ├── perps-order.md         # Open perps positions (long/short)
-            ├── perps-manage.md        # Positions, close, cancel, leverage, trade history
-            ├── perps-wallet.md        # Perps wallets, deposit, withdraw, transfer, sweep
-            ├── perps-autopilot.md     # AI autopilot for perps trading
-            ├── balance.md             # Balance and portfolio
-            ├── deposit.md             # Deposit addresses, spot→perps, credit card on-ramp
-            ├── withdraw.md            # Withdraw to external address
-            ├── chat.md                # AI ask & research commands
-            ├── discover.md            # Trending, search, fear & greed, BTC metrics
-            ├── auth.md                # Login, logout, account
-            ├── premium.md             # Subscription plans, credits
-            └── examples.md            # Full CLI examples
-```
-
 ## Installation
 
 ### Claude Code
@@ -67,7 +35,6 @@ npm install -g minara@latest
 git clone https://github.com/Minara-AI/skills.git /tmp/minara-skills
 cp -r /tmp/minara-skills/skills/minara ~/.claude/skills/minara
 ```
-
 
 ### OpenClaw
 
@@ -91,7 +58,7 @@ clawhub install lowesyang/minara
 git clone --branch main https://github.com/Minara-AI/skills.git /tmp/minara-skills
 cp -r /tmp/minara-skills/skills/minara ~/.openclaw/workspace/skills/minara
 
-or 
+or
 
 cp -r /tmp/minara-skills/skills/minara path/to/openclaw/workspace/skills
 ```
@@ -110,7 +77,6 @@ Add to `~/.openclaw/openclaw.json`:
 }
 ```
 
-
 ## Quick Start
 
 ```
@@ -126,21 +92,21 @@ Talk to the agent in natural language. It runs the right commands for you.
 
 ### Basic flow
 
-| Step | Example prompts |
-|------|----------------|
-| **Login** | _"Login to Minara"_ |
+| Step        | Example prompts                                                                               |
+| ----------- | --------------------------------------------------------------------------------------------- |
+| **Login**   | _"Login to Minara"_                                                                           |
 | **Deposit** | _"Show my deposit address"_ / _"Buy crypto with credit card"_ / _"Deposit 500 USDC to perps"_ |
-| **Trade** | _"Buy 100 USDC worth of ETH"_ / _"Swap 0.1 ETH to USDC"_ / _"Sell all SOL"_ |
+| **Trade**   | _"Buy 100 USDC worth of ETH"_ / _"Swap 0.1 ETH to USDC"_ / _"Sell all SOL"_                   |
 
 ### Perps and limit orders
 
-| Goal | Example prompts |
-|------|----------------|
-| **Open position** | _"Long ETH perp"_ / _"Short BTC, 10x leverage"_ |
-| **AI analysis** | _"Analyze ETH long or short"_ / _"Should I long BTC?"_ |
-| **Autopilot** | _"Enable AI autopilot for perps"_ |
-| **Limit order** | _"Buy ETH when price hits $3000"_ / _"Buy SOL at $150"_ |
-| **Manage orders** | _"List my limit orders"_ / _"Cancel limit order [id]"_ |
+| Goal              | Example prompts                                         |
+| ----------------- | ------------------------------------------------------- |
+| **Open position** | _"Long ETH perp"_ / _"Short BTC, 10x leverage"_         |
+| **AI analysis**   | _"Analyze ETH long or short"_ / _"Should I long BTC?"_  |
+| **Autopilot**     | _"Enable AI autopilot for perps"_                       |
+| **Limit order**   | _"Buy ETH when price hits $3000"_ / _"Buy SOL at $150"_ |
+| **Manage orders** | _"List my limit orders"_ / _"Cancel limit order [id]"_  |
 
 ### More examples
 
@@ -152,11 +118,11 @@ See [examples.md](skills/minara/references/examples.md) for full CLI examples.
 
 ## Scripts
 
-| Script | Purpose |
-|--------|---------|
-| `scripts/claudecode-minara-skill-setup.sh` | One-click installer for Claude Code: installs CLI, copies skill, runs login |
-| `scripts/openclaw-minara-skill-setup.sh` | One-click installer for OpenClaw: installs CLI, copies skill, registers in `openclaw.json`, runs login |
-| `skills/minara/scripts/version-check.sh` | Session-level version detector — outputs `UP_TO_DATE`, `SNOOZED`, or `UPGRADE cli:X→Y [skill:X→Y]` |
+| Script                                     | Purpose                                                                                                |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| `scripts/claudecode-minara-skill-setup.sh` | One-click installer for Claude Code: installs CLI, copies skill, runs login                            |
+| `scripts/openclaw-minara-skill-setup.sh`   | One-click installer for OpenClaw: installs CLI, copies skill, registers in `openclaw.json`, runs login |
+| `skills/minara/scripts/version-check.sh`   | Session-level version detector — outputs `UP_TO_DATE`, `SNOOZED`, or `UPGRADE cli:X→Y [skill:X→Y]`     |
 
 Both setup scripts are idempotent and support the same three-tier skill download fallback: ClawHub → GitHub → clawhub CLI.
 
