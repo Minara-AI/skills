@@ -3,7 +3,7 @@
 # Usage: curl -fsSL <SCRIPT_URL> | bash
 set -euo pipefail
 
-MINARA_SKILL_REPO="${MINARA_SKILL_REPO:-https://github.com/Minara-AI/openclaw-skill.git}"
+MINARA_SKILL_REPO="${MINARA_SKILL_REPO:-https://github.com/Minara-AI/skills.git}"
 CLAWHUB_SKILL_URL="${CLAWHUB_SKILL_URL:-https://clawhub.ai/lowesyang/minara}"
 SKILLS_DIR="$HOME/.claude/skills"
 CLAUDE_MD="$HOME/.claude/CLAUDE.md"
