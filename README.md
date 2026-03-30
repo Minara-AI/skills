@@ -55,7 +55,7 @@ skills/
 **One-click (recommended):** Send this prompt to your Claude Code agent:
 
 ```
-Run "curl -fsSL https://raw.githubusercontent.com/Minara-AI/skills/feat/claude-code-compatible/scripts/claudecode-minara-skill-setup.sh | bash" to install Minara. Follow the login URL when prompted.
+Run "curl -fsSL https://raw.githubusercontent.com/Minara-AI/skills/main/scripts/claudecode-minara-skill-setup.sh | bash" to install Minara CLI, Minara Skills and set following config. Follow the login URL when prompted.
 ```
 
 This installs the Minara CLI, copies skill files to `~/.claude/skills/minara` and starts the login flow.
@@ -74,7 +74,7 @@ cp -r /tmp/minara-skills/skills/minara ~/.claude/skills/minara
 **One-click (recommended):** Send this prompt to your Openclaw agent:
 
 ```
-Run "curl -fsSL https://raw.githubusercontent.com/Minara-AI/skills/feat/claude-code-compatible/scripts/openclaw-minara-skill-setup.sh | bash" to install Minara. Follow the login URL when prompted.
+Run "curl -fsSL https://raw.githubusercontent.com/Minara-AI/skills/main/scripts/openclaw-minara-skill-setup.sh | bash" to install Minara CLI, Minara Skills and set following config. Follow the login URL when prompted.
 ```
 
 This installs the CLI, copies skill files to `~/.openclaw/skills/minara`, registers the skill in `openclaw.json`, starts login.
@@ -88,7 +88,7 @@ clawhub install lowesyang/minara
 **Manual:**
 
 ```bash
-git clone --branch feat/claude-code-compatible https://github.com/Minara-AI/skills.git /tmp/minara-skills
+git clone --branch main https://github.com/Minara-AI/skills.git /tmp/minara-skills
 cp -r /tmp/minara-skills/skills/minara ~/.openclaw/workspace/skills/minara
 
 or 
