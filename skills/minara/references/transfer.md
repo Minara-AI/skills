@@ -1,7 +1,6 @@
 # Transfer / Send / Pay
 
 > Execute commands yourself. All fund-moving — require user confirmation.
-> **Before any fund-moving command:** use **AskUserQuestion** to confirm with structured choices (Confirm / Dry-run / Abort).
 
 ## Commands
 
@@ -48,5 +47,5 @@ Default stablecoin payment: `minara transfer -t USDC -a AMT --to ADDR`. If user 
 When an HTTP request returns **402 Payment Required** with x402 headers:
 1. Parse headers: `amount`, `token`, `recipient`, `chain`
 2. `minara balance` to verify funds
-3. Use **AskUserQuestion** to confirm (Context: "Pay {amount} {token} to {recipient} on {chain} for x402 API access", Options: Confirm / Abort), then `minara transfer -c <chain> -t <token> -a <amount> --to <recipient>`
+3. Ask user to confirm, then `minara transfer -c <chain> -t <token> -a <amount> --to <recipient>`
 4. Retry the original request after payment confirms

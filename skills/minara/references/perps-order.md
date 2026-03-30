@@ -1,7 +1,6 @@
 # Perps Order (Market / Limit)
 
 > Execute commands yourself. Use `pty: true` for interactive mode. Fund-moving — require confirmation.
-> **Before executing:** use **AskUserQuestion** to confirm with structured choices (Confirm / Abort).
 
 ## Commands
 

@@ -1,7 +1,6 @@
 # Swap (Buy / Sell)
 
 > Execute commands yourself. Never show CLI and ask the user to run it.
-> **Before any fund-moving command:** use **AskUserQuestion** to confirm with structured choices (Confirm / Dry-run / Abort).
 
 ## Commands
 

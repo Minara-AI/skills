@@ -1,7 +1,6 @@
 # Perps Positions / Close / Cancel / Leverage / Trades
 
 > Execute commands yourself. Use `pty: true` for interactive commands.
-> **Before any fund-moving command (close/cancel):** use **AskUserQuestion** to confirm with structured choices (Confirm / Abort).
 
 ## Commands
 
@@ -39,7 +38,7 @@ Open Positions (2):
 | `perps close --all` | Close all positions at market |
 | `perps close --symbol BTC` | Close all BTC positions |
 
-Use **AskUserQuestion** to confirm (Context: "Close {all/SYMBOL} perps positions", Options: Confirm / Abort). Then Touch ID before execution.
+Confirm + Touch ID before execution.
 
 ```
 $ minara perps close --all

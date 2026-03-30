@@ -1,7 +1,6 @@
 # Withdraw
 
 > Execute commands yourself. Fund-moving — require user confirmation.
-> **Before executing:** use **AskUserQuestion** to confirm with structured choices (Confirm / Abort).
 
 ## `minara withdraw`
 

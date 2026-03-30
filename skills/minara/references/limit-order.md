@@ -1,7 +1,6 @@
 # Spot Limit Orders
 
 > Execute commands yourself. Use `pty: true` for interactive prompts.
-> **Before any fund-moving command (create/cancel):** use **AskUserQuestion** to confirm with structured choices (Confirm / Abort).
 
 ## Commands
 
@@ -44,6 +43,6 @@ Lists all active orders in a table. Read-only.
 
 **Alias:** `minara lo cancel`
 
-If no ID given → interactive picker from active orders. Use **AskUserQuestion** to confirm before canceling (Context: "Cancel limit order [ID/description]", Options: Confirm / Abort).
+If no ID given → interactive picker from active orders. Confirm before canceling.
 
 **Note:** These are **spot** limit orders. For perps limit orders → see `perps-order.md`.
