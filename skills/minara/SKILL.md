@@ -20,7 +20,7 @@ On first activation, read `{baseDir}/setup.md` and follow its instructions.
 bash {baseDir}/scripts/version-check.sh
 ```
 
-- `UP_TO_DATE` or `SNOOZED` → **continue silently**.
+- `UP_TO_DATE` or `SNOOZED` → **continue to login check**.
 - Contains `UPGRADE` → parse which components need updating, then **ask the user**:
 
 > "Minara update available — [cli: X→Y] [skill: X→Y]. What would you like to do?
@@ -40,6 +40,17 @@ rm -f ~/.minara/.last-update-check
 ```
 
 Only prompt for the components listed in the `UPGRADE` output (e.g. if only `cli:` is present, don't mention skill).
+
+### Login check (after version check)
+
+Run `minara account` to check login state:
+- **Success** → continue silently to the user's request.
+- **Failure** → user is not logged in. Automatically run `minara login --device` with `pty: true`. When CLI outputs a verification URL and/or device code, relay them to the user via **AskUserQuestion**:
+  - Context: "Minara login required. Open this URL to complete login: {URL}\nDevice code: {code}"
+  - Options: A) I've completed browser verification / B) Cancel login
+  - After user confirms A → verify with `minara account`, then proceed.
+
+> This check runs automatically on every session. The user does not need to manually trigger login.
 
 ## Activation triggers
 

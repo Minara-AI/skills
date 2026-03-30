@@ -248,7 +248,7 @@ fi
 # ---------------------------------------------------------------------------
 # Step 1: Install or update Minara CLI
 # ---------------------------------------------------------------------------
-echo "==> [1/6] Minara CLI..."
+echo "==> [1/5] Minara CLI..."
 if command -v minara &>/dev/null; then
   CURRENT_CLI_VER=$(minara --version 2>/dev/null || echo "0.0.0")
   CURRENT_CLI_VER="${CURRENT_CLI_VER#v}"
@@ -272,7 +272,7 @@ fi
 # Step 2: Install or update Minara skill
 # ---------------------------------------------------------------------------
 echo ""
-echo "==> [2/6] Minara skill..."
+echo "==> [2/5] Minara skill..."
 mkdir -p "$SKILLS_DIR"
 
 SKILL_ACTION="none"
@@ -318,7 +318,7 @@ fi
 # Step 3: Enable minara in openclaw.json
 # ---------------------------------------------------------------------------
 echo ""
-echo "==> [3/6] OpenClaw config..."
+echo "==> [3/5] OpenClaw config..."
 CONFIG_PATH="$(_resolve_config_path "$CONFIG_PATH")"
 _ensure_minara_config "$CONFIG_PATH"
 
@@ -326,7 +326,7 @@ _ensure_minara_config "$CONFIG_PATH"
 # Step 4: Workspace integration (AGENTS.md + MEMORY.md)
 # ---------------------------------------------------------------------------
 echo ""
-echo "==> [4/6] Workspace integration..."
+echo "==> [4/5] Workspace integration..."
 _inject_agents_prompt
 _inject_memory
 
@@ -334,7 +334,7 @@ _inject_memory
 # Step 5: Login (skip if already logged in)
 # ---------------------------------------------------------------------------
 echo ""
-echo "==> [5/6] Minara login..."
+echo "==> [5/5] Minara login..."
 
 ALREADY_LOGGED_IN=false
 if command -v minara &>/dev/null; then
@@ -383,36 +383,6 @@ if [[ "$ALREADY_LOGGED_IN" == false ]]; then
     echo ""
     echo "    Login failed or was cancelled. Run 'minara login' to retry."
   fi
-fi
-
-# ---------------------------------------------------------------------------
-# Step 6: Claude Code slash command symlinks
-# ---------------------------------------------------------------------------
-echo ""
-echo "==> [6/6] Claude Code shortcuts..."
-
-CLAUDE_SKILLS_DIR="$HOME/.claude/skills"
-MINARA_COMMANDS="buy sell fi-invest fi-exit send pay swap balance assets long short positions trending close-order perps-close-order fi-ask fi-research deposit receive autopilot fi-search price limit-order perps-limit-order minara-account minara-premium minara-login minara-logout minara-setup"
-
-if [[ -d "$CLAUDE_SKILLS_DIR" ]]; then
-  if [[ ! -L "$CLAUDE_SKILLS_DIR/minara" ]] || [[ "$(readlink "$CLAUDE_SKILLS_DIR/minara")" != "$SKILLS_DIR/minara" ]]; then
-    ln -sf "$SKILLS_DIR/minara" "$CLAUDE_SKILLS_DIR/minara" 2>/dev/null || true
-  fi
-
-  LINKED=0
-  for cmd in $MINARA_COMMANDS; do
-    if [[ -d "$SKILLS_DIR/minara/$cmd" ]]; then
-      ln -sf "$SKILLS_DIR/minara/$cmd" "$CLAUDE_SKILLS_DIR/$cmd" 2>/dev/null && LINKED=$((LINKED + 1)) || true
-    fi
-  done
-
-  if [[ "$LINKED" -gt 0 ]]; then
-    echo "    Linked $LINKED slash commands for Claude Code"
-  else
-    echo "    Slash commands already linked"
-  fi
-else
-  echo "    Claude Code not detected (no ~/.claude/skills/), skipping"
 fi
 
 # ---------------------------------------------------------------------------
