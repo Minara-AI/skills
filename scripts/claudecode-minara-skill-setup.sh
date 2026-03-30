@@ -162,9 +162,9 @@ _inject_claude_md() {
   fi
 
   if [[ ! -f "$CLAUDE_MD" ]]; then
-    echo "Error: $CLAUDE_MD not found." >&2
-    echo "    Please install Claude Code first: https://docs.anthropic.com/en/docs/claude-code" >&2
-    return 1
+    printf '%s\n' "$CLAUDE_MD_BLOCK" > "$CLAUDE_MD"
+    echo "    Created CLAUDE.md with Minara config"
+    return 0
   fi
 
   printf '\n\n%s\n' "$CLAUDE_MD_BLOCK" >> "$CLAUDE_MD"
