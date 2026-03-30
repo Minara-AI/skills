@@ -67,7 +67,9 @@ If autopilot is ON for the selected wallet:
 ℹ Turn off autopilot first: minara perps autopilot
 ```
 
-The agent should offer: A) Disable autopilot and proceed, B) Use a different wallet, C) Cancel.
+Use **AskUserQuestion**:
+- Context: "Autopilot is ON for this wallet. Manual orders are blocked while AI is trading."
+- Options: A) Disable autopilot and proceed / B) Use a different wallet / C) Cancel
 
 **Errors:**
 - `Order placement failed` → insufficient margin, invalid size, API error

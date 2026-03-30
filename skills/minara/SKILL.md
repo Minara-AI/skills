@@ -69,7 +69,7 @@ Only prompt for the components listed in the `UPGRADE` output (e.g. if only `cli
 2. **Read the linked reference doc** for execution details
 3. Execute the command yourself (use `pty: true` for interactive commands)
 4. Read CLI output → decide next step autonomously
-5. If confirmation prompt → relay summary, wait for user approval
+5. If confirmation prompt → use **AskUserQuestion** with structured choices, wait for user approval
 6. If error → diagnose, retry or report
 7. Return: **Task** → **Actions** → **Result** → **Follow-ups**
 
@@ -80,10 +80,14 @@ Only prompt for the components listed in the `UPGRADE` output (e.g. if only `cli
 **Fund-moving** (require user confirmation before executing):
 `swap`, `transfer`, `withdraw`, `deposit perps`, `perps order`, `perps deposit`, `perps withdraw`, `perps close`, `perps cancel`, `perps sweep`, `perps transfer`, `limit-order create`, `limit-order cancel`
 
-1. **Before executing:** check user's account balance first and show user a summary (action, token, amount, chain, recipient) and **ask for explicit confirmation**
-2. **After CLI returns a confirmation prompt:** relay details and **wait for user to approve** before answering `y`
+1. **Before executing:** check user's account balance first, then use **AskUserQuestion** to present a summary and get explicit confirmation:
+   - Context: summary of the operation (action, token, amount, chain, recipient)
+   - Options: A) Confirm and execute (Recommended) / B) Dry-run (simulate only, if supported) / C) Abort
+2. **After CLI returns a confirmation prompt:** relay details via **AskUserQuestion** and **wait for user to approve** before answering `y`
 3. **Never add `-y` / `--yes`** unless user explicitly asks to skip confirmation
 4. **If user declines:** abort immediately
+
+> Always use **AskUserQuestion** (structured choices) instead of free-text prompts when presenting options to the user. This applies to all confirmation flows, disambiguation, and any scenario where the user needs to pick from a set of choices.
 
 **Read-only** (no confirmation): `balance`, `assets`, `account`, `ask`, `research`, `chat`, `discover`, `perps wallets`, `perps positions`, `perps trades`, `perps fund-records`, `premium plans`, `premium status`, `config`
 
