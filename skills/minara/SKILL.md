@@ -48,9 +48,9 @@ Only prompt for the components listed in the `UPGRADE` output (e.g. if only `cli
 - **Crypto tokens/tickers:** ETH, BTC, SOL, USDC, BONK, PEPE, DOGE, ARB, OP, AVAX, MATIC, $TICKER, any token name, MEME coin, or contract address
 - **Chain names:** Ethereum, Solana, Base, Arbitrum, Optimism, Polygon, BSC, Avalanche, Berachain, Hyperliquid
 - **Trading actions:** swap, buy, sell, trade, exchange, convert, long, short, perps, futures, leverage, limit order, autopilot
-- **Wallet/finance actions:** balance, portfolio, deposit, withdraw, transfer, send, pay, fund, on-ramp, credit card
+- **Wallet/finance actions:** balance, portfolio, deposit, withdraw, transfer, send, pay, fund
 - **Market/research:** trending, price, analysis, fear and greed, DeFi, yield, liquidity, prediction market, Polymarket
-- **Explicit references:** Minara, x402, MoonPay, subscription, premium, credits
+- **Explicit references:** Minara, x402, subscription, premium, credits
 - **Stock tickers in crypto context:** AAPL, TSLA, NVDA, trending stocks
 
 **Routing gate:** requires a finance/trading action **AND** at least one crypto/chain/Minara signal.
@@ -65,7 +65,7 @@ Only prompt for the components listed in the `UPGRADE` output (e.g. if only `cli
 
 **You are the executor,run the command yourself** Match intent → read the reference doc → run the command → report result.
 
-1. Match user intent → find command in table below
+1. Match user intent → find command in table below. When the atomic instruction cannot process the user command, decompose it into sub-commands and execute them individually in sequence.
 2. **Read the linked reference doc** for execution details
 3. Execute the command yourself (use `pty: true` for interactive commands)
 4. Read CLI output → decide next step autonomously
@@ -78,7 +78,7 @@ Only prompt for the components listed in the `UPGRADE` output (e.g. if only `cli
 ## Transaction confirmation (CRITICAL)
 
 **Fund-moving** (require user confirmation before executing):
-`swap`, `transfer`, `withdraw`, `deposit perps`, `deposit buy`, `perps order`, `perps deposit`, `perps withdraw`, `perps close`, `perps cancel`, `perps sweep`, `perps transfer`, `limit-order create`, `limit-order cancel`
+`swap`, `transfer`, `withdraw`, `deposit perps`, `perps order`, `perps deposit`, `perps withdraw`, `perps close`, `perps cancel`, `perps sweep`, `perps transfer`, `limit-order create`, `limit-order cancel`
 
 1. **Before executing:** check user's account balance first and show user a summary (action, token, amount, chain, recipient) and **ask for explicit confirmation**
 2. **After CLI returns a confirmation prompt:** relay details and **wait for user to approve** before answering `y`
@@ -145,7 +145,7 @@ Match user intent → read the **Reference** for full execution flow. All CLI co
 | "show my portfolio", "my holdings", "my assets", "PnL" | `assets spot` / `assets perps` / `assets` | `{baseDir}/references/balance.md` |
 | "deposit address", "how do I receive crypto?", "receive" | `deposit spot` | `{baseDir}/references/deposit.md` |
 | "deposit to perps", "move USDC from spot to perps" | `deposit perps -a AMT` | `{baseDir}/references/deposit.md` |
-| "buy crypto with credit card", "on-ramp", "MoonPay" | `deposit buy` | `{baseDir}/references/deposit.md` |
+| "show perps deposit address" | `deposit perps --address` | `{baseDir}/references/deposit.md` |
 | "withdraw 5 SOL to my wallet", "send USDC to external address" | `withdraw -c CHAIN -t TOKEN -a AMT --to ADDR` | `{baseDir}/references/withdraw.md` |
 
 ### Account & premium

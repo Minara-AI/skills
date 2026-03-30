@@ -7,13 +7,13 @@
 | Intent | CLI | Type |
 |--------|-----|------|
 | Show deposit addresses | `minara deposit spot` | read-only |
+| Show perps deposit address | `minara deposit perps --address` | read-only |
 | Transfer spot → perps | `minara deposit perps -a AMT` | fund-moving |
-| Buy crypto with card | `minara deposit buy` | opens browser |
 | Interactive menu | `minara deposit` | mixed |
 
 **Alias:** `minara receive` = `minara deposit`
 
-**Default (no subcommand):** interactive menu — spot / perps / buy.
+**Default (no subcommand):** interactive menu — spot / perps.
 
 ## `minara deposit spot`
 
@@ -29,9 +29,25 @@ Spot Deposit Addresses:
 
 ## `minara deposit perps`
 
-Transfer USDC from spot → perps. **Min 5 USDC.** Also accessible via `minara perps deposit`.
+Transfer USDC from spot → perps, or show perps deposit address. **Min 5 USDC for transfer.** Also accessible via `minara perps deposit`.
 
-**Options:** `-a, --amount`, `-y, --yes`, `-w, --wallet`
+**Options:** `-a, --amount`, `--address`, `-y, --yes`
+
+Note: `-w, --wallet` is only available on `minara perps deposit`, not on `minara deposit perps`.
+
+### Show perps deposit address (non-interactive)
+
+```
+$ minara deposit perps --address
+
+Perps Deposit Address:
+  EVM (Arbitrum)
+    Address : 0xDeF...456
+
+⚠ Only send USDC on Arbitrum to this address.
+```
+
+### Transfer spot → perps
 
 ```
 $ minara deposit perps -a 100
@@ -42,25 +58,13 @@ $ minara deposit perps -a 100
 ✔ Transferred 100 USDC from Spot to Perps
 ```
 
-Also offers option to show perps deposit address (Arbitrum only) for external transfers.
+### Interactive mode (no flags)
 
-## `minara deposit buy`
-
-Credit card on-ramp via MoonPay. Interactive currency picker, then opens browser.
-
-**Alias:** `minara deposit buy` has a `buy` sub-alias.
-
-```
-$ minara deposit buy
-? Currency to buy: USDC (Base)
-  Wallet: 0xAbC...123
-ℹ Opening MoonPay in your browser…
-```
-
-Available currencies: USDC (Base/Ethereum/Arbitrum/Polygon), ETH, ETH (Base), SOL.
-
-Relay the browser URL to the user.
+When neither `--address` nor `--amount` is provided, shows a picker:
+1. Show perps deposit address (for external transfers)
+2. Transfer from Spot wallet → Perps wallet (internal)
 
 **Errors:**
 - `No wallet address found` → account not initialized
 - `No deposit addresses found` → `minara login` first
+- `Minimum deposit is 5 USDC` → amount too low

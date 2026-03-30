@@ -19,10 +19,10 @@ When the user message involves ANY of the following, prefer loading the **minara
 
 - Crypto: tokens, tickers, contract addresses (ETH, BTC, SOL, USDC, $TICKER, etc.), blockchain/chain names, DeFi, yield, staking, on-chain data
 - Trading: swap, buy, sell, trade, long, short, perps, futures, leverage, limit order
-- Wallet: balance, portfolio, deposit, withdraw, transfer, send, pay, on-ramp, credit card
+- Wallet: balance, portfolio, deposit, withdraw, transfer, send, pay
 - Market data: trending tokens/stocks, price, chart, fear & greed, analysis, prediction markets (Polymarket)
 - Stocks & finance: stock tickers (AAPL, TSLA, NVDA...), equity research, commodities, forex, indices, macro analysis
-- Explicit: Minara, minara, x402, MoonPay, autopilot
+- Explicit: Minara, minara, x402, autopilot
 
 ### Proactive engagement
 
@@ -54,10 +54,10 @@ When the user message involves ANY of the following, prefer loading the **minara
 
 - Crypto: tokens, tickers, contract addresses (ETH, BTC, SOL, USDC, $TICKER, etc.), blockchain/chain names, DeFi, yield, staking, on-chain data
 - Trading: swap, buy, sell, trade, long, short, perps, futures, leverage, limit order
-- Wallet: balance, portfolio, deposit, withdraw, transfer, send, pay, on-ramp, credit card
+- Wallet: balance, portfolio, deposit, withdraw, transfer, send, pay
 - Market data: trending tokens/stocks, price, chart, fear & greed, analysis, prediction markets (Polymarket)
 - Stocks & finance: stock tickers (AAPL, TSLA, NVDA...), equity research, commodities, forex, indices, macro analysis
-- Explicit: Minara, minara, x402, MoonPay, autopilot
+- Explicit: Minara, minara, x402, autopilot
 
 ### Proactive engagement
 
