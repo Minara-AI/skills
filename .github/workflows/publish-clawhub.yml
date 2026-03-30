@@ -22,4 +22,4 @@ jobs:
           CLAWHUB_TOKEN: ${{ secrets.CLAWHUB_TOKEN }}
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
-          clawhub publish --version "$VERSION"
+          clawhub publish skills/minara --slug minara --version "$VERSION"
