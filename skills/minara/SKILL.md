@@ -98,7 +98,7 @@ Run `minara account` to check login state:
    - **Claude Code:** MUST use the **AskUserQuestion** tool. Do NOT use plain text chat.
    - **OpenClaw / other agents:** present numbered options in chat (e.g. "1) Confirm  2) Dry-run  3) Abort").
    - Include in the prompt: summary of the operation (action, token, amount, chain, recipient, current balance)
-   - Options: A) Confirm and execute (Recommended) / B) Dry-run (simulate only, if supported) / C) Abort
+   - Options: A) Confirm and execute (Recommended) / B) Abort
 3. **Wait for user's choice** before proceeding
 4. **If user selects Confirm:** execute the CLI command WITHOUT `-y`. Let the CLI show its own confirmation prompt, then answer `y` on the user's behalf (since they already confirmed)
 5. **If user selects Abort:** stop immediately
