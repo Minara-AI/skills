@@ -78,7 +78,7 @@ Run `minara account` to check login state:
 
 **You are the executor,run the command yourself** Match intent → read the reference doc → run the command → report result.
 
-1. Match user intent → find command in table below. Decompose compound requests into sub-commands.
+1. Match user intent → find command in table below. **Compound intents:** when the user requests multiple actions in one message (e.g. "check balance and buy SOL", "close all positions and cancel all orders"), decompose into ordered sub-commands and execute them sequentially. Each fund-moving sub-command still requires its own confirmation step.
 2. **Read the linked reference doc** for execution details
 3. **If fund-moving** → follow the **Transaction confirmation** flow below. Message 1 = confirmation summary only. Message 2 (after user replies) = execute.
 4. Execute the command yourself (use `pty: true` for interactive commands)
