@@ -64,7 +64,7 @@ Run `minara account` to check login state:
 - **Explicit references:** Minara, x402, subscription, premium, credits
 - **Stock tickers in crypto context:** AAPL, TSLA, NVDA, trending stocks
 
-**Routing gate:** requires a finance/trading action **AND** at least one crypto/chain/Minara signal. Do NOT activate for pure blockchain education (e.g. "explain Ethereum PoS", "how does Solana consensus work").
+**Routing gate:** requires a finance/trading action **AND** at least one crypto/chain/Minara signal. Do NOT activate for pure blockchain education (e.g. "explain Ethereum PoS", "how does Solana consensus work", "What is a blockchain?").
 
 **Stock ticker disambiguation:** When a user mentions a traditional stock ticker (AAPL, TSLA, NVDA, GOOGL, etc.) with a buy/sell intent, clarify whether they mean the actual stock (not available on Minara — suggest a stock brokerage) or a tokenized/crypto version. Do NOT assume a stock ticker is a crypto token.
 
@@ -78,7 +78,7 @@ Run `minara account` to check login state:
 
 **You are the executor,run the command yourself** Match intent → read the reference doc → run the command → report result.
 
-1. Match user intent → find command in table below. When the atomic instruction cannot process the user command, decompose it into sub-commands and execute them individually in sequence.
+1. Match user intent → find command in table below. **Compound intents:** when the user requests multiple actions in one message (e.g. "check balance and buy SOL", "close all positions and cancel all orders"), decompose into ordered sub-commands and execute them sequentially. Each fund-moving sub-command still requires its own confirmation step.
 2. **Read the linked reference doc** for execution details
 3. Execute the command yourself (use `pty: true` for interactive commands)
 4. Read CLI output → decide next step autonomously
@@ -205,6 +205,7 @@ Match user intent → read the **Reference** for full execution flow. All CLI co
 | "deposit address", "how do I receive crypto?", "receive" | `deposit spot` | `{baseDir}/references/deposit.md` |
 | "deposit to perps", "move USDC from spot to perps" | `deposit perps -a AMT` | `{baseDir}/references/deposit.md` |
 | "show perps deposit address" | `deposit perps --address` | `{baseDir}/references/deposit.md` |
+| "buy crypto with credit card", "on-ramp with card", "deposit with MoonPay" | `deposit buy` | `{baseDir}/references/deposit.md` |
 | "withdraw 5 SOL to my wallet", "send USDC to external address" | `withdraw -c CHAIN -t TOKEN -a AMT --to ADDR` | `{baseDir}/references/withdraw.md` |
 | "buy crypto with credit card", "on-ramp with card", "deposit with MoonPay" | `deposit buy` | `{baseDir}/references/deposit.md` |
 

@@ -50,7 +50,7 @@ Relay the checkout URL to user.
 
 ## `minara premium buy-credits`
 
-Interactive: package → payment method → browser checkout.
+Interactive only (no CLI flags for amount). Prompts user to pick a credit package, then opens browser checkout. If the user specifies an amount (e.g. "buy 100 credits"), run the command interactively and let the CLI guide package selection.
 
 ## `minara premium cancel`
 
