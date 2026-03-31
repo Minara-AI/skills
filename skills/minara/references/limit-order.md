@@ -2,17 +2,22 @@
 
 > Execute commands yourself. Use `pty: true` for interactive prompts.
 
+## ⚠ CRITICAL — Interactive commands (anti-loop)
+
+- `limit-order create` is **fully interactive** (multi-step prompts). Collect all inputs (chain, side, token, price condition, target price, amount, expiry) from the user first, then run with `pty: true` and feed answers sequentially.
+- `limit-order cancel` without an ID enters an **interactive picker**. Always run `limit-order list` first, then pass the specific order ID: `limit-order cancel ID`.
+- **Never run bare `minara limit-order`** (no subcommand) — it enters an interactive submenu that can hang.
+- **If any command hangs** (no output for 15s), kill it immediately. Do NOT retry. Max 1 retry total.
+
 ## Commands
 
 | Intent | CLI | Type |
 |--------|-----|------|
-| Create limit order | `minara limit-order create` | fund-moving |
+| Create limit order | `minara limit-order create` (pty) | fund-moving |
 | List active orders | `minara limit-order list` | read-only |
-| Cancel order by ID | `minara limit-order cancel [ID]` | fund-moving |
+| Cancel order by ID | `minara limit-order cancel ID` (⚠ always pass ID) | fund-moving |
 
 **Alias:** `minara lo` = `minara limit-order`
-
-**Default (no subcommand):** interactive submenu — create / list / cancel.
 
 ## `minara limit-order create`
 

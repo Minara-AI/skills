@@ -49,9 +49,13 @@ For limit orders, also provide `--type limit` and `--price`:
 $ minara perps order -T limit -S short -s ETH -z 0.5 -p 4000 --wallet Bot-1
 ```
 
-### Interactive mode (default)
+### Interactive mode (default) — ⚠ AVOID in Claude Code
 
-When any of `--side`/`--symbol`/`--size` is missing, CLI guides through prompts:
+When any of `--side`/`--symbol`/`--size` is missing, CLI guides through prompts. **This multi-step interactive flow can hang in agent environments and cause retry loops.**
+
+**Agent rule:** ALWAYS provide `--side`, `--symbol`, and `--size` to use non-interactive mode. Parse the user's intent to determine these values. If any value is unclear, ask the user — do NOT run the bare interactive command.
+
+Interactive prompt sequence (for reference only — prefer non-interactive mode):
 
 1. Resolve wallet (via `--wallet` or picker)
 2. **Autopilot check** — blocks if autopilot is ON for this wallet
@@ -62,6 +66,8 @@ When any of `--side`/`--symbol`/`--size` is missing, CLI guides through prompts:
 7. Reduce only? (default: No)
 8. Grouping: None / Normal TP/SL / Position TP/SL
 9. Preview → Confirm → Touch ID → Execute
+
+**If interactive mode is unavoidable and the command hangs** (no output for 15s), kill it immediately. Do NOT retry. Report to user.
 
 ### Autopilot guard
 

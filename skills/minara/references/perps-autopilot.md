@@ -2,6 +2,15 @@
 
 > Execute commands yourself. Use `pty: true` — fully interactive dashboards.
 
+## ⚠ CRITICAL — Interactive commands (anti-loop)
+
+Both commands below are **fully interactive** (multi-step prompts). To prevent hang/retry loops:
+
+1. **Collect all inputs from user first** before running the command.
+2. Run with `pty: true` and feed answers sequentially.
+3. **If the command hangs** (no new output for 15s), kill it immediately. Do NOT retry. Report to user.
+4. **Max 1 retry** — after 2 failures, stop and report.
+
 ## Commands
 
 | Intent | CLI | Type |

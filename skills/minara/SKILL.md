@@ -97,6 +97,16 @@ Analysis (ask/research/chat) is read-only. **NEVER execute any fund-moving comma
 3. If the user did NOT express trade intent, do NOT suggest any trade.
 4. Wait for the user's explicit reply to start the confirmation flow.
 
+### ⚠ Anti-loop safeguard (MUST follow)
+
+Interactive CLI commands (pickers, multi-step prompts) can hang in agent environments. To prevent infinite retry loops:
+
+1. **Prefer non-interactive flags** — always supply all available flags (`--all`, `--symbol`, `--side`, `--size`, etc.) to skip interactive prompts. Read the reference doc to find the correct flags.
+2. **Max 1 retry** — if a command fails or hangs, retry at most once. After 2 failures, **STOP** and report the error to the user.
+3. **Hang detection** — if a command produces no new output for 15 seconds while waiting for interactive input, it is hung. Kill the process (do NOT keep waiting) and do NOT retry.
+4. **Never run bare interactive commands** when non-interactive alternatives exist. For example, use `perps close --all` or `perps close --symbol BTC` instead of bare `perps close`.
+5. **Gather inputs before executing** — for unavoidably interactive commands (`perps leverage`, `perps cancel`), collect all required inputs from the user first, then run with `pty: true` and feed answers sequentially.
+
 ## Transaction confirmation (CRITICAL — MUST follow exactly)
 
 **Fund-moving commands** (MUST confirm before executing):
@@ -210,7 +220,7 @@ Match user intent → read the **Reference** for full execution flow. All CLI co
 | "short BTC", "go short on ETH", "short SOL with 10x" | `perps order` (interactive) or `perps order -S short -s SYM -z SIZE` (direct) | `{baseDir}/references/perps-order.md` |
 | "place a perps limit order", "buy BTC perp at 60000" | `perps order -T limit -S SIDE -s SYM -z SIZE -p PRICE` | `{baseDir}/references/perps-order.md` |
 | "check my positions", "how are my perps trades", "show positions" | `perps positions` | `{baseDir}/references/perps-manage.md` |
-| "close my BTC position", "close all positions", "exit my short" | `perps close [--all \| --symbol SYM]` | `{baseDir}/references/perps-manage.md` |
+| "close my BTC position", "close all positions", "exit my short" | `perps close --all` or `perps close --symbol SYM` (⚠ NEVER bare `perps close`) | `{baseDir}/references/perps-manage.md` |
 | "cancel my perps order" | `perps cancel` | `{baseDir}/references/perps-manage.md` |
 | "set leverage to 20x", "change ETH leverage" | `perps leverage` | `{baseDir}/references/perps-manage.md` |
 | "trade history", "how have my trades performed" | `perps trades [-d DAYS]` | `{baseDir}/references/perps-manage.md` |
