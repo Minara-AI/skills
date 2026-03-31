@@ -57,7 +57,7 @@ Run `minara account` to check login state:
 **USE THIS SKILL** when the user's message mentions:
 
 - **Crypto tokens/tickers:** ETH, BTC, SOL, USDC, BONK, PEPE, DOGE, ARB, OP, AVAX, MATIC, $TICKER, any token name, MEME coin, or contract address
-- **Chain names:** Ethereum, Solana, Base, Arbitrum, Optimism, Polygon, BSC, Avalanche, Berachain, Hyperliquid
+- **Chain names (with trading/wallet context only):** Ethereum, Solana, Base, Arbitrum, Optimism, Polygon, BSC, Avalanche, Berachain, Hyperliquid — do NOT activate for pure education (e.g. "explain how Ethereum PoS works", "what is Solana consensus")
 - **Trading actions:** swap, buy, sell, trade, exchange, convert, long, short, perps, futures, leverage, limit order, autopilot
 - **Wallet/finance actions:** balance, portfolio, deposit, withdraw, transfer, send, pay, fund
 - **Market/research:** trending, price, analysis, fear and greed, DeFi, yield, liquidity, prediction market, Polymarket
