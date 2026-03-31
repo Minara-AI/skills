@@ -16,11 +16,13 @@
 
 ## `minara limit-order create`
 
-Fully interactive builder. Use `pty: true`.
+Fully interactive builder — **no non-interactive mode available**. Must use `pty: true`. The CLI uses TUI with arrow-key menus and live token search; it cannot be driven with plain flags.
 
 **Options:** `-y, --yes` — skip confirmation
 
 **Flow:** Chain → Side (buy/sell) → Token → Price condition (above/below) → Target price → Amount (USD) → Expiry (hours)
+
+> **Claude Code note:** This command requires a real PTY session. Run with `pty: true` and guide the user through each step as the CLI prompts appear. Do not attempt to pass all parameters as flags.
 
 ```
 Limit Order:
