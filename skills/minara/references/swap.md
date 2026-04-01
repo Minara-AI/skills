@@ -25,9 +25,9 @@
 
 `-t` accepts: ticker (`ETH`, `SOL`), dollar-prefixed (`'$BONK'` — quote the `$`!), contract address (`0xAbC...`), or name (`ethereum`). CLI resolves to chain + address via `lookupToken()`.
 
-### Chain auto-detection
+### Chain resolution
 
-Chain is derived from token lookup. If token exists on multiple chains, CLI shows a picker sorted by gas cost. No manual chain flag needed.
+Chain is derived from token lookup. If token exists on multiple chains, CLI shows a picker sorted by gas cost. **Important:** When presenting the confirmation prompt to the user, always include the resolved chain name. If the chain is ambiguous and CLI needs user input, resolve it BEFORE showing the confirmation — never show "Auto-detected" as chain.
 
 ### Buy example
 
