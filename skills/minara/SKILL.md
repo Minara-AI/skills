@@ -144,11 +144,9 @@ When handling any token swap or transfer:
 
 ### Autopilot wallet guard
 
-Before placing any manual perps order, check if autopilot is ON for the target wallet. If ON, present structured choices: A) Disable autopilot first / B) Use a different wallet / C) Cancel. Do NOT silently proceed — autopilot ON blocks manual orders.
+Before placing any manual perps order, check if autopilot is ON for the target wallet (`minara perps wallets` shows status). If ON, present structured choices: A) Disable autopilot first / B) Use a different wallet / C) Cancel. Do NOT silently proceed — autopilot ON blocks manual orders. See `{baseDir}/references/perps-autopilot.md`.
 
 **Read-only** (no confirmation): `balance`, `assets`, `account`, `ask`, `research`, `chat`, `discover`, `perps wallets`, `perps positions`, `perps trades`, `perps fund-records`, `premium plans`, `premium status`, `config`
-
-> **Autopilot guard:** Per-wallet. When ON, manual orders on that wallet are blocked. See `{baseDir}/references/perps-autopilot.md`.
 
 ## Command reference
 
@@ -159,7 +157,7 @@ Match user intent → read the **Reference** for full execution flow. All CLI co
 | Triggers (User Intent) | CLI Command | Reference |
 |------------------------|-------------|-----------|
 | "buy ETH", "buy $100 of SOL", "invest in BONK", "purchase some PEPE" | `swap -s buy -t TOKEN -a AMT` | `{baseDir}/references/swap.md` |
-| "sell my ETH", "sell all SOL", "cash out PEPE", "exit my BONK" | `swap -s sell -t TOKEN -a AMT` | `{baseDir}/references/swap.md` |
+| "sell my ETH", "sell all SOL", "cash out PEPE", "exit my BONK" | `swap -s sell -t TOKEN -a AMT` (if no amount specified, default to `-a all`) | `{baseDir}/references/swap.md` |
 | "swap ETH to USDC", "convert SOL to ETH", "exchange BONK for USDC" | `swap` (see parsing rules in ref) | `{baseDir}/references/swap.md` |
 | "send 0.5 ETH to 0x...", "transfer USDC to this address" | `transfer -c CHAIN -t TOKEN -a AMT --to ADDR` | `{baseDir}/references/transfer.md` |
 | "pay 50 USDC to 0x...", "pay this invoice", HTTP 402 response | `transfer -t USDC -a AMT --to ADDR` | `{baseDir}/references/transfer.md` |
@@ -190,7 +188,7 @@ Match user intent → read the **Reference** for full execution flow. All CLI co
 
 | Triggers (User Intent) | CLI Command | Reference |
 |------------------------|-------------|-----------|
-| "what's the BTC price?", "how much is ETH?", "SOL price" | `ask "What is the current price of ASSET?"` (for rich context) or `discover search ASSET --type tokens` (for quick lookup) | `{baseDir}/references/chat.md` or `{baseDir}/references/discover.md` |
+| "what's the BTC price?", "how much is ETH?", "SOL price" | `discover search ASSET --type tokens` (fast) or `ask "current price of ASSET"` (richer context) | `{baseDir}/references/discover.md` or `{baseDir}/references/chat.md` |
 | "should I buy ETH?", "quick take on BTC", "what's happening with SOL?" | `ask "QUESTION"` | `{baseDir}/references/chat.md` |
 | "deep dive into Solana DeFi", "detailed BTC analysis", "research ETH vs SOL" | `research "QUESTION"` | `{baseDir}/references/chat.md` |
 | "what's trending?", "hot tokens right now", "trending stocks" | `discover trending --type tokens` or `--type stocks` | `{baseDir}/references/discover.md` |
@@ -208,6 +206,7 @@ Match user intent → read the **Reference** for full execution flow. All CLI co
 | "deposit to perps", "move USDC from spot to perps" | `deposit perps -a AMT` | `{baseDir}/references/deposit.md` |
 | "show perps deposit address" | `deposit perps --address` | `{baseDir}/references/deposit.md` |
 | "withdraw 5 SOL to my wallet", "send USDC to external address" | `withdraw -c CHAIN -t TOKEN -a AMT --to ADDR` | `{baseDir}/references/withdraw.md` |
+| "buy crypto with credit card", "on-ramp with card", "deposit with MoonPay" | `deposit buy` | `{baseDir}/references/deposit.md` |
 
 ### Account & premium
 

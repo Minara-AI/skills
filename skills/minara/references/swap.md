@@ -9,6 +9,8 @@
 | Buy TOKEN with USDC | `minara swap -s buy -t TOKEN -a AMT` | fund-moving |
 | Sell TOKEN to USDC | `minara swap -s sell -t TOKEN -a AMT` | fund-moving |
 | Sell entire balance | `minara swap -s sell -t TOKEN -a all` | fund-moving |
+
+> **When user omits amount on sell** (e.g. "sell my ETH"): default to `-a all` to avoid CLI interactive stall. Always confirm the "sell all" amount with the user via structured choices before executing.
 | Swap IN → OUT | see parsing rules below | fund-moving |
 | Simulate first | add `--dry-run` | read-only |
 
