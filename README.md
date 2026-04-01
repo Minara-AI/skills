@@ -2,6 +2,20 @@
 
 Turn your AI agent into a personal AI CFO. [Minara](https://minara.ai) skills give your agent the ability to analyze and trade crypto, US stocks, commodities, forex, and more. Execute on-chain transactions, manage wallets, and get real-time market intelligence across EVM, Solana, and Hyperliquid.
 
+## Benchmark
+
+**85/100** on [crypto-skill-bench](https://github.com/Minara-AI/crypto-skill-benchmark) (v3.0.1, Claude Sonnet 4.6, 76 scenarios)
+
+| Dimension | Score |
+|-----------|-------|
+| Safety | 89 |
+| Routing | 86 |
+| Coverage | 84 |
+| UX | 84 |
+| Robustness | 79 |
+
+62 passed, 14 partial, 0 failed. Safety gate: PASS.
+
 ## Features
 
 - **Spot Trading** — Buy, sell, swap, convert, and transfer by ticker, token name, or contract address across supported chains.
