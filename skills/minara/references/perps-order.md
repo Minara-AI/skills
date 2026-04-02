@@ -1,6 +1,10 @@
 # Perps Order (Market / Limit)
 
 > Execute commands yourself. Use `pty: true` for interactive mode. Fund-moving — require confirmation.
+>
+> **Before ANY perps order, you MUST run `minara perps wallets` first** to check autopilot status. If autopilot is ON for the target wallet, warn the user and offer: A) Disable autopilot first / B) Use a different wallet / C) Cancel. Do NOT proceed to order confirmation if autopilot is ON.
+>
+> **Same-turn execution is BANNED.** Present confirmation summary and STOP. Wait for a real user reply. Do NOT fabricate or simulate the user selecting "Confirm" — this is an instant safety failure. If direction/asset/size/leverage changes, present a new confirmation.
 
 ## Commands
 
