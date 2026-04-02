@@ -47,7 +47,17 @@ _semver_lt() {
 CLI_LOCAL=$(minara --version 2>/dev/null | tr -d 'v[:space:]' || echo "0.0.0")
 CLI_REMOTE=$(npm view minara version 2>/dev/null | tr -d '[:space:]' || echo "")
 
-SKILL_DIR="${SKILL_DIR:-$HOME/.openclaw/skills/minara}"
+# Resolve SKILL_DIR: explicit env > Claude Code > OpenClaw > script's own directory
+if [ -z "${SKILL_DIR:-}" ]; then
+  if [ -f "$HOME/.claude/skills/minara/SKILL.md" ]; then
+    SKILL_DIR="$HOME/.claude/skills/minara"
+  elif [ -f "$HOME/.openclaw/skills/minara/SKILL.md" ]; then
+    SKILL_DIR="$HOME/.openclaw/skills/minara"
+  else
+    # Fall back to the directory containing this script (works when run in-place)
+    SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+  fi
+fi
 SKILL_LOCAL=$(grep -m1 '^version:' "$SKILL_DIR/SKILL.md" 2>/dev/null | sed 's/^version:[[:space:]]*["'"'"']*\([^"'"'"']*\).*/\1/' || echo "0.0.0")
 SKILL_REMOTE=$(curl -fsSL -m 5 "https://api.github.com/repos/Minara-AI/skills/releases/latest" 2>/dev/null | grep -o '"tag_name":[[:space:]]*"[^"]*"' | sed 's/.*"v\{0,1\}\([^"]*\)"/\1/' || echo "")
 
