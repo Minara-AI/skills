@@ -1,6 +1,8 @@
 # Perps Order (Market / Limit)
 
 > Execute commands yourself. Use `pty: true` for interactive mode. Fund-moving — require confirmation.
+>
+> **Same-turn execution is BANNED.** You MUST present structured confirmation choices (AskUserQuestion in Claude Code) and STOP. Do NOT execute `perps order` in the same response turn as the confirmation summary. Wait for the user's explicit reply in a new turn. If the user changes direction/asset/size/leverage, void any prior confirmation and present a new one.
 
 ## Commands
 

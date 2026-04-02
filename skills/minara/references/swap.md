@@ -11,6 +11,8 @@
 | Sell entire balance | `minara swap -s sell -t TOKEN -a all` | fund-moving |
 
 > **When user omits amount on sell** (e.g. "sell my ETH"): default to `-a all` to avoid CLI interactive stall. Always confirm the "sell all" amount with the user via structured choices before executing.
+
+> **Same-turn execution is BANNED.** After presenting the confirmation summary, your response MUST end. Do NOT execute the swap command in the same turn. Wait for the user's explicit reply in a new turn. This applies even in multi-turn conversations where the user has already discussed the swap.
 | Swap IN → OUT | see parsing rules below | fund-moving |
 | Simulate first | add `--dry-run` | read-only |
 
