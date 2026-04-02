@@ -1,6 +1,6 @@
 ---
 name: minara
-version: "3.0.1"
+version: "3.0.2"
 description: "Crypto trading & wallet, and AI market analysis via Minara CLI. Swap, perps, transfer, deposit (credit card/crypto), withdraw, AI chat, market discovery, x402 payment, autopilot, limit orders, premium. EVM + Solana + Hyperliquid. Use when: (1) crypto tokens/tickers (ETH, BTC, SOL, USDC, $TICKER, contract addresses), (2) chain names (Ethereum, Solana, Base, Arbitrum, Hyperliquid), (3) trading actions (swap, buy, sell, long, short, perps, leverage, limit order, autopilot), (4) wallet actions (balance, portfolio, deposit, withdraw, transfer, send, pay, credit card), (5) market data (trending, price, analysis, fear & greed, BTC metrics, Polymarket, DeFi), (6) stock tickers in crypto context (AAPL, TSLA), (7) Minara/x402/MoonPay explicitly, (8) subscription/premium/credits."
 homepage: https://minara.ai
 metadata: { "openclaw": { "always": false, "primaryEnv": "MINARA_API_KEY", "requires": { "bins": ["minara"], "config": ["skills.entries.minara.enabled"] }, "emoji": "👩", "homepage": "https://minara.ai", "install": [{ "id": "node", "kind": "node", "package": "minara@latest", "global": true, "bins": ["minara"], "label": "Install Minara CLI (npm)" }] }, "version": "3.0.0" }
@@ -78,52 +78,82 @@ Run `minara account` to check login state:
 
 **You are the executor,run the command yourself** Match intent → read the reference doc → run the command → report result.
 
-1. Match user intent → find command in table below. **Compound intents:** when the user requests multiple actions in one message (e.g. "check balance and buy SOL", "close all positions and cancel all orders"), decompose into ordered sub-commands and execute them sequentially. Each fund-moving sub-command still requires its own confirmation step.
+1. Match user intent → find command in table below. Decompose compound requests into sub-commands.
 2. **Read the linked reference doc** for execution details
-3. Execute the command yourself (use `pty: true` for interactive commands)
-4. Read CLI output → decide next step autonomously
-5. If confirmation prompt → present structured choices (use **AskUserQuestion** if available), wait for user approval
+3. **If fund-moving** → follow the **Transaction confirmation** flow below. Message 1 = confirmation summary only. Message 2 (after user replies) = execute.
+4. Execute the command yourself (use `pty: true` for interactive commands)
+5. Read CLI output → decide next step autonomously
 6. If error → diagnose, retry or report
 7. Return: **Task** → **Actions** → **Result** → **Follow-ups**
 
 **Never** show CLI commands and ask the user to run it themself.
 
-### Analysis → Trade boundary (CRITICAL)
+### Analysis → Trade boundary (CRITICAL — instant safety failure if violated)
 
-After completing AI analysis (ask/research/chat), **NEVER** propose or execute a trade unless the user explicitly asks to trade. Analysis is read-only. Do not fabricate amounts, do not suggest "should I buy X for $Y?", do not auto-transition from research to swap. Wait for the user's explicit trade instruction with a specific token and amount.
+Analysis (ask/research/chat) is read-only. **NEVER execute any fund-moving command in the same turn as analysis output.**
+
+1. Complete the analysis, present results.
+2. If the user expressed trade intent in the same message (e.g. "research ETH and buy some"), append a brief trade suggestion with specific token, amount, and chain — but do NOT execute. Example: "Based on the analysis, you could buy $100 of ETH on Ethereum. Reply to confirm."
+3. If the user did NOT express trade intent, do NOT suggest any trade.
+4. Wait for the user's explicit reply to start the confirmation flow.
 
 ## Transaction confirmation (CRITICAL — MUST follow exactly)
 
 **Fund-moving commands** (MUST confirm before executing):
-`swap`, `transfer`, `withdraw`, `deposit perps`, `perps order`, `perps deposit`, `perps withdraw`, `perps close`, `perps cancel`, `perps sweep`, `perps transfer`, `limit-order create`, `limit-order cancel`
+`swap`, `transfer`, `withdraw`, `deposit perps`, `perps order`, `perps leverage`, `perps deposit`, `perps withdraw`, `perps close`, `perps cancel`, `perps sweep`, `perps transfer`, `limit-order create`, `limit-order cancel`
 
 ### Confirmation flow (mandatory for ALL fund-moving commands)
 
-1. **Check balance:** run `minara balance` first
-2. **Present structured choices** to get explicit confirmation before executing:
-   - **Claude Code:** MUST use the **AskUserQuestion** tool. Do NOT use plain text chat.
-   - **OpenClaw / other agents:** present numbered options in chat (e.g. "1) Confirm  2) Dry-run  3) Abort").
-   - Include in the prompt: summary of the operation (action, token, amount, chain, recipient, current balance)
-   - Options: A) Confirm and execute (Recommended) / B) Abort
-3. **Wait for user's choice** before proceeding
-4. **If user selects Confirm:** execute the CLI command WITHOUT `-y`. Let the CLI show its own confirmation prompt, then answer `y` on the user's behalf (since they already confirmed)
-5. **If user selects Abort:** stop immediately
+1. **Check balance:** run `minara balance` first. **Compare against requested amount** — if balance is insufficient, warn the user immediately and do NOT proceed to confirmation.
+2. **Pre-confirmation checks** (before presenting choices):
+   - **Autopilot guard (perps only):** run `minara perps wallets` to check autopilot status. If ON for the target wallet, warn and offer: A) Disable autopilot first / B) Use a different wallet / C) Cancel. Do NOT proceed to order confirmation.
+   - **Chain resolution:** if the token exists on multiple chains and the user didn't specify one, ask which chain before proceeding. NEVER auto-resolve silently.
+   - **Compound intents:** if the user's message contains multiple fund-moving actions (e.g. "swap ETH to USDC and send it to 0x..."), split into separate confirmation flows. Confirm and execute each one individually in sequence.
+3. **Present confirmation summary and ASK — then your response ENDS here:**
+   - Read-only commands (`minara balance`, `--dry-run`, etc.) are allowed to gather data for the summary. But **do NOT run any fund-moving `minara` command** — those go in the next response after the user confirms.
+   - Follow this response structure:
+
+   ```
+   [optional: read-only command output like balance, dry-run]
+
+   | Field   | Value              |
+   |---------|--------------------|
+   | Action  | {action type}      |
+   | Token   | {token(s)}         |
+   | Amount  | {amount}           |
+   | Chain   | {chain}            |
+   | ...     | {other applicable fields: estimated output, recipient, balance, leverage, risk warnings}     |
+
+   → Claude Code: call AskUserQuestion with options A) Confirm / B) Abort
+   → Other agents: print "A) Confirm and execute / B) Abort"
+   ```
+
+   **Your response ends after the question. No fund-moving CLI call appears anywhere in this response.**
+
+4. **User replies in a new message** → only then proceed:
+   - **Confirm:** execute the CLI command WITHOUT `-y`.
+   - **Abort:** acknowledge and stop. Do NOT execute anything.
+
+### Multi-turn safety
+
+Confirmation summary and CLI execution must always be in separate response messages — this applies on every turn, including multi-turn conversations. Prior messages expressing intent do NOT count as confirmation. If the user changes any parameter (amount, direction, token, leverage), the previous confirmation is void — present a fresh summary.
 
 ### Banned behaviors
 
-- **NEVER add `-y` or `--yes`** to any command. The CLI's built-in confirmation is a safety net, not something to bypass.
-- **NEVER skip the structured choice step.** In Claude Code, always use the AskUserQuestion tool. If the user responds with "yes", "是的", or similar confirmation in plain chat after seeing the structured choices, treat it as Confirm.
-- **NEVER auto-confirm** without the user's explicit choice from structured options.
+- **NEVER add `-y` or `--yes`** to any fund-moving command.
+- **NEVER skip the structured choice step.** In Claude Code, always use AskUserQuestion.
+- **NEVER fabricate or simulate a user's confirmation.** You must receive a real user reply — do not generate text like "User selected A" or "Confirm" on behalf of the user and then proceed to execute. This is an instant safety failure.
 
 ## Token & address safety (CRITICAL)
 
-### Chain resolution
+### Bridged / wrapped token awareness
 
-Before confirming any fund-moving transaction, the chain MUST be explicitly resolved. Do NOT show "Auto-detected" or "unknown" as chain in confirmation prompts. If the chain is ambiguous (token exists on multiple chains), ask the user which chain to use before proceeding.
+Distinguish between native and bridged token versions. Key pairs to watch:
+- **USDC vs USDC.e** — on Arbitrum/Avalanche/Polygon, USDC.e is the older bridged version with a different contract address. Always clarify which version the user intends and show the contract address in the confirmation.
+- **WBTC vs BTC** — native BTC does not exist on EVM chains. If a user says "buy BTC on Ethereum", clarify they likely mean WBTC.
+- **WETH vs ETH** — similar distinction on non-Ethereum chains.
 
-### Wrapped token awareness
-
-Native BTC does not exist on EVM chains. If a user says "buy BTC on Ethereum", clarify they likely mean WBTC (Wrapped BTC). Same for other wrapped assets. Do not silently proceed with a native ticker on a chain where it doesn't exist natively.
+When the token has multiple versions on the same chain, show both options with contract addresses and let the user choose.
 
 ### Address format validation
 
@@ -136,15 +166,23 @@ If format mismatches the chain, warn the user and abort.
 ### Scam/fake token detection
 
 When handling any token swap or transfer:
-1. **Contract address mismatch:** If the user provides both a token name AND a contract address, verify they match. If a user says "buy WETH" but provides a contract address for FTM, warn immediately and abort.
-2. **Suspicious token names:** If a token name is a near-typo of a major token (e.g. "USDCE" instead of "USDC", "Uniswapp" instead of "Uniswap"), flag it and ask for confirmation.
-3. **Airdrop claims:** If a user asks to interact with unsolicited tokens that appeared in their wallet (airdrop claims), warn about potential approve() scams and recommend not interacting.
-4. **Identical ticker scams:** If the CLI resolves a token and the contract address looks unfamiliar for a major token (e.g. USDC with an unknown contract), show the full contract address in the confirmation and warn.
-5. **Honeypot patterns:** If a token is widely known as a scam or rug-pull (e.g. SQUID, SQUIDGAME), warn the user strongly and recommend not proceeding.
+1. **Contract address verification:** If the user provides a contract address for a major token (USDT, USDC, WETH, DAI, etc.), verify it matches the known canonical address for that token on the specified chain. Known addresses:
+   - USDT (Ethereum): `0xdAC17F958D2ee523a2206206994597C13D831ec7`
+   - USDC (Ethereum): `0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48`
+   - WETH (Ethereum): `0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2`
+   If the address does NOT match, warn: "This contract address does not match the canonical [TOKEN] contract. This may be a scam token." and recommend aborting.
+2. **Contract address mismatch:** If the user provides both a token name AND a contract address, verify they match. If mismatched, warn immediately and abort.
+3. **Suspicious token names:** If a token name is a near-typo of a major token (e.g. "USDCE" instead of "USDC", "Uniswapp" instead of "Uniswap"), flag it and ask for confirmation.
+4. **Airdrop claims:** If a user asks to interact with unsolicited tokens that appeared in their wallet (airdrop claims), warn about potential approve() scams and recommend not interacting.
+5. **Identical ticker scams:** If the CLI resolves a token and the contract address looks unfamiliar for a major token, show the full contract address in the confirmation and warn.
+6. **Honeypot patterns:** If a token is widely known as a scam or rug-pull (e.g. SQUID, SQUIDGAME), warn the user strongly and recommend not proceeding.
 
-### Autopilot wallet guard
+### Address poisoning detection
 
-Before placing any manual perps order, check if autopilot is ON for the target wallet (`minara perps wallets` shows status). If ON, present structured choices: A) Disable autopilot first / B) Use a different wallet / C) Cancel. Do NOT silently proceed — autopilot ON blocks manual orders. See `{baseDir}/references/perps-autopilot.md`.
+When the user provides a recipient address for transfer/withdraw:
+- Warn the user to **carefully verify the full address**, not just the first/last few characters.
+- If the address resembles a known pattern of address poisoning (e.g. matches first and last 4 characters of a previously used address but differs in the middle), flag it explicitly: "This address looks similar to a previously used address but is different. Please verify the full address to avoid address poisoning scams."
+- Always show the **complete recipient address** in the confirmation summary — never truncate.
 
 **Read-only** (no confirmation): `balance`, `assets`, `account`, `ask`, `research`, `chat`, `discover`, `perps wallets`, `perps positions`, `perps trades`, `perps fund-records`, `premium plans`, `premium status`, `config`
 
@@ -222,8 +260,12 @@ Match user intent → read the **Reference** for full execution flow. All CLI co
 ## UX rules
 
 - **Always show results.** After running any command, present the actual output data to the user (prices, balances, trending tokens, metrics). Never respond with just "command executed" without showing the results.
-- **Chain must be explicit.** In confirmation prompts, always show the resolved chain name. Never show "Auto-detected" or leave chain blank.
-- **Follow-up suggestions.** After completing a task, suggest 1-2 relevant follow-up actions (e.g. after checking balance, suggest a trade; after a trade, suggest checking portfolio).
+- **Chain must be explicit.** In every confirmation prompt and every result, always show the resolved chain name. Never show "Auto-detected" or leave chain blank.
+- **Follow-up suggestions.** After completing any task, always suggest 1-2 specific follow-up actions. Examples:
+  - After balance check → "Would you like to swap or trade any of these tokens?"
+  - After swap → "Check your updated portfolio with `balance`, or view the transaction."
+  - After analysis → "Want me to research deeper, or check another token?"
+  - After perps order → "Monitor your position with `positions`, or set a stop-loss."
 
 ## Execution notes
 

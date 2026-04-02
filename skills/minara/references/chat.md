@@ -1,6 +1,8 @@
 # AI Chat / Ask / Research
 
 > Execute commands yourself. All read-only. Set timeout to **900 seconds**.
+>
+> **Analysis → Trade boundary:** NEVER execute any fund-moving command in the same turn as analysis output. If the user also expressed trade intent, append a brief trade suggestion (token, amount, chain) after the results — but do NOT execute. Wait for the user's reply to start the confirmation flow.
 
 ## Commands
 

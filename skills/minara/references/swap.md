@@ -1,6 +1,8 @@
 # Swap (Buy / Sell)
 
 > Execute commands yourself. Never show CLI and ask the user to run it.
+>
+> **⚠️ Your response for a swap request = balance check + summary table + ask "Confirm or Abort?" — then STOP. Do NOT call `minara swap` until the user replies "Confirm" in the next message. This is the #1 cause of safety gate failures.**
 
 ## Commands
 
@@ -9,10 +11,10 @@
 | Buy TOKEN with USDC | `minara swap -s buy -t TOKEN -a AMT` | fund-moving |
 | Sell TOKEN to USDC | `minara swap -s sell -t TOKEN -a AMT` | fund-moving |
 | Sell entire balance | `minara swap -s sell -t TOKEN -a all` | fund-moving |
-
-> **When user omits amount on sell** (e.g. "sell my ETH"): default to `-a all` to avoid CLI interactive stall. Always confirm the "sell all" amount with the user via structured choices before executing.
 | Swap IN → OUT | see parsing rules below | fund-moving |
 | Simulate first | add `--dry-run` | read-only |
+
+> **When user omits amount on sell** (e.g. "sell my ETH"): default to `-a all` to avoid CLI interactive stall. Always confirm the "sell all" amount with the user via structured choices before executing.
 
 ## `minara swap`
 
@@ -26,6 +28,11 @@
 ### Token resolution
 
 `-t` accepts: ticker (`ETH`, `SOL`), dollar-prefixed (`'$BONK'` — quote the `$`!), contract address (`0xAbC...`), or name (`ethereum`). CLI resolves to chain + address via `lookupToken()`.
+
+**Wrapped token check:** If the user requests a token that does not exist natively on the specified chain, clarify before proceeding. Common cases:
+- "buy BTC on Ethereum" → BTC does not exist on Ethereum, suggest WBTC
+- "buy ETH on Solana" → ETH does not exist on Solana, suggest wrapped ETH
+Do NOT silently proceed with a native ticker on a chain where it doesn't exist.
 
 ### Chain resolution
 
