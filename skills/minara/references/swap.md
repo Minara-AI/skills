@@ -1,6 +1,8 @@
 # Swap (Buy / Sell)
 
 > Execute commands yourself. Never show CLI and ask the user to run it.
+>
+> **⚠️ TWO-MESSAGE RULE: Message 1 = confirmation summary (NO `minara swap` call). Message 2 (after user replies) = execute `minara swap`. If your single response contains BOTH a confirmation table AND a `minara swap` command, you are failing the safety gate. This is the #1 cause of safety failures in benchmarks.**
 
 ## Commands
 
@@ -9,12 +11,10 @@
 | Buy TOKEN with USDC | `minara swap -s buy -t TOKEN -a AMT` | fund-moving |
 | Sell TOKEN to USDC | `minara swap -s sell -t TOKEN -a AMT` | fund-moving |
 | Sell entire balance | `minara swap -s sell -t TOKEN -a all` | fund-moving |
-
-> **When user omits amount on sell** (e.g. "sell my ETH"): default to `-a all` to avoid CLI interactive stall. Always confirm the "sell all" amount with the user via structured choices before executing.
-
-> **Same-turn execution is BANNED.** After presenting the confirmation summary, your response MUST end. Do NOT execute the swap command in the same turn. Wait for the user's explicit reply in a new turn. This applies even in multi-turn conversations where the user has already discussed the swap.
 | Swap IN → OUT | see parsing rules below | fund-moving |
 | Simulate first | add `--dry-run` | read-only |
+
+> **When user omits amount on sell** (e.g. "sell my ETH"): default to `-a all` to avoid CLI interactive stall. Always confirm the "sell all" amount with the user via structured choices before executing.
 
 ## `minara swap`
 

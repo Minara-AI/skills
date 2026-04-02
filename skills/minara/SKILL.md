@@ -78,11 +78,11 @@ Run `minara account` to check login state:
 
 **You are the executor,run the command yourself** Match intent → read the reference doc → run the command → report result.
 
-1. Match user intent → find command in table below. When the atomic instruction cannot process the user command, decompose it into sub-commands and execute them individually in sequence.
+1. Match user intent → find command in table below. Decompose compound requests into sub-commands.
 2. **Read the linked reference doc** for execution details
-3. Execute the command yourself (use `pty: true` for interactive commands)
-4. Read CLI output → decide next step autonomously
-5. If confirmation prompt → present structured choices (use **AskUserQuestion** if available), wait for user approval
+3. **If fund-moving** → follow the **Transaction confirmation** flow below. Message 1 = confirmation summary only. Message 2 (after user replies) = execute.
+4. Execute the command yourself (use `pty: true` for interactive commands)
+5. Read CLI output → decide next step autonomously
 6. If error → diagnose, retry or report
 7. Return: **Task** → **Actions** → **Result** → **Follow-ups**
 
@@ -100,7 +100,7 @@ Analysis (ask/research/chat) is read-only. **NEVER execute any fund-moving comma
 ## Transaction confirmation (CRITICAL — MUST follow exactly)
 
 **Fund-moving commands** (MUST confirm before executing):
-`swap`, `transfer`, `withdraw`, `deposit perps`, `perps order`, `perps deposit`, `perps withdraw`, `perps close`, `perps cancel`, `perps sweep`, `perps transfer`, `limit-order create`, `limit-order cancel`
+`swap`, `transfer`, `withdraw`, `deposit perps`, `perps order`, `perps leverage`, `perps deposit`, `perps withdraw`, `perps close`, `perps cancel`, `perps sweep`, `perps transfer`, `limit-order create`, `limit-order cancel`
 
 ### Confirmation flow (mandatory for ALL fund-moving commands)
 
@@ -109,48 +109,26 @@ Analysis (ask/research/chat) is read-only. **NEVER execute any fund-moving comma
    - **Autopilot guard (perps only):** run `minara perps wallets` to check autopilot status. If ON for the target wallet, warn and offer: A) Disable autopilot first / B) Use a different wallet / C) Cancel. Do NOT proceed to order confirmation.
    - **Chain resolution:** if the token exists on multiple chains and the user didn't specify one, ask which chain before proceeding. NEVER auto-resolve silently.
    - **Compound intents:** if the user's message contains multiple fund-moving actions (e.g. "swap ETH to USDC and send it to 0x..."), split into separate confirmation flows. Confirm and execute each one individually in sequence.
-3. **Present confirmation summary with structured choices, then STOP:**
-   - **Claude Code:** MUST use the **AskUserQuestion** tool. Do NOT use plain text chat.
-   - **OpenClaw / other agents:** present numbered options in chat (e.g. "1) Confirm  2) Abort").
-   - **Summary MUST include** (omit fields that don't apply):
-     - Action (buy/sell/swap/transfer/long/short/close/limit order)
-     - Token symbol(s) and contract address (for non-major tokens)
-     - Amount (in user's original unit — do NOT convert)
-     - Estimated output (e.g. "~0.05 ETH" for a $100 buy)
-     - Chain/network name (NEVER omit, NEVER "Auto-detected")
-     - Recipient address (for transfers — show full address, never truncate)
-     - Current balance of the relevant token
-     - Leverage (for perps)
-     - Risk warnings when applicable: gas > swap value, high leverage (≥10x), selling entire balance, meme coin slippage
-   - Options: A) Confirm and execute / B) Abort
-   - **After presenting, your response MUST end. Do not call any CLI command in the same turn.**
-4. **Wait for user's choice** — execution happens in the NEXT response turn, only after the user explicitly replies
-5. **If user selects Confirm:** execute the CLI command WITHOUT `-y`. The CLI will show its own confirmation prompt — proceed through it since the user already gave explicit approval.
-6. **If user selects Abort:** stop immediately
+3. **Present confirmation summary and ASK — nothing else in this response:**
+   - Show a summary table with applicable fields:
+     - Action, Token (+ contract address for non-major tokens), Amount (user's original unit), Estimated output, Chain, Recipient (full address for transfers), Current balance, Leverage (perps), Risk warnings (gas > value, high leverage, sell-all, slippage)
+   - End your response with **exactly one question** asking the user to choose:
+     - **Claude Code:** use the **AskUserQuestion** tool.
+     - **OpenClaw / other agents:** end with "A) Confirm and execute / B) Abort"
+   - Read-only commands (`minara balance`, `--dry-run`, etc.) are allowed in this response to gather data for the summary. But **do NOT run any fund-moving `minara` command** (swap, transfer, perps order, etc.) — those go in the next response after the user confirms.
 
-### Multi-turn safety (CRITICAL — applies to ALL fund-moving commands including perps)
+4. **User replies in a new message** → only then proceed:
+   - **Confirm:** execute the CLI command WITHOUT `-y`.
+   - **Abort:** acknowledge and stop. Do NOT execute anything.
 
-In multi-turn conversations, the confirmation step is STILL mandatory for every fund-moving command. Prior messages expressing intent do NOT count as confirmation.
+### Multi-turn safety
 
-**Swap example:**
-1. User says "swap 0.1 ETH to USDC" → present structured choices → STOP
-2. User replies "actually make it 0.2 ETH" → present UPDATED structured choices → STOP
-3. User replies "confirm" or selects option A → NOW execute
-
-**Perps example:**
-1. User says "long BTC 10x" → present structured choices (side: LONG, symbol: BTC, leverage: 10x) → STOP
-2. User replies "wait, short instead" → present NEW structured choices (side: SHORT, symbol: BTC, leverage: 10x) → STOP
-3. User replies "confirm" → NOW execute
-
-**Direction reversal rule:** When the user changes the direction (long→short or short→long) or changes the asset, amount, or leverage, you MUST present a completely new confirmation with the updated parameters. NEVER carry over a prior confirmation — the previous confirmation is void.
-
-**Even if the user says "yes", "go ahead", "do it", or "confirmed" in the same message as the trade request, you MUST still present structured choices first and wait for a separate confirmation response.**
+Confirmation summary and CLI execution must always be in separate response messages — this applies on every turn, including multi-turn conversations. Prior messages expressing intent do NOT count as confirmation. If the user changes any parameter (amount, direction, token, leverage), the previous confirmation is void — present a fresh summary.
 
 ### Banned behaviors
 
-- **NEVER add `-y` or `--yes`** to any command. The CLI's built-in confirmation is a safety net, not something to bypass.
-- **NEVER skip the structured choice step.** In Claude Code, always use the AskUserQuestion tool. If the user responds with "yes", "是的", or similar confirmation in plain chat after seeing the structured choices, treat it as Confirm.
-- **NEVER auto-confirm or execute in the same turn as the confirmation summary.** Each fund-moving command requires its own explicit confirmation step — prior conversation turns do NOT count.
+- **NEVER add `-y` or `--yes`** to any fund-moving command.
+- **NEVER skip the structured choice step.** In Claude Code, always use AskUserQuestion.
 
 ## Token & address safety (CRITICAL)
 

@@ -1,6 +1,8 @@
 # Perps Positions / Close / Cancel / Leverage / Trades
 
 > Execute commands yourself. Use `pty: true` for interactive commands.
+>
+> **`perps leverage` is fund-moving** — changing leverage directly affects position risk and liquidation price. Present a confirmation summary (asset, current leverage → new leverage, margin mode, Hyperliquid) and STOP. Wait for user's explicit reply before executing.
 
 ## Commands
 
@@ -9,7 +11,7 @@
 | View positions | `minara perps positions` | read-only |
 | Close position(s) | `minara perps close` | fund-moving |
 | Cancel open order(s) | `minara perps cancel` | fund-moving |
-| Set leverage | `minara perps leverage` | config |
+| Set leverage | `minara perps leverage` | fund-moving |
 | Trade fill history | `minara perps trades` | read-only |
 
 All accept `-w, --wallet <name>` to target a specific sub-wallet.
