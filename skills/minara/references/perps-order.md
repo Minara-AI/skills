@@ -2,7 +2,9 @@
 
 > Execute commands yourself. Use `pty: true` for interactive mode. Fund-moving — require confirmation.
 >
-> **Same-turn execution is BANNED.** You MUST present structured confirmation choices (AskUserQuestion in Claude Code) and STOP. Do NOT execute `perps order` in the same response turn as the confirmation summary. Wait for the user's explicit reply in a new turn. If the user changes direction/asset/size/leverage, void any prior confirmation and present a new one.
+> **Before ANY perps order, you MUST run `minara perps wallets` first** to check autopilot status. If autopilot is ON for the target wallet, warn the user and offer: A) Disable autopilot first / B) Use a different wallet / C) Cancel. Do NOT proceed to order confirmation if autopilot is ON.
+>
+> **Same-turn execution is BANNED.** Present confirmation summary and STOP. Wait for a real user reply. Do NOT fabricate or simulate the user selecting "Confirm" — this is an instant safety failure. If direction/asset/size/leverage changes, present a new confirmation.
 
 ## Commands
 

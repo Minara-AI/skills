@@ -1,6 +1,6 @@
 ---
 name: minara
-version: "3.0.1"
+version: "3.0.2"
 description: "Crypto trading & wallet, and AI market analysis via Minara CLI. Swap, perps, transfer, deposit (credit card/crypto), withdraw, AI chat, market discovery, x402 payment, autopilot, limit orders, premium. EVM + Solana + Hyperliquid. Use when: (1) crypto tokens/tickers (ETH, BTC, SOL, USDC, $TICKER, contract addresses), (2) chain names (Ethereum, Solana, Base, Arbitrum, Hyperliquid), (3) trading actions (swap, buy, sell, long, short, perps, leverage, limit order, autopilot), (4) wallet actions (balance, portfolio, deposit, withdraw, transfer, send, pay, credit card), (5) market data (trending, price, analysis, fear & greed, BTC metrics, Polymarket, DeFi), (6) stock tickers in crypto context (AAPL, TSLA), (7) Minara/x402/MoonPay explicitly, (8) subscription/premium/credits."
 homepage: https://minara.ai
 metadata: { "openclaw": { "always": false, "primaryEnv": "MINARA_API_KEY", "requires": { "bins": ["minara"], "config": ["skills.entries.minara.enabled"] }, "emoji": "👩", "homepage": "https://minara.ai", "install": [{ "id": "node", "kind": "node", "package": "minara@latest", "global": true, "bins": ["minara"], "label": "Install Minara CLI (npm)" }] }, "version": "3.0.0" }
@@ -109,13 +109,26 @@ Analysis (ask/research/chat) is read-only. **NEVER execute any fund-moving comma
    - **Autopilot guard (perps only):** run `minara perps wallets` to check autopilot status. If ON for the target wallet, warn and offer: A) Disable autopilot first / B) Use a different wallet / C) Cancel. Do NOT proceed to order confirmation.
    - **Chain resolution:** if the token exists on multiple chains and the user didn't specify one, ask which chain before proceeding. NEVER auto-resolve silently.
    - **Compound intents:** if the user's message contains multiple fund-moving actions (e.g. "swap ETH to USDC and send it to 0x..."), split into separate confirmation flows. Confirm and execute each one individually in sequence.
-3. **Present confirmation summary and ASK — nothing else in this response:**
-   - Show a summary table with applicable fields:
-     - Action, Token (+ contract address for non-major tokens), Amount (user's original unit), Estimated output, Chain, Recipient (full address for transfers), Current balance, Leverage (perps), Risk warnings (gas > value, high leverage, sell-all, slippage)
-   - End your response with **exactly one question** asking the user to choose:
-     - **Claude Code:** use the **AskUserQuestion** tool.
-     - **OpenClaw / other agents:** end with "A) Confirm and execute / B) Abort"
-   - Read-only commands (`minara balance`, `--dry-run`, etc.) are allowed in this response to gather data for the summary. But **do NOT run any fund-moving `minara` command** (swap, transfer, perps order, etc.) — those go in the next response after the user confirms.
+3. **Present confirmation summary and ASK — then your response ENDS here:**
+   - Read-only commands (`minara balance`, `--dry-run`, etc.) are allowed to gather data for the summary. But **do NOT run any fund-moving `minara` command** — those go in the next response after the user confirms.
+   - Follow this response structure:
+
+   ```
+   [optional: read-only command output like balance, dry-run]
+
+   | Field   | Value              |
+   |---------|--------------------|
+   | Action  | {action type}      |
+   | Token   | {token(s)}         |
+   | Amount  | {amount}           |
+   | Chain   | {chain}            |
+   | ...     | {other applicable fields: estimated output, recipient, balance, leverage, risk warnings}     |
+
+   → Claude Code: call AskUserQuestion with options A) Confirm / B) Abort
+   → Other agents: print "A) Confirm and execute / B) Abort"
+   ```
+
+   **Your response ends after the question. No fund-moving CLI call appears anywhere in this response.**
 
 4. **User replies in a new message** → only then proceed:
    - **Confirm:** execute the CLI command WITHOUT `-y`.
@@ -129,6 +142,7 @@ Confirmation summary and CLI execution must always be in separate response messa
 
 - **NEVER add `-y` or `--yes`** to any fund-moving command.
 - **NEVER skip the structured choice step.** In Claude Code, always use AskUserQuestion.
+- **NEVER fabricate or simulate a user's confirmation.** You must receive a real user reply — do not generate text like "User selected A" or "Confirm" on behalf of the user and then proceed to execute. This is an instant safety failure.
 
 ## Token & address safety (CRITICAL)
 

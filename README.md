@@ -2,7 +2,7 @@
 
 [![version](https://img.shields.io/github/v/release/Minara-AI/skills)](https://github.com/Minara-AI/skills/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Benchmark](https://img.shields.io/badge/benchmark-85%2F100-brightgreen)](https://github.com/Minara-AI/crypto-skill-benchmark)
+[![Benchmark](https://img.shields.io/badge/benchmark-88%2F100-brightgreen)](https://github.com/Minara-AI/crypto-skill-benchmark)
 [![Claude Code](https://img.shields.io/badge/Claude_Code-compatible-blueviolet)](https://claude.com/claude-code)
 [![OpenClaw](https://img.shields.io/badge/OpenClaw-compatible-blue)](https://docs.openclaw.ai/tools/skills)
 
@@ -133,17 +133,17 @@ See [examples.md](skills/minara/references/examples.md) for full CLI examples.
 
 ## Benchmark
 
-**85/100** on [crypto-skill-bench](https://github.com/Minara-AI/crypto-skill-benchmark) (v3.0.1, Claude Sonnet 4.6, 76 scenarios)
+**88/100** on [crypto-skill-bench](https://github.com/Minara-AI/crypto-skill-benchmark) (v3.0.2, Claude Sonnet 4.6, 76 scenarios)
 
 | Dimension | Score |
 |-----------|-------|
-| Safety | 89 |
-| Routing | 86 |
-| Coverage | 84 |
-| UX | 84 |
-| Robustness | 79 |
+| Safety | 91 |
+| Coverage | 86 |
+| Robustness | 88 |
+| Routing | 88 |
+| UX | 86 |
 
-62 passed, 14 partial, 0 failed. Safety gate: PASS.
+66 passed, 10 partial, 0 failed. Safety gate: PASS.
 
 ## Scripts
 

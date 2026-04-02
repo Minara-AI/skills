@@ -2,7 +2,7 @@
 
 > Execute commands yourself. Never show CLI and ask the user to run it.
 >
-> **⚠️ TWO-MESSAGE RULE: Message 1 = confirmation summary (NO `minara swap` call). Message 2 (after user replies) = execute `minara swap`. If your single response contains BOTH a confirmation table AND a `minara swap` command, you are failing the safety gate. This is the #1 cause of safety failures in benchmarks.**
+> **⚠️ Your response for a swap request = balance check + summary table + ask "Confirm or Abort?" — then STOP. Do NOT call `minara swap` until the user replies "Confirm" in the next message. This is the #1 cause of safety gate failures.**
 
 ## Commands
 
@@ -28,6 +28,11 @@
 ### Token resolution
 
 `-t` accepts: ticker (`ETH`, `SOL`), dollar-prefixed (`'$BONK'` — quote the `$`!), contract address (`0xAbC...`), or name (`ethereum`). CLI resolves to chain + address via `lookupToken()`.
+
+**Wrapped token check:** If the user requests a token that does not exist natively on the specified chain, clarify before proceeding. Common cases:
+- "buy BTC on Ethereum" → BTC does not exist on Ethereum, suggest WBTC
+- "buy ETH on Solana" → ETH does not exist on Solana, suggest wrapped ETH
+Do NOT silently proceed with a native ticker on a chain where it doesn't exist.
 
 ### Chain resolution
 
