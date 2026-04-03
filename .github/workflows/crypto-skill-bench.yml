@@ -1,0 +1,32 @@
+name: Crypto Skill Bench
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install crypto-skill-bench
+        run: npm install -g crypto-skill-bench
+
+      - name: Run benchmark (CI mode)
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: crypto-skill-bench evaluate ./skills/minara --ci
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bench-report
+          path: reports/
