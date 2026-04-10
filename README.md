@@ -208,7 +208,7 @@ This repo contains documentation files and setup scripts. No binaries or long-ru
 - [OpenClaw Skills](https://docs.openclaw.ai/tools/skills)
 - [ClawHub](https://clawhub.ai)
 
-## Agent Compatible With
+## Compatible With
 
  <table style="margin: 0; border: 0 !important; border-collapse: collapse; 
   border-spacing: 0;"> 
