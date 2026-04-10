@@ -1,6 +1,8 @@
 # Perps Positions / Close / Cancel / Leverage / Trades
 
 > Execute commands yourself. Use `pty: true` for interactive commands.
+>
+> **`perps leverage` is fund-moving** — changing leverage directly affects position risk and liquidation price. Present a confirmation summary (asset, current leverage → new leverage, margin mode, Hyperliquid) and STOP. Wait for user's explicit reply before executing.
 
 ## Commands
 
@@ -9,7 +11,7 @@
 | View positions | `minara perps positions` | read-only |
 | Close position(s) | `minara perps close` | fund-moving |
 | Cancel open order(s) | `minara perps cancel` | fund-moving |
-| Set leverage | `minara perps leverage` | config |
+| Set leverage | `minara perps leverage` | fund-moving |
 | Trade fill history | `minara perps trades` | read-only |
 
 All accept `-w, --wallet <name>` to target a specific sub-wallet.
@@ -67,14 +69,17 @@ Cancel an open perps order. Interactive picker if no specific order.
 
 ## `minara perps leverage`
 
-Interactive: select asset → leverage (1–max) → margin mode (cross/isolated).
+Can be run interactively or with non-interactive flags.
+Options: `-s, --symbol <TOKEN>` (target token), `-l, --leverage <VALUE>` (leverage multiplier), `-w, --wallet <name>`.
+
+When both `-s` and `-l` are provided, it defaults to cross margin mode.
 
 ```
-? Asset: ETH $3,200 max 50x
-? Leverage (1–50x): 20
-? Margin mode: Cross
+$ minara perps leverage -s ETH -l 20
 ✔ Leverage set to 20x (cross) for ETH
 ```
+
+If flags are missing, it falls back to an Interactive prompt: select asset → leverage (1–max) → margin mode (cross/isolated).
 
 ## `minara perps trades`
 

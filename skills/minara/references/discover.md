@@ -16,7 +16,7 @@
 
 **Default (no subcommand):** interactive submenu.
 
-## `minara discover trending [category]`
+## `minara discover trending`
 
 **Options:** `-t, --type <tokens|stocks>` — skip interactive category picker
 

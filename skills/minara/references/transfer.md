@@ -33,7 +33,12 @@ $ minara transfer -c base -t USDC -a 100 --to 0xRecipient...
 ✔ Transfer submitted! Transaction ID: tx_abc...
 ```
 
-**Address validation:** EVM → `0x` + 40 hex chars. Solana → base58.
+**Address validation (MUST check before executing):**
+- **EVM:** `0x` + 40 hex chars (42 total). Reject truncated addresses (e.g. `0x123`).
+- **Solana:** base58 encoded, typically 32-44 chars.
+- **TRON:** starts with `T` — this is NOT an EVM address. If user provides a `T`-prefixed address for an EVM chain, warn and abort.
+- **Invalid strings:** reject non-hex, non-base58 strings (e.g. `not_a_valid_eth_address`).
+If the address format does not match the target chain, warn the user and do NOT proceed.
 
 **Errors:**
 - `Transfer failed` → insufficient balance, invalid address, network error

@@ -1,6 +1,36 @@
-# Minara Skills
+
+<div style="display: flex; flex-direction: column; align-items: center; gap: 12px; margin: 20px auto; width: fit-content;">
+  <h1 align="center"; style="margin: 0; line-height: 1.2; border: none; text-align: center;">Minara Skills</h1>
+  <img src="assets/minara_banner.png" alt="Xneuro" width=100% style="display: block;">
+</div>
+
+[![version](https://img.shields.io/github/v/release/Minara-AI/skills)](https://github.com/Minara-AI/skills/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Benchmark](https://img.shields.io/badge/benchmark-88%2F100-brightgreen)](https://github.com/Minara-AI/crypto-skill-benchmark)
+[![Claude Code](https://img.shields.io/badge/Claude_Code-compatible-blueviolet)](https://claude.com/claude-code)
+[![OpenClaw](https://img.shields.io/badge/OpenClaw-compatible-blue)](https://docs.openclaw.ai/tools/skills)
+[![Static Badge](https://img.shields.io/badge/Hermes_Agent-compatible-yellow)](https://hermes-agent.nousresearch.com/)
+
 
 Turn your AI agent into a personal AI CFO. [Minara](https://minara.ai) skills give your agent the ability to analyze and trade crypto, US stocks, commodities, forex, and more. Execute on-chain transactions, manage wallets, and get real-time market intelligence across EVM, Solana, and Hyperliquid.
+
+## Table of Contents
+
+- [Table of Contents](#table-of-contents)
+- [Features](#features)
+- [Supported Networks](#supported-networks)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Usage](#usage)
+  - [Basic flow](#basic-flow)
+  - [Perps and limit orders](#perps-and-limit-orders)
+  - [More examples](#more-examples)
+- [Benchmark](#benchmark)
+- [Scripts](#scripts)
+- [Security](#security)
+- [Links](#links)
+- [Agent Compatible With](#agent-compatible-with)
+- [License](#license)
 
 ## Features
 
@@ -18,7 +48,8 @@ Ethereum, Base, Arbitrum, Optimism, Polygon, Avalanche, Solana, BSC, Berachain, 
 
 ## Installation
 
-### Claude Code
+<details open>
+<summary>Claude Code</summary>
 
 **One-click (recommended):** Send this prompt to your Claude Code agent:
 
@@ -36,9 +67,11 @@ git clone https://github.com/Minara-AI/skills.git /tmp/minara-skills
 cp -r /tmp/minara-skills/skills/minara ~/.claude/skills/minara
 ```
 
-### OpenClaw
+</details>
 
-**One-click (recommended):** Send this prompt to your Openclaw agent:
+<details>
+<summary>OpenClaw</summary>
+**One-click (recommended):** Send this prompt to your OpenClaw agent:
 
 ```
 Run "curl -fsSL https://raw.githubusercontent.com/Minara-AI/skills/main/scripts/openclaw-minara-skill-setup.sh | bash" to install Minara CLI, Minara Skills and set following config. Follow the login URL when prompted.
@@ -76,6 +109,29 @@ Add to `~/.openclaw/openclaw.json`:
   }
 }
 ```
+
+</details>
+
+<details>
+<summary>Hermes</summary>
+
+**One-click (recommended):** Send this prompt to your Hermes agent:
+
+```
+Run "curl -fsSL https://raw.githubusercontent.com/Minara-AI/skills/main/scripts/hermes-minara-skill-setup.sh | bash" to install Minara CLI, Minara Skills and set following config. Follow the login URL when prompted.
+```
+
+This installs the Minara CLI, copies skill files to `~/.hermes/skills/minara` and starts the login flow.
+
+**Manual:**
+
+```bash
+npm install -g minara@latest
+git clone https://github.com/Minara-AI/skills.git /tmp/minara-skills
+cp -r /tmp/minara-skills/skills/minara ~/.hermes/skills/minara
+```
+
+</details>
 
 ## Quick Start
 
@@ -116,15 +172,30 @@ Talk to the agent in natural language. It runs the right commands for you.
 
 See [examples.md](skills/minara/references/examples.md) for full CLI examples.
 
+## Benchmark
+
+**88/100** on [crypto-skill-bench](https://github.com/Minara-AI/crypto-skill-benchmark) (v3.0.2, Claude Sonnet 4.6, 76 scenarios)
+
+| Dimension | Score |
+|-----------|-------|
+| Safety | 91 |
+| Coverage | 86 |
+| Robustness | 88 |
+| Routing | 88 |
+| UX | 86 |
+
+66 passed, 10 partial, 0 failed. Safety gate: PASS.
+
 ## Scripts
 
-| Script                                     | Purpose                                                                                                |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
-| `scripts/claudecode-minara-skill-setup.sh` | One-click installer for Claude Code: installs CLI, copies skill, runs login                            |
-| `scripts/openclaw-minara-skill-setup.sh`   | One-click installer for OpenClaw: installs CLI, copies skill, registers in `openclaw.json`, runs login |
-| `skills/minara/scripts/version-check.sh`   | Session-level version detector — outputs `UP_TO_DATE`, `SNOOZED`, or `UPGRADE cli:X→Y [skill:X→Y]`     |
+| Script                                       | Purpose                                                                                                |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `scripts/claudecode-minara-skill-setup.sh`   | One-click installer for Claude Code: installs CLI, copies skill, runs login                            |
+| `scripts/openclaw-minara-skill-setup.sh`     | One-click installer for OpenClaw: installs CLI, copies skill, registers in `openclaw.json`, runs login |
+| `scripts/hermes-minara-skill-setup.sh`       | One-click installer for Hermes: installs CLI, copies skill, runs login                                |
+| `skills/minara/scripts/version-check.sh`     | Session-level version detector — outputs `UP_TO_DATE`, `SNOOZED`, or `UPGRADE cli:X→Y [skill:X→Y]`     |
 
-Both setup scripts are idempotent and support the same three-tier skill download fallback: ClawHub → GitHub → clawhub CLI.
+All setup scripts are idempotent and support the same three-tier skill download fallback: ClawHub → GitHub → clawhub CLI.
 
 ## Security
 
@@ -136,6 +207,36 @@ This repo contains documentation files and setup scripts. No binaries or long-ru
 - [Minara CLI (npm)](https://www.npmjs.com/package/minara)
 - [OpenClaw Skills](https://docs.openclaw.ai/tools/skills)
 - [ClawHub](https://clawhub.ai)
+
+## Compatible With
+
+ <table style="margin: 0; border: 0 !important; border-collapse: collapse; 
+  border-spacing: 0;"> 
+  <tr>
+    <td style="vertical-align: middle; padding-right: 16px; border: 0 !important;">
+      <img src="assets/claudecode-color.png" alt="Claude Code" height="60">
+    </td>
+    <td style="vertical-align: middle; border: 0 !important;">
+      <p style="margin: 0;"><a href="https://www.anthropic.com/product/claude-code">Claude Code</a></p>
+    </td>
+  </tr>
+  <tr>
+    <td style="vertical-align: middle; padding-right: 16px; border: 0 !important;">
+      <img src="assets/openclaw-logo.png" alt="OpenClaw" height="60">
+    </td>
+    <td style="vertical-align: middle; border: 0 !important;">
+      <p style="margin: 0;"><a href="https://openclaw.ai/">OpenClaw</a></p>
+    </td>
+  </tr>
+  <tr>
+    <td style="vertical-align: middle; padding-right: 16px; border: 0 !important;">
+      <img src="assets/hermes-logo.png" alt="Hermes Agent" height="60">
+    </td>
+    <td style="vertical-align: middle; border: 0 !important;">
+      <p style="margin: 0;"><a href="https://hermes-agent.nousresearch.com/">Hermes Agent</a></p>
+    </td>
+  </tr>
+</table>
 
 ## License
 

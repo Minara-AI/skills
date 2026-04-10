@@ -16,13 +16,15 @@
 
 ## `minara limit-order create`
 
-Fully interactive builder. Use `pty: true`.
+Can be run interactively or with non-interactive flags. 
+Flags: `--chain <chain>`, `--side <side>`, `--token <symbol|address>`, `--condition <above|below>`, `--price <amount>`, `--amount <amount>`, `--expiry <hours>`, `-y, --yes` (skip confirmation).
 
-**Options:** `-y, --yes` — skip confirmation
+> **Note:** Even with non-interactive flags, Touch ID is still requested.
 
-**Flow:** Chain → Side (buy/sell) → Token → Price condition (above/below) → Target price → Amount (USD) → Expiry (hours)
+> **Claude Code note:** This command requires a real PTY session. Run with `pty: true` and guide the user through each step as the CLI prompts appear. Do not attempt to pass all parameters as flags.
 
 ```
+$ minara limit-order create --chain base --side buy --token PEPE --condition below --price 0.000012 --amount 100 --expiry 24
 Limit Order:
   Chain: base · Side: buy · Token: PEPE (0xAbc...)
   Condition: price below $0.000012 · Amount: $100

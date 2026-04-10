@@ -131,7 +131,7 @@ minara chat --history <chatId>
 
 ```bash
 minara discover trending           # Trending tokens
-minara discover trending stocks    # Trending stocks
+minara discover trending --type stocks # Trending stocks
 minara discover search SOL         # Search tokens / stocks
 minara discover search AAPL        # Search stocks by name
 minara discover trending --json    # JSON output
@@ -140,7 +140,7 @@ minara discover trending --json    # JSON output
 ## 8 — Limit orders
 
 ```bash
-minara limit-order create          # Interactive: token, price, side, amount, expiry
+minara limit-order create --chain base --side buy --token PEPE --condition below --price 0.000012 --amount 100 --expiry 24
 minara limit-order list            # List all orders
 minara limit-order cancel abc123   # Cancel by ID
 ```
@@ -172,6 +172,5 @@ minara deposit spot                # Show deposit addresses to receive crypto
 minara premium plans               # View plans
 minara premium status              # Current subscription
 minara premium subscribe           # Subscribe / upgrade
-minara premium buy-credits         # Buy credits
 minara premium cancel              # Cancel
 ```

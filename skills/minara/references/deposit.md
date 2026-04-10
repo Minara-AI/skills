@@ -9,6 +9,7 @@
 | Show deposit addresses | `minara deposit spot` | read-only |
 | Show perps deposit address | `minara deposit perps --address` | read-only |
 | Transfer spot → perps | `minara deposit perps -a AMT` | fund-moving |
+| Buy crypto with credit card | `minara deposit buy` | opens browser |
 | Interactive menu | `minara deposit` | mixed |
 
 **Alias:** `minara receive` = `minara deposit`
@@ -63,6 +64,18 @@ $ minara deposit perps -a 100
 When neither `--address` nor `--amount` is provided, shows a picker:
 1. Show perps deposit address (for external transfers)
 2. Transfer from Spot wallet → Perps wallet (internal)
+
+## `minara deposit buy`
+
+Buy crypto with a credit card via MoonPay. Opens a browser checkout flow.
+
+```
+$ minara deposit buy
+✔ Opening MoonPay checkout…
+  https://buy.moonpay.com/...
+```
+
+Relay the checkout URL to the user. Fund-moving (card charge), but handled entirely in the browser.
 
 **Errors:**
 - `No wallet address found` → account not initialized
