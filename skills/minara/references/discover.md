@@ -49,6 +49,22 @@ Prompts keyword if missing. Non-TTY defaults type to tokens.
 
 For `/price ASSET`: run `minara discover search ASSET --type tokens`, then extract and present **only the price** concisely (name, price, 24h change).
 
+### Multiple results — how to pick
+
+Search often returns several tokens with the same symbol (same name, different chains or contract addresses). When this happens:
+
+1. **Pick the highest market cap result** — this is almost always the canonical token the user means.
+2. If two results have similar market caps, present both (symbol + chain + market cap) and ask the user to confirm which one.
+3. Never silently pick a low-market-cap result when a high-market-cap one exists with the same symbol.
+
+### xStocks vs real stocks
+
+`--type stocks` returns **xStocks** — tokenized stocks on Solana (e.g. NVDAx, AAPLx). These are **not** real NASDAQ/NYSE equities. Before searching for a stock ticker:
+
+1. Clarify to the user: "Minara trades tokenized stocks (xStocks on Solana), not real exchange shares."
+2. If the user confirms they want the xStock version, search with `--type stocks`.
+3. If the user wants a real stock quote/analysis (no trading intent), use `minara ask` or `minara research` instead.
+
 ## `minara discover fear-greed`
 
 ```
