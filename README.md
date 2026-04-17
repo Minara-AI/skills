@@ -14,6 +14,26 @@
 
 Turn your AI agent into a personal AI CFO. [Minara](https://minara.ai) skills give your agent the ability to analyze and trade crypto, US stocks, commodities, forex, and more. Execute on-chain transactions, manage wallets, and get real-time market intelligence across EVM, Solana, and Hyperliquid.
 
+<table>
+  <tr>
+    <td align="center" width="140"><h3>Works<br>with</h3></td>
+    <td align="center" width="140">
+      <a href="https://openclaw.ai/"><img src="assets/openclaw-logo.png" alt="OpenClaw" height="56"></a><br>
+      <a href="https://openclaw.ai/">OpenClaw</a>
+    </td>
+    <td align="center" width="140">
+      <a href="https://www.anthropic.com/product/claude-code"><img src="assets/claudecode-color.png" alt="Claude Code" height="56"></a><br>
+      <a href="https://www.anthropic.com/product/claude-code">Claude Code</a>
+    </td>
+    <td align="center" width="140">
+      <a href="https://hermes-agent.nousresearch.com/"><img src="assets/hermes-logo.png" alt="Hermes Agent" height="56"></a><br>
+      <a href="https://hermes-agent.nousresearch.com/">Hermes Agent</a>
+    </td>
+  </tr>
+</table>
+
+<p align="center"><em>If it can receive a heartbeat, it's hired.</em></p>
+
 ## Table of Contents
 
 - [Table of Contents](#table-of-contents)
@@ -29,7 +49,6 @@ Turn your AI agent into a personal AI CFO. [Minara](https://minara.ai) skills gi
 - [Scripts](#scripts)
 - [Security](#security)
 - [Links](#links)
-- [Agent Compatible With](#agent-compatible-with)
 - [License](#license)
 
 ## Features
@@ -207,28 +226,6 @@ This repo contains documentation files and setup scripts. No binaries or long-ru
 - [Minara CLI (npm)](https://www.npmjs.com/package/minara)
 - [OpenClaw Skills](https://docs.openclaw.ai/tools/skills)
 - [ClawHub](https://clawhub.ai)
-
-## Compatible With
-
-<table>
-  <tr>
-    <td align="center" width="140"><h3>Works<br>with</h3></td>
-    <td align="center" width="140">
-      <a href="https://openclaw.ai/"><img src="assets/openclaw-logo.png" alt="OpenClaw" height="56"></a><br>
-      <a href="https://openclaw.ai/">OpenClaw</a>
-    </td>
-    <td align="center" width="140">
-      <a href="https://www.anthropic.com/product/claude-code"><img src="assets/claudecode-color.png" alt="Claude Code" height="56"></a><br>
-      <a href="https://www.anthropic.com/product/claude-code">Claude Code</a>
-    </td>
-    <td align="center" width="140">
-      <a href="https://hermes-agent.nousresearch.com/"><img src="assets/hermes-logo.png" alt="Hermes Agent" height="56"></a><br>
-      <a href="https://hermes-agent.nousresearch.com/">Hermes Agent</a>
-    </td>
-  </tr>
-</table>
-
-<p align="center"><em>If it can receive a heartbeat, it's hired.</em></p>
 
 ## License
 
