@@ -20,16 +20,13 @@ Turn your AI agent into a personal AI CFO. [Minara](https://minara.ai) skills gi
   <tr>
     <td align="center" width="140"><h3>Works<br>with</h3></td>
     <td align="center" width="140">
-      <a href="https://openclaw.ai/"><img src="assets/openclaw-logo.png" alt="OpenClaw" height="56"></a><br>
-      <a href="https://openclaw.ai/">OpenClaw</a>
+      <a href="https://openclaw.ai/"><img src="assets/openclaw-logo.png" alt="OpenClaw" height="56"><br>OpenClaw</a>
     </td>
     <td align="center" width="140">
-      <a href="https://www.anthropic.com/product/claude-code"><img src="assets/claudecode-color.png" alt="Claude Code" height="56"></a><br>
-      <a href="https://www.anthropic.com/product/claude-code">Claude Code</a>
+      <a href="https://www.anthropic.com/product/claude-code"><img src="assets/claudecode-color.png" alt="Claude Code" height="56"><br>Claude Code</a>
     </td>
     <td align="center" width="140">
-      <a href="https://hermes-agent.nousresearch.com/"><img src="assets/hermes-logo.png" alt="Hermes Agent" height="56"></a><br>
-      <a href="https://hermes-agent.nousresearch.com/">Hermes Agent</a>
+      <a href="https://hermes-agent.nousresearch.com/"><img src="assets/hermes-logo.png" alt="Hermes Agent" height="56"><br>Hermes Agent</a>
     </td>
   </tr>
 </table>
