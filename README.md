@@ -14,6 +14,8 @@
 
 Turn your AI agent into a personal AI CFO. [Minara](https://minara.ai) skills give your agent the ability to analyze and trade crypto, US stocks, commodities, forex, and more. Execute on-chain transactions, manage wallets, and get real-time market intelligence across EVM, Solana, and Hyperliquid.
 
+<div align="center">
+
 <table>
   <tr>
     <td align="center" width="140"><h3>Works<br>with</h3></td>
@@ -32,7 +34,7 @@ Turn your AI agent into a personal AI CFO. [Minara](https://minara.ai) skills gi
   </tr>
 </table>
 
-<p align="center"><em>If it can receive a heartbeat, it's hired.</em></p>
+</div>
 
 ## Table of Contents
 
