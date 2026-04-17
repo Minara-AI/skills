@@ -210,33 +210,25 @@ This repo contains documentation files and setup scripts. No binaries or long-ru
 
 ## Compatible With
 
- <table style="margin: 0; border: 0 !important; border-collapse: collapse; 
-  border-spacing: 0;"> 
+<table>
   <tr>
-    <td style="vertical-align: middle; padding-right: 16px; border: 0 !important;">
-      <img src="assets/claudecode-color.png" alt="Claude Code" height="60">
+    <td align="center" width="140"><h3>Works<br>with</h3></td>
+    <td align="center" width="140">
+      <a href="https://openclaw.ai/"><img src="assets/openclaw-logo.png" alt="OpenClaw" height="56"></a><br>
+      <a href="https://openclaw.ai/">OpenClaw</a>
     </td>
-    <td style="vertical-align: middle; border: 0 !important;">
-      <p style="margin: 0;"><a href="https://www.anthropic.com/product/claude-code">Claude Code</a></p>
+    <td align="center" width="140">
+      <a href="https://www.anthropic.com/product/claude-code"><img src="assets/claudecode-color.png" alt="Claude Code" height="56"></a><br>
+      <a href="https://www.anthropic.com/product/claude-code">Claude Code</a>
     </td>
-  </tr>
-  <tr>
-    <td style="vertical-align: middle; padding-right: 16px; border: 0 !important;">
-      <img src="assets/openclaw-logo.png" alt="OpenClaw" height="60">
-    </td>
-    <td style="vertical-align: middle; border: 0 !important;">
-      <p style="margin: 0;"><a href="https://openclaw.ai/">OpenClaw</a></p>
-    </td>
-  </tr>
-  <tr>
-    <td style="vertical-align: middle; padding-right: 16px; border: 0 !important;">
-      <img src="assets/hermes-logo.png" alt="Hermes Agent" height="60">
-    </td>
-    <td style="vertical-align: middle; border: 0 !important;">
-      <p style="margin: 0;"><a href="https://hermes-agent.nousresearch.com/">Hermes Agent</a></p>
+    <td align="center" width="140">
+      <a href="https://hermes-agent.nousresearch.com/"><img src="assets/hermes-logo.png" alt="Hermes Agent" height="56"></a><br>
+      <a href="https://hermes-agent.nousresearch.com/">Hermes Agent</a>
     </td>
   </tr>
 </table>
+
+<p align="center"><em>If it can receive a heartbeat, it's hired.</em></p>
 
 ## License
 
