@@ -1,18 +1,14 @@
 ---
 name: minara
 version: "3.0.2"
-description: "Crypto trading & wallet, and AI market analysis via Minara CLI. Swap, perps, transfer, deposit (credit card/crypto), withdraw, AI chat, market discovery, x402 payment, autopilot, limit orders, premium. EVM + Solana + Hyperliquid. Use when: (1) crypto tokens/tickers (ETH, BTC, SOL, USDC, $TICKER, contract addresses), (2) chain names (Ethereum, Solana, Base, Arbitrum, Hyperliquid), (3) trading actions (swap, buy, sell, long, short, perps, leverage, limit order, autopilot), (4) wallet actions (balance, portfolio, deposit, withdraw, transfer, send, pay, credit card), (5) market data (trending, price, analysis, fear & greed, BTC metrics, Polymarket, DeFi), (6) stock tickers in crypto context (AAPL, TSLA), (7) Minara/x402/MoonPay explicitly, (8) subscription/premium/credits."
+description: "Crypto trading, wallet, and AI market analysis via the Minara CLI. Swap, perps, transfer, deposit, withdraw, AI chat, market discovery, x402 pay, autopilot. EVM + Solana + Hyperliquid."
 homepage: https://minara.ai
-metadata: { "openclaw": { "always": false, "primaryEnv": "MINARA_API_KEY", "requires": { "bins": ["minara"], "config": ["skills.entries.minara.enabled"] }, "emoji": "👩", "homepage": "https://minara.ai", "install": [{ "id": "node", "kind": "node", "package": "minara@latest", "global": true, "bins": ["minara"], "label": "Install Minara CLI (npm)" }] }, "version": "3.0.0" }
+tags: [crypto, trading, wallet, defi, ai]
 ---
 
 # Minara — Your Personal Crypto AI Financial Officer for Crypto Trading & Wallet Management
 
 <!-- Safety: this file is documentation only. No executable code. -->
-
-## Post-install Setup
-
-On first activation, read `{baseDir}/setup.md` and follow its instructions.
 
 ## Preamble — run once on first activation per session
 
@@ -294,10 +290,6 @@ Match user intent → read the **Reference** for full execution flow. All CLI co
 
 - `minara login` → saved to `~/.minara/`
 - `MINARA_API_KEY` env var or `skills.entries.minara.apiKey` in OpenClaw or Claude Code config
-
-## Post-install setup
-
-On first activation, read `{baseDir}/setup.md` and follow instructions. **Inform user** before writing to workspace files.
 
 ## Examples
 
