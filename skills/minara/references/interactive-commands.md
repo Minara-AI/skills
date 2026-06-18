@@ -111,17 +111,11 @@ Always interactive. Use `pty: true`. No bypass available — this is an ongoing 
 
 ---
 
-### `minara premium buy-credits` — interactive package picker
-
-No flag for amount. CLI prompts for credit package selection. Use `pty: true` and let the user pick. If the user specifies an amount upfront, relay it verbally as the CLI shows options — don't try to pre-fill.
-
----
-
 ### `minara premium` (no subcommand) — interactive submenu
 
 | Situation | Fix |
 |-----------|-----|
-| `minara premium` | Use specific subcommand: `premium plans`, `premium status`, `premium subscribe`, `premium buy-credits`, `premium cancel` |
+| `minara premium` | Use specific subcommand: `premium plans`, `premium status`, `premium subscribe`, `premium cancel` |
 
 ---
 
@@ -155,7 +149,6 @@ This one is intentionally interactive. The correct agent behavior:
 | `perps close` | no target | `--all` or `--symbol SYM` | No |
 | `limit-order create` | always | **no fix — must use pty** | **Yes** |
 | `perps autopilot` | always | **no fix — must use pty** | **Yes** |
-| `premium buy-credits` | always | **no fix — must use pty** | **Yes** |
 | `premium` | no subcommand | use specific subcommand | No |
 | `config` | always | ask user to run manually | Yes |
 | `login --device` | always (expected) | relay URL/code to user | **Yes** |

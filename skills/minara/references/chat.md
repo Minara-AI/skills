@@ -41,7 +41,15 @@ $ minara research "detailed Solana DeFi ecosystem analysis"
 Minara: [detailed quality response...]
 ```
 
-Uses more credits than `ask`.
+Uses more credits than `ask`, and **consumes a workflow** — it is gated by the
+plan's **workflow** quota, not just credits.
+
+**Free tier cannot use `research`.** The Free plan has **0 workflows**, so
+`research` errors with: *"Quota is still exhausted on the Free tier … Lite+
+unlocks workflows."* This is expected — **Lite+ unlocks workflows** (Lite = 5).
+If a user hits this on Free, suggest `minara ask` / `minara chat` (fast mode,
+credit-only, works on Free) or upgrading via `minara premium subscribe`. See
+`premium.md` for the workflow allocation per plan.
 
 ## `minara chat [message]`
 
