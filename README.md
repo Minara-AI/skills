@@ -220,12 +220,22 @@ This repo contains documentation files and setup scripts. No binaries or long-ru
 
 ## Links
 
+- [Discord](https://discord.com/invite/minaraai)
 - [Minara](https://minara.ai)
 - [Minara CLI (npm)](https://www.npmjs.com/package/minara)
-- [Discord](https://discord.com/invite/minaraai)
 - [OpenClaw Skills](https://docs.openclaw.ai/tools/skills)
 - [ClawHub](https://clawhub.ai)
 
 ## License
 
 MIT
+
+## Star History
+
+<a href="https://www.star-history.com/#Minara-AI/skills&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=Minara-AI/skills&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=Minara-AI/skills&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=Minara-AI/skills&type=Date" />
+ </picture>
+</a>
