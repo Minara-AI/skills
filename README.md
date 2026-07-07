@@ -12,7 +12,7 @@
 [![Static Badge](https://img.shields.io/badge/Hermes_Agent-compatible-yellow)](https://hermes-agent.nousresearch.com/)
 
 
-[Minara](https://minara.ai) is an AI-native financial OS, and these skills bring it into your agent. Trade crypto, US and Korean stocks, commodities, and forex in plain language. Run on-chain transactions, manage wallets, and get real-time market data across EVM, Solana, and Hyperliquid.
+[Minara](https://minara.ai) is an AI-native financial OS, and these skills bring it into your agent. Trade US and Korean stocks, futures, indices, commodities, forex, and crypto in plain language. Run on-chain transactions, manage wallets, and get real-time market data across EVM, Solana, and Hyperliquid.
 
 > **⚡ Strategy Studio** — go beyond execution: AI-powered backtesting and AI factor-combination strategies. Available now on the web at **[strategy.minara.ai](https://strategy.minara.ai)**.
 
